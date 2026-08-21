@@ -1,0 +1,184 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", sans-serif;
+    background: #f8f5ff;
+    color: #2d2d2d;
+}
+
+/* ENCABEZADO */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    background: linear-gradient(90deg,
+            #1e1b2e,
+            #6b21a8);
+    border-bottom: 3px solid #d4af37;
+}
+
+.logo h1 {
+    color: #d4af37;
+    font-size: 38px;
+}
+
+.logo p {
+    color: white;
+    font-size: 14px;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+nav a {
+    text-decoration: none;
+    color: white;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+nav a:hover {
+    color: #d4af37;
+}
+
+/* SECCIÓN PRINCIPAL */
+.hero {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 500px;
+    padding: 80px 20px;
+    background: linear-gradient(135deg,
+            #f3e8ff,
+            #e9d5ff,
+            #d8b4fe);
+}
+
+.hero-content {
+    max-width: 800px;
+}
+
+.hero h2 {
+    font-size: 60px;
+    color: #5b21b6;
+    margin-bottom: 25px;
+}
+
+.hero p {
+    font-size: 22px;
+    color: #4b5563;
+    line-height: 1.8;
+    margin-bottom: 40px;
+}
+
+/* BOTONES */
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 15px 35px;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-primary {
+    background: #d4af37;
+    color: white;
+}
+
+.btn-secondary {
+    background: white;
+    color: #6b21a8;
+    border: 2px solid #6b21a8;
+}
+
+.btn-primary:hover,
+.btn-secondary:hover {
+    transform: translateY(-5px);
+}
+
+/* MÓDULOS */
+.modules {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,
+            minmax(280px, 1fr));
+    gap: 30px;
+    padding: 80px 60px;
+}
+
+.card {
+    background: white;
+    padding: 35px;
+    border-radius: 20px;
+    text-align: center;
+    border: 2px solid #e9d5ff;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    transition: 0.4s;
+
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    border-color: #d4af37;
+}
+
+.card h3 {
+    color: #6b21a8;
+    margin-bottom: 15px;
+    font-size: 24px;
+}
+
+.card p {
+    color: #6b7280;
+}
+
+/* PIE DE PÁGINA */
+footer {
+    background: #1e1b2e;
+    color: white;
+    text-align: center;
+    padding: 25px;
+    border-top: 3px solid #d4af37;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+
+    header {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .hero h2 {
+        font-size: 42px;
+    }
+
+    .hero p {
+        font-size: 18px;
+    }
+
+    .buttons {
+        flex-direction: column;
+    }
+}

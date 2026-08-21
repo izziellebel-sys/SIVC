@@ -1,0 +1,290 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Montserrat", sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(
+        90deg,
+        #f7dbe4,
+        #f2d3de,
+        #efd1dd
+    );
+}
+
+/* CONTENEDOR PRINCIPAL */
+
+.login-container {
+    width: 980px;
+    min-height: 620px;
+    display: flex;
+    background: white;
+    border-radius: 30px;
+    padding: 45px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+/* COLUMNA IZQUIERDA */
+
+.form-section {
+    flex: 1;
+    padding-right: 40px;
+}
+
+.form-section h1 {
+    color: #6f2dbd;
+
+    font-size: 82px;
+
+    font-weight: 300;
+
+    text-align: center;
+
+    margin-bottom: 10px;
+}
+
+.form-section h3 {
+    text-align: center;
+
+    font-size: 22px;
+
+    margin-bottom: 35px;
+
+    color: #333;
+}
+
+label {
+    display: block;
+
+    margin-bottom: 10px;
+
+    font-size: 16px;
+
+    color: #444;
+}
+
+/* CAMPOS */
+
+.input-box {
+    display: flex;
+    align-items: center;
+
+    background: #f2f2f2;
+
+    border-radius: 30px;
+
+    padding: 14px 18px;
+
+    margin-bottom: 25px;
+
+    transition: 0.3s;
+}
+
+.input-box:hover {
+    box-shadow: 0 0 12px rgba(111, 45, 189, 0.2);
+}
+
+.input-box input {
+    width: 100%;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    padding: 0 12px;
+
+    font-size: 15px;
+}
+
+.input-box i {
+    cursor: pointer;
+}
+
+/* OJO */
+
+#togglePassword {
+    transition: 0.3s;
+}
+
+#togglePassword:hover {
+    transform: scale(1.2);
+}
+
+/* BOTÓN ENTRA */
+
+button {
+    width: 100%;
+
+    border: none;
+
+    border-radius: 35px;
+
+    padding: 18px;
+
+    background: linear-gradient(
+        90deg,
+        #b85ce8,
+        #8f7cff
+    );
+
+    font-size: 26px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: translateY(-5px);
+
+    box-shadow: 0 10px 25px rgba(184, 92, 232, 0.4);
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* TEXTO */
+
+.social-text {
+    margin-top: 30px;
+
+    margin-bottom: 20px;
+
+    font-size: 16px;
+
+    color: #444;
+}
+
+/* ICONOS */
+
+.social-icons {
+    display: flex;
+
+    gap: 18px;
+
+    margin-bottom: 40px;
+}
+
+.social-icons i {
+    font-size: 28px;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+.social-icons i:hover {
+    transform: scale(1.2);
+}
+
+.fa-google {
+    color: #ffb000;
+}
+
+.fa-facebook {
+    color: #1877f2;
+}
+
+/* CREAR CUENTA */
+
+.register {
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+}
+
+.register span {
+    font-size: 16px;
+}
+
+.register a {
+    text-decoration: none;
+
+    color: #6f2dbd;
+
+    background: #f3cad9;
+
+    padding: 10px 45px;
+
+    border-radius: 30px;
+
+    transition: 0.3s;
+}
+
+.register a:hover {
+    background: #ebb8cb;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* COLUMNA DERECHA */
+
+.image-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.image-section img {
+    width: 270px;
+    margin-bottom: 15px;
+}
+
+.image-section h2 {
+    color: #5f2d8b;
+    font-size: 50px;
+    margin-bottom: 5px;
+}
+
+.image-section p {
+    color: #5f2d8b;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 950px) {
+    .login-container {
+        flex-direction: column;
+        width: 95%;
+        padding: 30px;
+    }
+
+    .form-section {
+        padding-right: 0;
+    }
+
+    .form-section h1 {
+        font-size: 60px;
+    }
+
+    .image-section {
+        margin-top: 40px;
+    }
+
+    .image-section img {
+        width: 220px;
+    }
+
+    .register {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

@@ -1,0 +1,300 @@
+/* ==========================================================================
+   VENTAS ADMINISTRADOR CSS - SIVC
+   ========================================================================== */
+
+:root {
+    --bg-lavender: #eedffd;
+    --sidebar-bg: #f5e4f7;
+    --card-bg: #ffffff;
+    --text-dark: #120e24;
+    --text-muted: #555555;
+    
+    /* Colores temáticos */
+    --color-purple: #6f2dbd;
+    --color-pink: #f72585;
+    --color-blue: #3f37c9;
+    --color-magenta: #b5179e;
+    --color-teal: #009688;
+
+    --border-style: 2px solid #e2d1f0;
+    --radius-md: 20px;
+    --radius-lg: 30px;
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* DISTRIBUCIÓN GRID DE VENTAS */
+.sales-grid-layout {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+/* SECCIÓN IZQUIERDA: CARRITO Y SELECCIÓN */
+.sales-left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.sales-card-box {
+    background-color: var(--card-bg);
+    border: var(--border-style);
+    border-radius: var(--radius-md);
+    padding: 25px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+}
+
+.sales-card-box h2 {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--color-purple);
+    margin: 0 0 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px dashed #ebd0f0;
+    padding-bottom: 10px;
+}
+
+/* Formulario agregar producto */
+.add-product-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 15px;
+    align-items: flex-end;
+}
+
+.form-group-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group-item label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-group-item select,
+.form-group-item input {
+    background-color: #f7f3fc;
+    border: 2px solid #ebd0f0;
+    border-radius: 20px;
+    padding: 10px 15px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dark);
+    outline: none;
+    transition: var(--transition);
+}
+
+.form-group-item select:focus,
+.form-group-item input:focus {
+    border-color: var(--color-purple);
+    background-color: #ffffff;
+}
+
+.btn-add-to-cart {
+    background: linear-gradient(90deg, #9b5de5, #f15bb5);
+    border: none;
+    border-radius: 20px;
+    padding: 11px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 42px;
+}
+
+.btn-add-to-cart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(155, 93, 229, 0.3);
+}
+
+/* Tabla del Carrito */
+.cart-table-wrapper {
+    overflow-x: auto;
+}
+
+.cart-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.cart-table th {
+    text-align: left;
+    font-weight: 700;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    padding: 10px;
+    border-bottom: 2px solid #e2d1f0;
+}
+
+.cart-table td {
+    padding: 12px 10px;
+    border-bottom: 1px dashed #ebd0f0;
+    font-size: 14px;
+}
+
+.cart-table tr:last-child td {
+    border-bottom: none;
+}
+
+.btn-delete-cart-item {
+    background-color: #fcdfe5;
+    border: none;
+    color: #ec4899;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.btn-delete-cart-item:hover {
+    background-color: #ec4899;
+    color: #ffffff;
+    transform: scale(1.1);
+}
+
+/* SECCIÓN DERECHA: CLIENTE Y COBRO */
+.sales-right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.totals-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 25px;
+    background-color: #fcf8ff;
+    padding: 15px;
+    border-radius: 15px;
+    border: 1px solid #ebd0f0;
+}
+
+.totals-breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.totals-breakdown-row.total-grand {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--color-purple);
+    border-top: 2px dashed #ebd0f0;
+    padding-top: 12px;
+    margin-top: 5px;
+}
+
+.btn-process-sale {
+    background: linear-gradient(90deg, #b5179e, #7209b7);
+    border: none;
+    border-radius: 30px;
+    padding: 16px;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 800;
+    width: 100%;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(114, 9, 183, 0.2);
+    transition: var(--transition);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-process-sale:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(114, 9, 183, 0.4);
+}
+
+/* TABLA DE HISTORIAL DE VENTAS */
+.sales-history-card {
+    background-color: var(--card-bg);
+    border: var(--border-style);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: 0 6px 15px rgba(111, 45, 189, 0.03);
+    margin-bottom: 30px;
+}
+
+.sales-history-card .card-header {
+    padding: 20px 25px;
+    border-bottom: 2px solid #e2d1f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sales-history-card .card-header h2 {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--color-purple);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sales-history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.sales-history-table th {
+    background-color: #ebd3f8;
+    color: var(--color-purple);
+    font-weight: 800;
+    padding: 15px 20px;
+    text-align: left;
+    border-bottom: 2px solid #e2d1f0;
+    font-size: 13px;
+}
+
+.sales-history-table td {
+    padding: 15px 20px;
+    border-bottom: 2px solid #ebd0f0;
+    vertical-align: middle;
+}
+
+.sales-history-table tr:last-child td {
+    border-bottom: none;
+}
+
+.sales-history-table tr:nth-child(even) {
+    background-color: #fbf6ff;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 1200px) {
+    .sales-grid-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .add-product-row {
+        grid-template-columns: 1fr;
+    }
+}

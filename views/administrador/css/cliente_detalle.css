@@ -1,0 +1,381 @@
+/* ==========================================================================
+   DETALLE CLIENTE CSS - SIVC
+   ========================================================================== */
+
+:root {
+    --bg-lavender: #eedffd;
+    --sidebar-bg: #f5e4f7;
+    --card-bg: #ffffff;
+    --text-dark: #120e24;
+    --text-muted: #555555;
+    
+    /* Colores temáticos */
+    --color-purple: #6f2dbd;
+    --color-pink: #f72585;
+    --color-blue: #3f37c9;
+    --color-magenta: #b5179e;
+    --color-teal: #009688;
+
+    --border-style: 2px solid #e2d1f0;
+    --radius-md: 20px;
+    --radius-lg: 30px;
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    
+    --grad-purple: linear-gradient(135deg, #6f2dbd 0%, #b5179e 100%);
+}
+
+/* Enlace de regreso */
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-purple);
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 25px;
+    transition: var(--transition);
+}
+
+.back-link:hover {
+    color: var(--color-pink);
+    transform: translateX(-3px);
+}
+
+/* Ficha del Cliente (Cabecera Detalle) */
+.client-detail-header-card {
+    background-color: var(--card-bg);
+    border: var(--border-style);
+    border-radius: var(--radius-md);
+    padding: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(111, 45, 189, 0.02);
+}
+
+.client-profile-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.client-avatar-circle {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    background-color: #ebd3f8;
+    color: var(--color-purple);
+    font-size: 28px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #e2d1f0;
+}
+
+.client-profile-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.client-profile-info h2 {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin: 0 0 5px 0;
+}
+
+.client-profile-info p {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Badges de estado general */
+.general-status-badge {
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.general-status-badge.debt {
+    background-color: #fff0f2;
+    color: #f72585;
+    border: 1px solid #ffccd5;
+}
+
+.general-status-badge.no-debt {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+/* Tarjetas resumen (Compras, Deuda, Actividad) */
+.summary-cards-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 35px;
+}
+
+.summary-card {
+    border: var(--border-style);
+    border-radius: var(--radius-md);
+    padding: 20px;
+}
+
+.summary-card.purchases {
+    background-color: #fbf6ff;
+}
+
+.summary-card.debts {
+    background-color: #fff0f2; /* Fondo rosa suave para deudas */
+    border-color: #ffccd5;
+}
+
+.summary-card.activity {
+    background-color: #eaf6ff;
+    border-color: #cce5ff;
+}
+
+.summary-card .card-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.summary-card .card-value {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+}
+
+.summary-card .card-subtext {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+/* Sección de Deudas Registradas */
+.debts-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.debts-section-header h3 {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.btn-register-debt {
+    background-color: var(--color-purple);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition);
+}
+
+.btn-register-debt:hover {
+    background-color: var(--color-magenta);
+    transform: translateY(-1px);
+}
+
+/* Tabla de deudas */
+.debts-table-container {
+    background-color: var(--card-bg);
+    border: var(--border-style);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: 35px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.01);
+}
+
+.debts-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.debts-table th {
+    background-color: #ebd3f8;
+    color: var(--color-purple);
+    font-weight: 800;
+    padding: 12px 18px;
+    text-align: left;
+    border-bottom: 2px solid #e2d1f0;
+}
+
+.debts-table td {
+    padding: 14px 18px;
+    border-bottom: 2px solid #ebd0f0;
+    vertical-align: middle;
+}
+
+.debts-table tr:last-child td {
+    border-bottom: none;
+}
+
+.debts-table tr:nth-child(even) {
+    background-color: #fbf6ff;
+}
+
+/* Badges de estados individuales de deuda */
+.debt-status-badge {
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.debt-status-badge.pendiente {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+.debt-status-badge.abonada {
+    background-color: #eaf2ff;
+    color: #0b5ed7;
+    border: 1px solid #cfe2ff;
+}
+
+.debt-status-badge.pagada {
+    background-color: #d1e7dd;
+    color: #0f5132;
+    border: 1px solid #badbcc;
+}
+
+/* Acciones en deudas */
+.debt-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.debt-action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-muted);
+    transition: var(--transition);
+}
+
+.debt-action-btn:hover {
+    color: var(--color-purple);
+    transform: scale(1.1);
+}
+
+/* Formulario actualizar estado inferior */
+.update-status-section {
+    background-color: var(--card-bg);
+    border: var(--border-style);
+    border-radius: var(--radius-md);
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(111, 45, 189, 0.02);
+}
+
+.update-status-section h4 {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-dark);
+    text-transform: uppercase;
+    margin: 0 0 20px 0;
+}
+
+.update-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 20px;
+    align-items: flex-end;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-field label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+.form-field select, .form-field input {
+    background-color: #f7f3fc;
+    border: 2px solid #ebd0f0;
+    border-radius: 12px;
+    padding: 10px 15px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text-dark);
+    outline: none;
+    transition: var(--transition);
+}
+
+.form-field select:focus, .form-field input:focus {
+    border-color: var(--color-purple);
+    background-color: #ffffff;
+}
+
+.btn-save-abono {
+    background: var(--grad-purple);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 30px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(111, 45, 189, 0.15);
+    transition: var(--transition);
+    height: 44px;
+}
+
+.btn-save-abono:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(111, 45, 189, 0.25);
+}
+
+/* RESPONSIVE */
+@media (max-width: 991px) {
+    .summary-cards-row {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .client-detail-header-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .update-form-row {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .btn-save-abono {
+        width: 100%;
+        text-align: center;
+    }
+}

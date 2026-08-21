@@ -1,0 +1,312 @@
+/* ==========================================================================
+   CONFIGURACIÓN ADMINISTRADOR CSS - SIVC
+   ========================================================================== */
+
+:root {
+    --bg-lavender: #eedffd;
+    --sidebar-bg: #f5e4f7;
+    --card-bg: #ffffff;
+    --text-dark: #120e24;
+    --text-muted: #555555;
+    
+    /* Colores temáticos */
+    --color-purple: #6f2dbd;
+    --color-pink: #f72585;
+    --color-blue: #3f37c9;
+    --color-magenta: #b5179e;
+    --color-teal: #009688;
+
+    --border-style: 2px solid #e2d1f0;
+    --radius-md: 20px;
+    --radius-lg: 30px;
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    
+    --grad-purple: linear-gradient(135deg, #6f2dbd 0%, #b5179e 100%);
+}
+
+/* ENCABEZADO CON ILUSTRACIÓN */
+.header-with-illustration {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.header-illustration-img {
+    width: 170px;
+    height: auto;
+    border-radius: 12px;
+}
+
+/* GRUPOS DE CONFIGURACIÓN (TARJETAS) */
+.config-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+.config-card {
+    background-color: var(--card-bg);
+    border: var(--border-style);
+    border-radius: var(--radius-md);
+    padding: 25px 35px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(111, 45, 189, 0.02);
+}
+
+.config-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+}
+
+.config-info h3 {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.config-info p {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin: 0;
+}
+
+.config-control-panel {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1.5;
+}
+
+/* 1. CONTROL COLOR DE FONDO */
+.color-palette-group {
+    display: flex;
+    gap: 15px;
+}
+
+.color-option-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+}
+
+.color-option-btn:hover {
+    transform: scale(1.15);
+}
+
+.color-option-btn.selected {
+    border-color: var(--color-purple);
+    transform: scale(1.15);
+    box-shadow: 0 4px 10px rgba(111, 45, 189, 0.25);
+}
+
+/* 2. CONTROL TIPOGRAFÍA */
+.font-buttons-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.font-option-btn {
+    padding: 10px 20px;
+    border-radius: 15px;
+    border: 2px solid #ebd0f0;
+    background-color: var(--card-bg);
+    color: var(--text-dark);
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: var(--transition);
+    text-transform: uppercase;
+}
+
+.font-option-btn:hover {
+    border-color: var(--color-purple);
+    color: var(--color-purple);
+}
+
+.font-option-btn.selected {
+    background: var(--grad-purple);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 4px 8px rgba(111, 45, 189, 0.2);
+}
+
+/* 3. CONTROL TAMAÑO DE FUENTE */
+.font-size-slider-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 450px;
+}
+
+.slider-label-a {
+    font-weight: 800;
+    color: var(--text-dark);
+}
+
+.slider-label-a.small { font-size: 12px; }
+.slider-label-a.large { font-size: 22px; }
+
+.font-size-range-input {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: #e2d1f0;
+    outline: none;
+    cursor: pointer;
+}
+
+/* Custom track and thumb styles for input range */
+.font-size-range-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--color-purple);
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 3px 6px rgba(111, 45, 189, 0.3);
+}
+
+.font-size-range-input::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    background: var(--color-magenta);
+}
+
+.font-size-range-input::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--color-purple);
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+    box-shadow: 0 3px 6px rgba(111, 45, 189, 0.3);
+}
+
+.font-size-range-input::-moz-range-thumb:hover {
+    transform: scale(1.15);
+    background: var(--color-magenta);
+}
+
+/* 4. MODO OSCURO SWITCH */
+.switch-toggle-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch-toggle-wrapper input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider-round {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ebd3f8;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider-round:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: #ffffff;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+input:checked + .slider-round {
+    background-color: var(--color-purple);
+}
+
+input:focus + .slider-round {
+    box-shadow: 0 0 1px var(--color-purple);
+}
+
+input:checked + .slider-round:before {
+    transform: translateX(26px);
+}
+
+/* ACCIONES INFERIORES */
+.config-footer-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.btn-config-reset {
+    background-color: #ffffff;
+    border: 2px solid #ebd0f0;
+    border-radius: 15px;
+    padding: 12px 28px;
+    color: var(--text-dark);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-config-reset:hover {
+    border-color: var(--color-purple);
+    color: var(--color-purple);
+}
+
+.btn-config-save {
+    background: var(--grad-purple);
+    border: none;
+    border-radius: 15px;
+    padding: 12px 30px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(111, 45, 189, 0.2);
+    transition: var(--transition);
+}
+
+.btn-config-save:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(111, 45, 189, 0.3);
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 991px) {
+    .config-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 20px 25px;
+    }
+
+    .config-control-panel {
+        justify-content: flex-start;
+        width: 100%;
+    }
+}

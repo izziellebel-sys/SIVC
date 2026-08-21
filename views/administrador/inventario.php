@@ -20,10 +20,150 @@ if ($checkProv && $checkProv->fetch_assoc()['total'] == 0) {
 $checkProd = $conn->query("SELECT COUNT(*) as total FROM producto");
 if ($checkProd && $checkProd->fetch_assoc()['total'] == 0) {
     // Insertar productos de prueba en la tabla real 'producto'
-    $conn->query("INSERT INTO producto (codigo_Producto, nombre, id_Proveedor, descripcion, precio_Compra, precio_Venta, stock_Actual, stock_Minimo, unidad_Medida, estado) VALUES 
-        ('101', 'Arroz', 1, 'Arroz premium en bolsa de 1kg', 2000.00, 3000.00, 45, 5, 'Granos', 'Activo'),
-        ('102', 'Tuna / Atún', 1, 'Atún enlatado en agua 160g', 3800.00, 5000.00, 20, 5, 'Pez', 'Activo'),
-        ('103', 'Cereal', 1, 'Cereal hojuelas de maíz azucarado', 2500.00, 3500.00, 0, 5, 'Cereales', 'Activo')");
+    $conn->query("INSERT INTO producto (codigo_Producto, nombre, id_Proveedor, descripcion, precio_Compra, precio_Venta, stock_Actual, stock_Minimo, unidad_Medida, estado, imagen) VALUES 
+        ('101', 'Arroz', 1, 'Arroz premium en bolsa de 1kg', 2000.00, 3000.00, 45, 5, 'Granos', 'Activo', '../../public/img/arroz.jpg'),
+        ('102', 'Tuna / Atún', 1, 'Atún enlatado en agua 160g', 3800.00, 5000.00, 20, 5, 'Pez', 'Activo', '../../public/img/tuna.jpg'),
+        ('103', 'Cereal', 1, 'Cereal hojuelas de maíz azucarado', 2500.00, 3500.00, 0, 5, 'Cereales', 'Activo', '../../public/img/cereal.jpg')");
+} else {
+    // Actualizar imágenes si están vacías para mejorar la presentación inicial
+    $conn->query("UPDATE producto SET imagen = '../../public/img/arroz.jpg' WHERE codigo_Producto = '101' AND (imagen IS NULL OR imagen = '')");
+    $conn->query("UPDATE producto SET imagen = '../../public/img/tuna.jpg' WHERE codigo_Producto = '102' AND (imagen IS NULL OR imagen = '')");
+    $conn->query("UPDATE producto SET imagen = '../../public/img/cereal.jpg' WHERE codigo_Producto = '103' AND (imagen IS NULL OR imagen = '')");
+}
+
+$mensaje = "";
+$tipo_alerta = "";
+$titulo_alerta = "";
+
+// PROCESAR POST ACCIONES
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $action = $_POST['action'] ?? '';
+
+    if ($action === 'editar') {
+        $id_producto = (int)($_POST['id_Producto'] ?? 0);
+        $codigo = trim($_POST['codigo_Producto'] ?? '');
+        $nombre = trim($_POST['nombre'] ?? '');
+        $id_proveedor = (int)($_POST['id_Proveedor'] ?? 0);
+        $descripcion = trim($_POST['descripcion'] ?? '');
+        $precio_compra = (float)($_POST['precio_Compra'] ?? 0);
+        $precio_venta = (float)($_POST['precio_Venta'] ?? 0);
+        $stock_actual = (int)($_POST['stock_Actual'] ?? 0);
+        $stock_minimo = (int)($_POST['stock_Minimo'] ?? 0);
+        $unidad_medida = trim($_POST['unidad_Medida'] ?? '');
+        $estado = $_POST['estado'] ?? 'Activo';
+        $imagen_actual = $_POST['imagen_actual'] ?? '';
+
+        if ($id_producto > 0 && $codigo && $nombre && $id_proveedor > 0) {
+            // Verificar duplicado de código excluyendo el actual
+            $stmtCheck = $conn->prepare("SELECT id_Producto FROM producto WHERE codigo_Producto = ? AND id_Producto != ?");
+            $stmtCheck->bind_param("si", $codigo, $id_producto);
+            $stmtCheck->execute();
+            $resCheck = $stmtCheck->get_result();
+
+            if ($resCheck->num_rows > 0) {
+                $mensaje = "El código de producto pertenece a otro registro.";
+                $tipo_alerta = "error";
+                $titulo_alerta = "Duplicado";
+            } else {
+                $db_image_path = $imagen_actual;
+                // Subir nueva imagen si se seleccionó
+                if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == UPLOAD_ERR_OK) {
+                    $tmpName = $_FILES['imagen']['tmp_name'];
+                    $fileName = basename($_FILES['imagen']['name']);
+                    $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+                    $allowedExts = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+
+                    if (in_array($fileExt, $allowedExts)) {
+                        $newFileName = time() . '_' . uniqid() . '.' . $fileExt;
+                        $uploadDir = __DIR__ . '/../../public/uploads/productos/';
+                        if (!is_dir($uploadDir)) {
+                            mkdir($uploadDir, 0777, true);
+                        }
+                        if (move_uploaded_file($tmpName, $uploadDir . $newFileName)) {
+                            $db_image_path = '../../public/uploads/productos/' . $newFileName;
+                            // Eliminar imagen anterior si existía y no es la de tienda.png
+                            if ($imagen_actual && strpos($imagen_actual, 'tienda.png') === false) {
+                                $oldFilePath = __DIR__ . '/../../' . str_replace('../../', '', $imagen_actual);
+                                if (file_exists($oldFilePath)) {
+                                    @unlink($oldFilePath);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                $stmtUpdate = $conn->prepare("UPDATE producto SET codigo_Producto = ?, nombre = ?, id_Proveedor = ?, descripcion = ?, precio_Compra = ?, precio_Venta = ?, stock_Actual = ?, stock_Minimo = ?, unidad_Medida = ?, estado = ?, imagen = ? WHERE id_Producto = ?");
+                if ($stmtUpdate) {
+                    $stmtUpdate->bind_param("ssisddiisssi", $codigo, $nombre, $id_proveedor, $descripcion, $precio_compra, $precio_venta, $stock_actual, $stock_minimo, $unidad_medida, $estado, $db_image_path, $id_producto);
+                    if ($stmtUpdate->execute()) {
+                        $mensaje = "La información del producto ha sido actualizada.";
+                        $tipo_alerta = "success";
+                        $titulo_alerta = "¡Éxito!";
+                    } else {
+                        $mensaje = "Error al actualizar la base de datos.";
+                        $tipo_alerta = "error";
+                        $titulo_alerta = "Error";
+                    }
+                    $stmtUpdate->close();
+                }
+            }
+            $stmtCheck->close();
+        }
+    } elseif ($action === 'eliminar') {
+        $id_producto = (int)($_POST['id_Producto'] ?? 0);
+        $imagen_actual = $_POST['imagen_actual'] ?? '';
+
+        if ($id_producto > 0) {
+            try {
+                $stmtDel = $conn->prepare("DELETE FROM producto WHERE id_Producto = ?");
+                if ($stmtDel) {
+                    $stmtDel->bind_param("i", $id_producto);
+                    if ($stmtDel->execute()) {
+                        // Eliminar imagen física
+                        if ($imagen_actual && strpos($imagen_actual, 'tienda.png') === false) {
+                            $oldFilePath = __DIR__ . '/../../' . str_replace('../../', '', $imagen_actual);
+                            if (file_exists($oldFilePath)) {
+                                @unlink($oldFilePath);
+                            }
+                        }
+                        $mensaje = "El producto ha sido eliminado del inventario.";
+                        $tipo_alerta = "success";
+                        $titulo_alerta = "¡Eliminado!";
+                    } else {
+                        $mensaje = "No se pudo eliminar el producto.";
+                        $tipo_alerta = "error";
+                        $titulo_alerta = "Error";
+                    }
+                    $stmtDel->close();
+                }
+            } catch (mysqli_sql_exception $e) {
+                // Si falla por llaves foráneas, cambiar estado a Inactivo
+                $stmtInact = $conn->prepare("UPDATE producto SET estado = 'Inactivo' WHERE id_Producto = ?");
+                if ($stmtInact) {
+                    $stmtInact->bind_param("i", $id_producto);
+                    if ($stmtInact->execute()) {
+                        $mensaje = "El producto tiene transacciones o relaciones y no puede ser eliminado. Su estado ha sido cambiado a 'Inactivo'.";
+                        $tipo_alerta = "warning";
+                        $titulo_alerta = "Producto Desactivado";
+                    } else {
+                        $mensaje = "Error al intentar desactivar el producto.";
+                        $tipo_alerta = "error";
+                        $titulo_alerta = "Error";
+                    }
+                    $stmtInact->close();
+                }
+            }
+        }
+    }
+}
+
+// Obtener lista de proveedores
+$proveedores = [];
+$resProv = $conn->query("SELECT id_Proveedor, nombre FROM proveedor");
+if ($resProv) {
+    while ($p = $resProv->fetch_assoc()) {
+        $proveedores[] = $p;
+    }
 }
 
 // OBTENER ESTADÍSTICAS REALES DESDE LA BASE DE DATOS
@@ -420,15 +560,45 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                                         </td>
                                         <td>
                                             <div class="actions-cell">
-                                                <a href="#" class="action-icon-btn view" title="Ver Detalle">
+                                                <button type="button" class="action-icon-btn view" title="Ver Detalle"
+                                                        data-id="<?= $prod['id_Producto']; ?>"
+                                                        data-codigo="<?= htmlspecialchars($prod['codigo_Producto']); ?>"
+                                                        data-nombre="<?= htmlspecialchars($prod['nombre']); ?>"
+                                                        data-proveedor="<?= $prod['id_Proveedor']; ?>"
+                                                        data-descripcion="<?= htmlspecialchars($prod['descripcion'] ?? ''); ?>"
+                                                        data-compra="<?= $prod['precio_Compra']; ?>"
+                                                        data-venta="<?= $prod['precio_Venta']; ?>"
+                                                        data-stock="<?= $prod['stock_Actual']; ?>"
+                                                        data-minimo="<?= $prod['stock_Minimo']; ?>"
+                                                        data-categoria="<?= htmlspecialchars($prod['unidad_Medida'] ?? ''); ?>"
+                                                        data-estado="<?= htmlspecialchars($prod['estado']); ?>"
+                                                        data-imagen="<?= $imgPath; ?>"
+                                                        onclick="abrirModalDetalle(this)"
+                                                        style="border:none; cursor:pointer;">
                                                     <i class="fa-regular fa-eye"></i>
-                                                </a>
-                                                <a href="#" class="action-icon-btn edit" title="Editar Producto">
+                                                </button>
+                                                <button type="button" class="action-icon-btn edit" title="Editar Producto"
+                                                        data-id="<?= $prod['id_Producto']; ?>"
+                                                        data-codigo="<?= htmlspecialchars($prod['codigo_Producto']); ?>"
+                                                        data-nombre="<?= htmlspecialchars($prod['nombre']); ?>"
+                                                        data-proveedor="<?= $prod['id_Proveedor']; ?>"
+                                                        data-descripcion="<?= htmlspecialchars($prod['descripcion'] ?? ''); ?>"
+                                                        data-compra="<?= $prod['precio_Compra']; ?>"
+                                                        data-venta="<?= $prod['precio_Venta']; ?>"
+                                                        data-stock="<?= $prod['stock_Actual']; ?>"
+                                                        data-minimo="<?= $prod['stock_Minimo']; ?>"
+                                                        data-categoria="<?= htmlspecialchars($prod['unidad_Medida'] ?? ''); ?>"
+                                                        data-estado="<?= htmlspecialchars($prod['estado']); ?>"
+                                                        data-imagen="<?= $imgPath; ?>"
+                                                        onclick="abrirModalEditar(this)"
+                                                        style="border:none; cursor:pointer;">
                                                     <i class="fa-solid fa-pencil"></i>
-                                                </a>
-                                                <a href="#" class="action-icon-btn delete" title="Eliminar Producto">
+                                                </button>
+                                                <button type="button" class="action-icon-btn delete" title="Eliminar Producto"
+                                                        onclick="confirmarEliminar(<?= $prod['id_Producto']; ?>, '<?= addslashes($prod['nombre']); ?>', '<?= $imgPath; ?>')"
+                                                        style="border:none; cursor:pointer;">
                                                     <i class="fa-regular fa-trash-can"></i>
-                                                </a>
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -448,7 +618,7 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
             <!-- Table Footer: Add Product & Pagination controls -->
             <section class="inventory-footer-section">
                 <!-- Add Product Button -->
-                <a href="#" class="btn-add-product">
+                <a href="agregar_producto.php" class="btn-add-product">
                     <i class="fa-solid fa-plus"></i> Agregar Producto
                 </a>
 
@@ -482,7 +652,163 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
         </main>
     </div>
 
-    <!-- Mobile Drawer JS Controller -->
+    <!-- ==========================================
+         MODALES DE OPERACIÓN
+    =========================================== -->
+
+
+
+    <!-- 2. MODAL: EDITAR PRODUCTO -->
+    <div class="modal" id="modalEditar">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Producto</h2>
+                <button class="modal-close-btn" onclick="cerrarModalEditar()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form action="inventario.php" method="POST" enctype="multipart/form-data" id="formEditar">
+                    <input type="hidden" name="action" value="editar">
+                    <input type="hidden" name="id_Producto" id="editId">
+                    <input type="hidden" name="imagen_actual" id="editImagenActual">
+                    
+                    <div class="modal-grid-form">
+                        <div class="form-field-group">
+                            <label for="editCodigo">Código del Producto *</label>
+                            <input type="text" name="codigo_Producto" id="editCodigo" required>
+                        </div>
+                        <div class="form-field-group">
+                            <label for="editNombre">Nombre del Producto *</label>
+                            <input type="text" name="nombre" id="editNombre" required>
+                        </div>
+                        <div class="form-field-group">
+                            <label for="editCategoria">Categoría *</label>
+                            <input type="text" name="unidad_Medida" id="editCategoria" required>
+                        </div>
+                        <div class="form-field-group">
+                            <label for="editProveedor">Proveedor *</label>
+                            <select name="id_Proveedor" id="editProveedor" required>
+                                <?php foreach ($proveedores as $prov): ?>
+                                    <option value="<?= $prov['id_Proveedor']; ?>"><?= htmlspecialchars($prov['nombre']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="form-field-group">
+                            <label for="editPrecioCompra">Precio Compra *</label>
+                            <input type="number" step="0.01" name="precio_Compra" id="editPrecioCompra" required>
+                        </div>
+                        <div class="form-field-group">
+                            <label for="editPrecioVenta">Precio Venta *</label>
+                            <input type="number" step="0.01" name="precio_Venta" id="editPrecioVenta" required>
+                        </div>
+                        <div class="form-field-group">
+                            <label for="editStock">Cantidad / Stock Actual *</label>
+                            <input type="number" name="stock_Actual" id="editStock" required>
+                        </div>
+                        <div class="form-field-group">
+                            <label for="editStockMinimo">Stock Mínimo *</label>
+                            <input type="number" name="stock_Minimo" id="editStockMinimo" required>
+                        </div>
+                        <div class="form-field-group">
+                            <label for="editEstado">Estado *</label>
+                            <select name="estado" id="editEstado" required>
+                                <option value="Activo">Activo</option>
+                                <option value="Inactivo">Inactivo</option>
+                            </select>
+                        </div>
+                        <div class="form-field-group">
+                            <label for="editImagen">Subir Foto</label>
+                            <input type="file" name="imagen" id="editImagen" accept="image/*" onchange="previewImage(this, 'editPreview')">
+                        </div>
+                        <div class="form-field-group form-full-row">
+                            <div class="image-preview-container">
+                                <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Vista Previa de Imagen</span>
+                                <div class="image-preview-box">
+                                    <img id="editPreview" src="../../public/img/tienda.png" alt="Vista previa">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-field-group form-full-row">
+                            <label for="editDescripcion">Descripción</label>
+                            <textarea name="descripcion" id="editDescripcion"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-actions-row">
+                        <button type="button" class="btn-modal-cancel" onclick="cerrarModalEditar()">Cancelar</button>
+                        <button type="submit" class="btn-modal-submit">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. MODAL: DETALLE DEL PRODUCTO -->
+    <div class="modal" id="modalDetalle">
+        <div class="modal-content" style="max-width: 550px;">
+            <div class="modal-header">
+                <h2>Detalle del Producto</h2>
+                <button class="modal-close-btn" onclick="cerrarModalDetalle()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="product-profile-card">
+                    <img id="detImagen" src="../../public/img/tienda.png" alt="Imagen del producto" class="product-avatar-img">
+                    <h3 id="detNombre">Nombre Producto</h3>
+                    <span id="detEstadoBadge" class="status-badge">Disponible</span>
+                </div>
+
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <strong>Código</strong>
+                        <span id="detCodigo">101</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Categoría</strong>
+                        <span id="detCategoria">Granos</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Precio Compra</strong>
+                        <span id="detPrecioCompra">$0.00</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Precio Venta</strong>
+                        <span id="detPrecioVenta">$0.00</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Stock Actual</strong>
+                        <span id="detStockActual">0</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Stock Mínimo</strong>
+                        <span id="detStockMinimo">5</span>
+                    </div>
+                    <div class="detail-item form-full-row">
+                        <strong>Proveedor</strong>
+                        <span id="detProveedor">Proveedor Central</span>
+                    </div>
+                    <div class="detail-item form-full-row">
+                        <strong>Descripción</strong>
+                        <span id="detDescripcion" style="font-weight: 500; white-space: pre-wrap;">Sin descripción</span>
+                    </div>
+                </div>
+
+                <div class="form-actions-row" style="margin-top: 20px;">
+                    <button type="button" class="btn-modal-submit" onclick="cerrarModalDetalle()" style="width: 100px;">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FORMULARIO ELIMINACIÓN OCULTO -->
+    <form action="inventario.php" method="POST" id="formDelete" style="display:none;">
+        <input type="hidden" name="action" value="eliminar">
+        <input type="hidden" name="id_Producto" id="deleteId">
+        <input type="hidden" name="imagen_actual" id="deleteImagenActual">
+    </form>
+
+    <!-- SweetAlert2 library -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- JS Mobile Toggle & Modal Actions -->
     <script>
         const sidebar = document.getElementById('sidebar');
         const mobileMenu = document.getElementById('mobileMenu');
@@ -498,6 +824,138 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
 
         mobileMenu.addEventListener('click', openSidebar);
         sidebarClose.addEventListener('click', closeSidebar);
+
+        // Modales de Operación
+        const modalEditar = document.getElementById('modalEditar');
+        const modalDetalle = document.getElementById('modalDetalle');
+
+        // Mapeo de proveedores en frontend
+        const suppliersMap = {
+            <?php foreach($proveedores as $p) { echo $p['id_Proveedor'] . ': "' . addslashes($p['nombre']) . '",'; } ?>
+        };
+
+        // Previsualización de imágenes
+        function previewImage(input, previewId) {
+            const preview = document.getElementById(previewId);
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.src = "../../public/img/tienda.png";
+            }
+        }
+
+
+
+        // Editar Producto
+        function abrirModalEditar(btn) {
+            document.getElementById('editId').value = btn.getAttribute('data-id');
+            document.getElementById('editCodigo').value = btn.getAttribute('data-codigo');
+            document.getElementById('editNombre').value = btn.getAttribute('data-nombre');
+            document.getElementById('editCategoria').value = btn.getAttribute('data-categoria');
+            document.getElementById('editProveedor').value = btn.getAttribute('data-proveedor');
+            document.getElementById('editPrecioCompra').value = btn.getAttribute('data-compra');
+            document.getElementById('editPrecioVenta').value = btn.getAttribute('data-venta');
+            document.getElementById('editStock').value = btn.getAttribute('data-stock');
+            document.getElementById('editStockMinimo').value = btn.getAttribute('data-minimo');
+            document.getElementById('editEstado').value = btn.getAttribute('data-estado');
+            
+            const imgPath = btn.getAttribute('data-imagen');
+            document.getElementById('editImagenActual').value = imgPath;
+            document.getElementById('editPreview').src = imgPath ? imgPath : "../../public/img/tienda.png";
+
+            document.getElementById('editDescripcion').value = btn.getAttribute('data-descripcion');
+
+            modalEditar.classList.add('open');
+        }
+        function cerrarModalEditar() {
+            modalEditar.classList.remove('open');
+            document.getElementById('formEditar').reset();
+        }
+
+        // Detalle del Producto
+        function abrirModalDetalle(btn) {
+            const imgPath = btn.getAttribute('data-imagen');
+            document.getElementById('detImagen').src = imgPath ? imgPath : "../../public/img/tienda.png";
+            document.getElementById('detNombre').innerText = btn.getAttribute('data-nombre');
+            
+            // Estado Badge
+            const stock = parseInt(btn.getAttribute('data-stock'));
+            const badg = document.getElementById('detEstadoBadge');
+            if (stock === 0) {
+                badg.innerText = "Sin Stock";
+                badg.className = "status-badge sin-stock";
+            } else if (stock <= 15) {
+                badg.innerText = "Stock Bajo";
+                badg.className = "status-badge stock-bajo";
+            } else {
+                badg.innerText = "Disponible";
+                badg.className = "status-badge disponible";
+            }
+
+            document.getElementById('detCodigo').innerText = btn.getAttribute('data-codigo');
+            document.getElementById('detCategoria').innerText = btn.getAttribute('data-categoria') || 'N/A';
+            
+            // Precios formateados
+            const precioCompra = parseFloat(btn.getAttribute('data-compra'));
+            const precioVenta = parseFloat(btn.getAttribute('data-venta'));
+            
+            document.getElementById('detPrecioCompra').innerText = '$' + precioCompra.toLocaleString('es-CO', {minimumFractionDigits: 0, maximumFractionDigits: 2});
+            document.getElementById('detPrecioVenta').innerText = '$' + precioVenta.toLocaleString('es-CO', {minimumFractionDigits: 0, maximumFractionDigits: 2});
+            
+            document.getElementById('detStockActual').innerText = btn.getAttribute('data-stock');
+            document.getElementById('detStockMinimo').innerText = btn.getAttribute('data-minimo');
+            
+            const provId = btn.getAttribute('data-proveedor');
+            document.getElementById('detProveedor').innerText = suppliersMap[provId] || 'N/A';
+            
+            const desc = btn.getAttribute('data-descripcion');
+            document.getElementById('detDescripcion').innerText = desc ? desc : "Sin descripción";
+
+            modalDetalle.classList.add('open');
+        }
+        function cerrarModalDetalle() {
+            modalDetalle.classList.remove('open');
+        }
+
+        // Confirmar Eliminación
+        function confirmarEliminar(id, name, imgPath) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Se eliminará el producto '" + name + "' del sistema.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#6f2dbd',
+                cancelButtonColor: '#ffd8eb',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteId').value = id;
+                    document.getElementById('deleteImagenActual').value = imgPath;
+                    document.getElementById('formDelete').submit();
+                }
+            });
+        }
+
+        // Cerrar modales al hacer clic fuera del contenido
+        window.onclick = function(event) {
+            if (event.target == modalEditar) cerrarModalEditar();
+            if (event.target == modalDetalle) cerrarModalDetalle();
+        }
+
+        // Mostrar SweetAlert si hay un mensaje
+        <?php if ($mensaje !== ''): ?>
+            Swal.fire({
+                icon: '<?= $tipo_alerta; ?>',
+                title: '<?= $titulo_alerta; ?>',
+                text: '<?= $mensaje; ?>',
+                confirmButtonColor: '#6f2dbd'
+            });
+        <?php endif; ?>
     </script>
 </body>
 

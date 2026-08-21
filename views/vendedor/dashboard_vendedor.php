@@ -45,8 +45,21 @@ $clientes = $stats['clientes_registrados'];
     <!-- CSS Dashboard (reutilizado) -->
     <link rel="stylesheet" href="../administrador/css/dashboard_admi.css?v=5">
     
-    <!-- Cargar temas y fuentes personalizadas de la base de datos -->
-    <?php aplicarConfiguracionEstilos(); ?>
+    
+    <!-- Estilo local para alinear y redimensionar la ilustración del encabezado -->
+    <style>
+        .header-with-illustration {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .header-illustration-img {
+            width: 170px;
+            height: auto;
+            border-radius: 12px;
+        }
+    </style>
 </head>
 
 <body>
@@ -223,7 +236,7 @@ $clientes = $stats['clientes_registrados'];
         </main>
     </div>
 
-    <!-- JS Mobile Toggle Drawer -->
+    <!-- JS Mobile Toggle Drawerhjcc -->
     <script>
         const sidebar = document.getElementById('sidebar');
         const mobileMenu = document.getElementById('mobileMenu');

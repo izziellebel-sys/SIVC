@@ -399,30 +399,32 @@ if ($stmt) {
                     </table>
                 </div>
 
-                <!-- Footer of table (Add client button & Pagination) -->
-                <div class="table-footer-row">
+                <!-- Table Footer & Pagination -->
+                <section class="clients-footer-section">
+                    <!-- Add Client Button -->
                     <button type="button" class="btn-add-client" onclick="abrirModalAgregar()">
                         <i class="fa-solid fa-user-plus"></i> Registrar Cliente
                     </button>
 
-                    <div style="display: flex; flex-direction: column; align-items: flex-end;">
-                        <div class="pagination-controls">
+                    <!-- Pagination -->
+                    <div class="pagination-controls">
+                        <div class="pagination-links">
                             <a href="clientes.php?buscar=<?= urlencode($buscar); ?>&estado=<?= urlencode($estadoFiltro); ?>&pagina=<?= $pagina - 1; ?>" 
-                               class="pagination-btn <?= $pagina <= 1 ? 'disabled' : ''; ?>"><</a>
+                               class="page-btn <?= $pagina <= 1 ? 'disabled' : ''; ?>">&lt;</a>
                             
                             <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
                                 <a href="clientes.php?buscar=<?= urlencode($buscar); ?>&estado=<?= urlencode($estadoFiltro); ?>&pagina=<?= $i; ?>" 
-                                   class="pagination-btn <?= $pagina == $i ? 'active' : ''; ?>"><?= $i; ?></a>
+                                   class="page-btn <?= $pagina == $i ? 'active' : ''; ?>"><?= $i; ?></a>
                             <?php endfor; ?>
 
                             <a href="clientes.php?buscar=<?= urlencode($buscar); ?>&estado=<?= urlencode($estadoFiltro); ?>&pagina=<?= $pagina + 1; ?>" 
-                               class="pagination-btn <?= $pagina >= $totalPaginas ? 'disabled' : ''; ?>">></a>
+                               class="page-btn <?= $pagina >= $totalPaginas ? 'disabled' : ''; ?>">&gt;</a>
                         </div>
-                        <span class="pagination-info-text">
+                        <div class="pagination-info">
                             Mostrando <?= count($clientes); ?> de <?= $totalFiltrados; ?> clientes
-                        </span>
+                        </div>
                     </div>
-                </div>
+                </section>
             </section>
         </main>
     </div>

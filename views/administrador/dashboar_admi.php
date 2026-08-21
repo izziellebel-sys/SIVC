@@ -2,88 +2,88 @@
 session_start();
 
 // Protección básica de acceso
-if (!isset($_SESSION['usuario']) || $_SESSION['rol'] !== 'Administrador') {
-    header("Location: ../login.php");
-    exit();
+if (!isset($_SESSION['usuario']) || $_SESSION['rol'] !== 'Administrador') { //Sirve para verificar que el usuario este logueado y tenga rol de administrador
+    header("Location: ../login.php"); //sirve para redirigir al usuario a la pagina de inicio de sesion
+    exit(); //sirve para detener la ejecucion del archivo
 }
 
-$nombreUsuario = $_SESSION['usuario'] ?? 'Administrador';
-$rolUsuario = $_SESSION['rol'] ?? 'Administrador';
+$nombreUsuario = $_SESSION['usuario'] ?? 'Administrador'; //Sirve para obtener el nombre de usuario
+$rolUsuario = $_SESSION['rol'] ?? 'Administrador'; //Sirve para obtener el rol del usuario
 
 // Obtener fecha actual en español
 $dias = [
-    1 => 'Lunes', 2 => 'Martes', 3 => 'Miércoles', 4 => 'Jueves',
+    1 => 'Lunes', 2 => 'Martes', 3 => 'Miércoles', 4 => 'Jueves', //Sirve para obtener el dia de la semana
     5 => 'Viernes', 6 => 'Sábado', 7 => 'Domingo'
 ];
 $meses = [
-    1 => 'enero', 2 => 'febrero', 3 => 'marzo', 4 => 'abril',
-    5 => 'mayo', 6 => 'junio', 7 => 'julio', 8 => 'agosto',
-    9 => 'septiembre', 10 => 'octubre', 11 => 'noviembre', 12 => 'diciembre'
+    1 => 'enero', 2 => 'febrero', 3 => 'marzo', 4 => 'abril', //Sirve para obtener el mes
+    5 => 'mayo', 6 => 'junio', 7 => 'julio', 8 => 'agosto', //Sirve para obtener el mes
+    9 => 'septiembre', 10 => 'octubre', 11 => 'noviembre', 12 => 'diciembre' //Sirve para obtener el mes
 ];
-$diaSemana = date('N');
-$mes = date('n');
-$fechaString = $dias[$diaSemana] . ' ' . date('d') . ' de ' . $meses[$mes];
-$horaString = date('h:i a');
+$diaSemana = date('N'); //Sirve para obtener el dia de la semana
+$mes = date('n'); //Sirve para obtener el mes
+$fechaString = $dias[$diaSemana] . ' ' . date('d') . ' de ' . $meses[$mes]; //Sirve para obtener la fecha actual en español
+$horaString = date('h:i a'); //Sirve para obtener la hora actual
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
+<!DOCTYPE html> <!-- Indica que el documento es un documento HTML5 -->
+<html lang="es"> <!-- Sirve para especificar el idioma del documento -->
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Administrador | SIVC</title>
+    <meta charset="UTF-8"> <!-- Sirve para especificar el conjunto de caracteres a utilizar -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Sirve para especificar el viewport -->
+    <title>Dashboard Administrador | SIVC</title> <!-- Sirve para especificar el titulo del documento -->
 
     <!-- Fuentes -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com"> <!-- Sirve para especificar la fuente a utilizar -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> <!-- Sirve para especificar la fuente a utilizar -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"> <!-- Sirve para especificar la fuente a utilizar -->
 
     <!-- Iconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"> <!-- Sirve para especificar los iconos a utilizar -->
 
     <!-- CSS general -->
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/style.css"> <!-- Sirve para especificar el CSS general -->
 
     <!-- CSS Dashboard (Cache Busted) -->
-    <link rel="stylesheet" href="css/dashboard_admi.css?v=2">
+    <link rel="stylesheet" href="css/dashboard_admi.css?v=2"> <!-- Sirve para especificar el CSS del dashboard -->
     <?php 
-    require_once __DIR__ . '/../../configuration/load_config.php';
-    aplicarConfiguracionEstilos();
+    require_once __DIR__ . '/../../configuration/load_config.php'; //Sirve para incluir el archivo load_config.php
+    aplicarConfiguracionEstilos(); //Sirve para aplicar la configuracion de estilos
     ?>
-</head>
+</head> 
 
 <body>
 
-    <div class="dashboard-container">
+    <div class="dashboard-container"> <!-- Sirve para contener el contenido principal del dashboard -->
 
         <!-- ==========================================
              SIDEBAR (BARRA LATERAL)
         =========================================== -->
-        <aside class="sidebar" id="sidebar">
+        <aside class="sidebar" id="sidebar"> <!-- Sirve para contener la barra lateral -->
             <!-- Hamburger Menu (Mobile/Aesthetic) -->
-            <button class="sidebar-toggle-btn" id="sidebarClose">
+            <button class="sidebar-toggle-btn" id="sidebarClose"> <!-- Sirve para abrir y cerrar la barra lateral -->
                 <i class="fa-solid fa-bars"></i>
             </button>
 
             <!-- Store Logo Section -->
-            <div class="sidebar-logo-section">
+            <div class="sidebar-logo-section"> <!-- Sirve para contener el logo de la tienda -->
                 <img src="../../public/img/tienda.png" alt="Doña Marina Logo" class="brand-logo-img">
-                <h2 class="brand-title">DOÑA MARINA</h2>
-                <span class="brand-subtitle">TIENDA DE BARRIO</span>
+                <h2 class="brand-title">DOÑA MARINA</h2> <!-- Sirve para mostrar el titulo de la tienda -->
+                <span class="brand-subtitle">TIENDA DE BARRIO</span> <!-- Sirve para mostrar el subtitulo de la tienda -->
             </div>
 
             <!-- Navigation Links -->
-            <nav class="sidebar-navigation">
-                <a href="inventario.php" class="sidebar-link-card">
-                    <div class="link-left">
-                        <i class="fa-solid fa-basket-shopping"></i>
-                        <span>Inventario</span>
+            <nav class="sidebar-navigation"> <!-- Sirve para contener los enlaces de navegacion -->
+                <a href="inventario.php" class="sidebar-link-card"> <!-- Sirve para redirigir al usuario a la pagina de inventario -->
+                    <div class="link-left"> <!-- Sirve para contener el icono y el texto de inventario -->
+                        <i class="fa-solid fa-basket-shopping"></i> <!-- Sirve para mostrar el icono de inventario -->
+                        <span>Inventario</span> <!-- Sirve para mostrar el texto Inventario -->
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-arrow">></span> <!-- Sirve para mostrar la flecha de navegacion -->
                 </a>
 
-                <a href="ventas.php" class="sidebar-link-card">
+                <a href="ventas.php" class="sidebar-link-card"> <!-- Sirve para redirigir al usuario a la pagina de ventas -->
                     <div class="link-left">
                         <i class="fa-solid fa-cart-shopping"></i>
                         <span>Ventas</span>

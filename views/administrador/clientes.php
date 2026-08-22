@@ -157,7 +157,7 @@ $params = [];
 $types = "";
 
 if ($buscar !== '') {
-    $whereClauses[] = "(nombre LIKE ? OR apellido LIKE ? OR numero_Documento LIKE ?)";
+    $whereClauses[] = "(c.nombre LIKE ? OR c.apellido LIKE ? OR c.numero_Documento LIKE ?)";
     $searchWildcard = "%" . $buscar . "%";
     $params[] = $searchWildcard;
     $params[] = $searchWildcard;
@@ -166,7 +166,7 @@ if ($buscar !== '') {
 }
 
 if ($estadoFiltro !== 'Todos') {
-    $whereClauses[] = "estado = ?";
+    $whereClauses[] = "c.estado = ?";
     $params[] = $estadoFiltro;
     $types .= "s";
 }
@@ -182,7 +182,7 @@ $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
 if ($pagina < 1) $pagina = 1;
 
 // Contar filtrados
-$countQuery = "SELECT COUNT(*) as total FROM cliente $whereSql";
+$countQuery = "SELECT COUNT(*) as total FROM cliente c $whereSql";
 $stmtCount = $conn->prepare($countQuery);
 if ($stmtCount) {
     if (count($params) > 0) {

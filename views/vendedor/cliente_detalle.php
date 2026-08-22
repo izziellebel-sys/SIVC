@@ -116,7 +116,7 @@ if (isset($_GET['deuda_success'])) {
     <link rel="stylesheet" href="../css/style.css">
 
     <!-- CSS Dashboard & Cliente Detalle (reutilizados) -->
-    <link rel="stylesheet" href="../administrador/css/dashboard_admi.css?v=5">
+    <link rel="stylesheet" href="../administrador/admi.css/dashboard_admi.css?v=5">
     <link rel="stylesheet" href="../css/detalle_cliente_vendedor.css">
     
     <!-- Cargar temas y fuentes personalizadas de la base de datos -->

@@ -106,8 +106,8 @@ $horaString = date('h:i a');
     <link rel="stylesheet" href="../css/style.css">
 
     <!-- CSS Configuración & Dashboard -->
-    <link rel="stylesheet" href="css/dashboard_admi.css?v=5">
-    <link rel="stylesheet" href="css/configuracion.css?v=5">
+    <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=5">
+    <link rel="stylesheet" href="admi.css/configuracion_admi.css?v=5">
     
     <!-- Inyectar estilos cargados de la base de datos -->
     <?php aplicarConfiguracionEstilos(); ?>

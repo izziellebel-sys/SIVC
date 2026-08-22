@@ -42,8 +42,8 @@ $clientes = $stats['clientes_registrados'];
     <!-- CSS general -->
     <link rel="stylesheet" href="../css/style.css">
 
-    <!-- CSS Dashboard (reutilizado) -->
-    <link rel="stylesheet" href="../administrador/css/dashboard_admi.css?v=5">
+    <!-- CSS Dashboard & Sidebar -->
+    <link rel="stylesheet" href="../administrador/admi.css/dashboard_admi.css?v=5">
     
     
     <!-- Estilo local para alinear y redimensionar la ilustración del encabezado -->

@@ -271,9 +271,9 @@ if ($stmt) {
     <!-- CSS general -->
     <link rel="stylesheet" href="../css/style.css">
 
-    <!-- CSS Vendedores & Dashboard -->
-    <link rel="stylesheet" href="css/dashboard_admi.css?v=5">
-    <link rel="stylesheet" href="css/vendedores.css?v=5">
+    <!-- CSS Dashboard & Vendedores Local (Cache Busted) -->
+    <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=5">
+    <link rel="stylesheet" href="admi.css/vendedores_admi.css?v=5">
     
     <!-- Cargar configuración dinámica de temas y fuentes -->
     <?php aplicarConfiguracionEstilos(); ?>

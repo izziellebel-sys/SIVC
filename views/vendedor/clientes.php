@@ -189,8 +189,8 @@ if ($stmt) {
     <link rel="stylesheet" href="../css/style.css">
 
     <!-- CSS Dashboard & Clientes (reutilizados) -->
-    <link rel="stylesheet" href="../administrador/css/dashboard_admi.css?v=5">
-    <link rel="stylesheet" href="../administrador/css/clientes.css?v=5">
+    <link rel="stylesheet" href="../administrador/admi.css/dashboard_admi.css?v=5">
+    <link rel="stylesheet" href="../administrador/admi.css/clientes_admi.css?v=5">
     
     <!-- Cargar estilos personalizados de base de datos -->
     <?php aplicarConfiguracionEstilos(); ?>

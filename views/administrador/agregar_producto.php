@@ -116,7 +116,7 @@ if ($resProv) {
     <link rel="stylesheet" href="../css/style.css">
 
     <!-- CSS Dashboard & Formulario -->
-    <link rel="stylesheet" href="css/dashboard_admi.css?v=6">
+    <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=6">
     
     <style>
         .form-page-container {

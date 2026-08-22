@@ -185,8 +185,8 @@ $deudasPendientes = array_filter($deudas, function($d) {
     <link rel="stylesheet" href="../css/style.css">
 
     <!-- CSS Detalle & Dashboard -->
-    <link rel="stylesheet" href="css/dashboard_admi.css?v=3">
-    <link rel="stylesheet" href="css/cliente_detalle.css?v=3">
+    <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=3">
+    <link rel="stylesheet" href="admi.css/cliente_detalle_admi.css?v=3">
     <?php 
     require_once __DIR__ . '/../../configuration/load_config.php';
     aplicarConfiguracionEstilos();

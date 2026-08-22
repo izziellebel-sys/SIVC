@@ -133,7 +133,7 @@ $resCategorias = $conn->query("SELECT DISTINCT unidad_Medida FROM producto ORDER
     <link rel="stylesheet" href="../css/style.css">
 
     <!-- CSS Dashboard & Inventario (reutilizados) -->
-    <link rel="stylesheet" href="../administrador/css/dashboard_admi.css?v=5">
+    <link rel="stylesheet" href="../administrador/admi.css/dashboard_admi.css?v=5">
     <link rel="stylesheet" href="../css/inventario.css?v=5">
     
     <!-- Cargar configuración de base de datos -->

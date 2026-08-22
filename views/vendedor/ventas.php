@@ -95,8 +95,8 @@ if (isset($_GET['success']) && $_GET['success'] == '1') {
     <!-- CSS general -->
     <link rel="stylesheet" href="../css/style.css">
 
-    <!-- CSS Dashboard & Ventas (reutilizados) -->
-    <link rel="stylesheet" href="../administrador/css/dashboard_admi.css?v=5">
+    <!-- CSS Dashboard (reutilizado) -->
+    <link rel="stylesheet" href="../administrador/admi.css/dashboard_admi.css?v=5">
     <link rel="stylesheet" href="../css/ventas.css?v=5">
     
     

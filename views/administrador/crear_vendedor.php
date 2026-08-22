@@ -88,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="../css/style.css">
 
     <!-- CSS Dashboard & Formulario (reutilizado) -->
-    <link rel="stylesheet" href="css/dashboard_admi.css?v=5">
+    <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=5">
     
     <style>
         .form-page-container {

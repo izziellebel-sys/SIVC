@@ -567,9 +567,9 @@ if ($tab === 'general') {
     <!-- CSS general -->
     <link rel="stylesheet" href="../css/style.css">
 
-    <!-- CSS Reportes & Dashboard -->
-    <link rel="stylesheet" href="css/dashboard_admi.css?v=5">
-    <link rel="stylesheet" href="css/reportes.css?v=5">
+    <!-- CSS Dashboard & Reportes Local (Cache Busted) -->
+    <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=5">
+    <link rel="stylesheet" href="admi.css/reportes_admi.css?v=5">
     
     <style>
         /* Estilos de impresión */

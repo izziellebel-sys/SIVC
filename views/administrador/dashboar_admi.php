@@ -46,7 +46,7 @@ $horaString = date('h:i a'); //Sirve para obtener la hora actual
     <link rel="stylesheet" href="../css/style.css"> <!-- Sirve para especificar el CSS general -->
 
     <!-- CSS Dashboard (Cache Busted) -->
-    <link rel="stylesheet" href="css/dashboard_admi.css?v=2"> <!-- Sirve para especificar el CSS del dashboard -->
+    <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=2"> <!-- Sirve para especificar el CSS del dashboard -->
     <?php 
     require_once __DIR__ . '/../../configuration/load_config.php'; //Sirve para incluir el archivo load_config.php
     aplicarConfiguracionEstilos(); //Sirve para aplicar la configuracion de estilos

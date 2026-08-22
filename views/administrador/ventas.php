@@ -139,8 +139,8 @@ $ventasRecientes = $conn->query("SELECT v.*, u.nombre as cliente_nombre, u.apell
     <link rel="stylesheet" href="../css/style.css">
 
     <!-- CSS Dashboard & Ventas Local (Cache Busted) -->
-    <link rel="stylesheet" href="css/dashboard_admi.css?v=2">
-    <link rel="stylesheet" href="../css/ventas.css?v=3">
+    <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=2">
+    <link rel="stylesheet" href="admi.css/ventas_admi.css?v=3">
     
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

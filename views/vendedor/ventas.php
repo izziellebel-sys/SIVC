@@ -97,7 +97,7 @@ if (isset($_GET['success']) && $_GET['success'] == '1') {
 
     <!-- CSS Dashboard (reutilizado) -->
     <link rel="stylesheet" href="../administrador/admi.css/dashboard_admi.css?v=5">
-    <link rel="stylesheet" href="css/ventas.css?v=5">
+    <link rel="stylesheet" href="css/ventas.css?v=6">
     
     
     <!-- Estilo local para alinear y redimensionar la ilustración del encabezado -->
@@ -199,7 +199,7 @@ if (isset($_GET['success']) && $_GET['success'] == '1') {
             </header>
 
             <!-- Stats Row (4 Cards) -->
-            <section class="inventory-stats-row" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px;">
+            <section class="inventory-stats-row">
                 <!-- Total Facturado -->
                 <div class="stat-box-card">
                     <div class="stat-box-icon-circle" style="background-color: #ffd6ff;">

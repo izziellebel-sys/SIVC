@@ -259,7 +259,7 @@ if ($stmt) {
 
     <!-- CSS Clientes & Dashboard -->
     <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=3">
-    <link rel="stylesheet" href="admi.css/clientes_admi.css?v=3">
+    <link rel="stylesheet" href="admi.css/clientes_admi.css?v=4">
     <?php 
     require_once __DIR__ . '/../../configuration/load_config.php';
     aplicarConfiguracionEstilos();

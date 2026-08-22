@@ -190,7 +190,7 @@ if ($stmt) {
 
     <!-- CSS Dashboard & Clientes (reutilizados) -->
     <link rel="stylesheet" href="../administrador/admi.css/dashboard_admi.css?v=5">
-    <link rel="stylesheet" href="../administrador/admi.css/clientes_admi.css?v=5">
+    <link rel="stylesheet" href="../administrador/admi.css/clientes_admi.css?v=6">
     
     <!-- Cargar estilos personalizados de base de datos -->
     <?php aplicarConfiguracionEstilos(); ?>

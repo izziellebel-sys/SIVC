@@ -29,7 +29,7 @@ function alerta($icono, $titulo, $mensaje, $ruta)
 }
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-    header('Location: ../views/auth/login.php');
+    header('Location: ../../views/login.php');
     exit();
 }
 
@@ -41,7 +41,7 @@ if (empty($usuario) || empty($password)) {
         'warning',
         'Campos incompletos',
         'Ingresa tu usuario y contraseña.',
-        '../views/auth/login.php'
+        '../../views/login.php'
     );
 }
 
@@ -53,7 +53,7 @@ if (!$datos || !password_verify($password, $datos['contraseña'])) {
         'error',
         'Datos incorrectos',
         'El usuario o la contraseña no son correctos.',
-        '../views/login.php'
+        '../../views/login.php'
     );
 }
 
@@ -62,7 +62,7 @@ if ($datos['estado'] != 'Activo') {
         'warning',
         'Usuario inactivo',
         'Tu cuenta se encuentra inactiva.',
-        '../views/login.php'
+        '../../views/login.php'
     );
 }
 

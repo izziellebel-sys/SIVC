@@ -1,3 +1,6 @@
+<?php
+$error = $_GET['error'] ?? '';
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -123,8 +126,47 @@
         }
         toggle("password", "togglePassword");
         toggle("confirmPassword", "toggleConfirmPassword");
+    </script>
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        <?php if ($error === 'campos'): ?>
+            Swal.fire({
+                icon: 'warning',
+                title: 'Campos incompletos',
+                text: 'Por favor completa todos los campos del formulario.',
+                confirmButtonColor: '#6f2dbd'
+            });
+        <?php elseif ($error === 'password'): ?>
+            Swal.fire({
+                icon: 'error',
+                title: 'Contraseñas no coinciden',
+                text: 'La contraseña y su confirmación deben ser idénticas.',
+                confirmButtonColor: '#6f2dbd'
+            });
+        <?php elseif ($error === 'usuario'): ?>
+            Swal.fire({
+                icon: 'error',
+                title: 'Usuario ya registrado',
+                text: 'El nombre de usuario ya se encuentra registrado.',
+                confirmButtonColor: '#6f2dbd'
+            });
+        <?php elseif ($error === 'correo'): ?>
+            Swal.fire({
+                icon: 'error',
+                title: 'Correo ya registrado',
+                text: 'El correo electrónico ya se encuentra registrado.',
+                confirmButtonColor: '#6f2dbd'
+            });
+        <?php elseif ($error === 'db'): ?>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de registro',
+                text: 'Hubo un problema al procesar el registro en la base de datos. Inténtalo de nuevo.',
+                confirmButtonColor: '#6f2dbd'
+            });
+        <?php endif; ?>
     </script>
 </body>
-
 </html>

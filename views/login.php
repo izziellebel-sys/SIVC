@@ -1,3 +1,7 @@
+<?php
+$error = $_GET['error'] ?? '';
+$registro = $_GET['registro'] ?? '';
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -78,6 +82,39 @@
             }
         });
     </script>
-</body>
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        <?php if ($registro === 'exito'): ?>
+            Swal.fire({
+                icon: 'success',
+                title: '¡Registro Exitoso!',
+                text: 'Tu cuenta ha sido creada con éxito. Ahora puedes iniciar sesión.',
+                confirmButtonColor: '#6f2dbd'
+            });
+        <?php elseif ($error === 'credenciales'): ?>
+            Swal.fire({
+                icon: 'error',
+                title: 'Datos incorrectos',
+                text: 'El usuario o la contraseña no son correctos.',
+                confirmButtonColor: '#198754'
+            });
+        <?php elseif ($error === 'inactivo'): ?>
+            Swal.fire({
+                icon: 'warning',
+                title: 'Usuario inactivo',
+                text: 'Tu cuenta se encuentra inactiva.',
+                confirmButtonColor: '#198754'
+            });
+        <?php elseif ($error === 'campos'): ?>
+            Swal.fire({
+                icon: 'warning',
+                title: 'Campos incompletos',
+                text: 'Ingresa tu usuario y contraseña.',
+                confirmButtonColor: '#198754'
+            });
+        <?php endif; ?>
+    </script>
+</body>
 </html>

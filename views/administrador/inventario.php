@@ -435,9 +435,9 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                         <i class="fa-solid fa-triangle-exclamation" style="color: #ffb300;"></i>
                     </div>
                     <div class="stat-box-details">
-                        <span class="stat-name">Stock Disponible</span>
+                        <span class="stat-name">Stock Bajo</span>
                         <span class="stat-number"><?= $stockBajo; ?></span>
-                        <span class="stat-desc">Productos registrados</span>
+                        <span class="stat-desc">Productos con bajo stock</span>
                     </div>
                 </div>
 

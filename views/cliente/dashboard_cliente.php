@@ -119,7 +119,7 @@ $section = $_GET['section'] ?? 'dashboard';
     <link rel="stylesheet" href="../css/style.css">
 
     <!-- CSS Dashboard -->
-    <link rel="stylesheet" href="../css/dashboard_cliente.css">
+    <link rel="stylesheet" href="css/dashboard_cliente.css">
 </head>
 
 <body>

@@ -190,7 +190,7 @@ if ($stmt) {
 
     <!-- CSS Dashboard & Clientes (reutilizados) -->
     <link rel="stylesheet" href="../administrador/admi.css/dashboard_admi.css?v=5">
-    <link rel="stylesheet" href="../administrador/admi.css/clientes_admi.css?v=6">
+    <link rel="stylesheet" href="../administrador/admi.css/clientes_admi.css?v=7">
     
     <!-- Cargar estilos personalizados de base de datos -->
     <?php aplicarConfiguracionEstilos(); ?>
@@ -320,20 +320,18 @@ if ($stmt) {
             <!-- Filter Bar -->
             <section class="filter-section">
                 <form action="clientes.php" method="GET" class="filter-bar-form">
-                    <div class="filters-left-group">
-                        <div class="filter-input-group">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                            <input type="text" name="buscar" placeholder="Buscar Cliente..." value="<?= htmlspecialchars($buscar); ?>">
-                        </div>
+                    <div class="filter-input-group">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" name="buscar" placeholder="Buscar Cliente..." value="<?= htmlspecialchars($buscar); ?>">
+                    </div>
 
-                        <div class="filter-select-wrapper">
-                            <label for="filterEstado">Estado</label>
-                            <select name="estado" id="filterEstado" onchange="this.form.submit()">
-                                <option value="Todos" <?= $estadoFiltro === 'Todos' ? 'selected' : ''; ?>>Todos</option>
-                                <option value="Activo" <?= $estadoFiltro === 'Activo' ? 'selected' : ''; ?>>Activo</option>
-                                <option value="Inactivo" <?= $estadoFiltro === 'Inactivo' ? 'selected' : ''; ?>>Inactivo</option>
-                            </select>
-                        </div>
+                    <div class="filter-select-group">
+                        <label for="filterEstado">Estado</label>
+                        <select name="estado" id="filterEstado" onchange="this.form.submit()">
+                            <option value="Todos" <?= $estadoFiltro === 'Todos' ? 'selected' : ''; ?>>Todos</option>
+                            <option value="Activo" <?= $estadoFiltro === 'Activo' ? 'selected' : ''; ?>>Activo</option>
+                            <option value="Inactivo" <?= $estadoFiltro === 'Inactivo' ? 'selected' : ''; ?>>Inactivo</option>
+                        </select>
                     </div>
 
                     <?php if ($buscar !== '' || $estadoFiltro !== 'Todos'): ?>
@@ -383,7 +381,7 @@ if ($stmt) {
                                         <td style="font-weight: 700;">$<?= number_format($c['compras_total'], 0, ',', '.'); ?></td>
                                         <td><?= htmlspecialchars($c['ultima_compra']); ?></td>
                                         <td>
-                                            <a href="cliente_detalle.php?id=<?= $c['id_Cliente']; ?>" class="btn-view-detail" title="Ver Historial y Deudas">
+                                            <a href="cliente_detalle.php?id=<?= $c['id_Cliente']; ?>" class="btn-view-details" title="Ver Historial y Deudas">
                                                 <i class="fa-regular fa-eye"></i> Ver Detalle
                                             </a>
                                         </td>
@@ -399,9 +397,10 @@ if ($stmt) {
                         </tbody>
                     </table>
                 </div>
+            </section>
 
-                <!-- Table Footer & Pagination -->
-                <section class="clients-footer-section">
+            <!-- Table Footer & Pagination -->
+            <section class="clients-footer-section">
                     <!-- Add Client Button -->
                     <button type="button" class="btn-add-client" onclick="abrirModalAgregar()">
                         <i class="fa-solid fa-user-plus"></i> Registrar Cliente
@@ -426,7 +425,6 @@ if ($stmt) {
                         </div>
                     </div>
                 </section>
-            </section>
         </main>
     </div>
 

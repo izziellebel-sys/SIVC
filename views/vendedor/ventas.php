@@ -97,7 +97,7 @@ if (isset($_GET['success']) && $_GET['success'] == '1') {
 
     <!-- CSS Dashboard (reutilizado) -->
     <link rel="stylesheet" href="../administrador/admi.css/dashboard_admi.css?v=5">
-    <link rel="stylesheet" href="../css/ventas.css?v=5">
+    <link rel="stylesheet" href="css/ventas.css?v=5">
     
     
     <!-- Estilo local para alinear y redimensionar la ilustración del encabezado -->

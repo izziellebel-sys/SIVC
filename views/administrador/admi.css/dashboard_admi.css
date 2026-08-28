@@ -489,3 +489,30 @@ body {
         font-size: 36px;
     }
 }
+
+@media (max-width: 576px) {
+    .welcome-header-text h1 {
+        font-size: 28px;
+    }
+
+    .banner-text h2 {
+        font-size: 22px;
+    }
+
+    .banner-image-right {
+        display: none;
+    }
+
+    .datetime-card {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .main-content {
+        padding: 70px 15px 30px;
+    }
+
+    .welcome-banner {
+        padding: 20px;
+    }
+}

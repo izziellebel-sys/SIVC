@@ -687,3 +687,23 @@
         grid-column: auto;
     }
 }
+
+@media (max-width: 576px) {
+    .vendedores-table-container {
+        padding: 15px;
+    }
+
+    .vendedores-table th, .vendedores-table td {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    .modal-content {
+        padding: 15px;
+        border-radius: 16px;
+    }
+
+    .modal-header {
+        padding: 15px 0;
+    }
+}

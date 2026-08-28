@@ -203,7 +203,9 @@
     background-color: var(--card-bg);
     border: var(--border-style);
     border-radius: var(--radius-md);
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
     margin-bottom: 35px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.01);
 }
@@ -377,5 +379,18 @@
     .btn-save-abono {
         width: 100%;
         text-align: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .debts-table th, .debts-table td {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
     }
 }

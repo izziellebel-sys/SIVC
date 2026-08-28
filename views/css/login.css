@@ -288,3 +288,42 @@ button:active {
         align-items: flex-start;
     }
 }
+
+@media (max-width: 576px) {
+    .login-container {
+        padding: 20px 15px;
+        min-height: auto;
+        border-radius: 20px;
+    }
+
+    .form-section h1 {
+        font-size: 38px;
+        margin-bottom: 5px;
+    }
+
+    .form-section h3 {
+        font-size: 18px;
+        margin-bottom: 25px;
+    }
+
+    button {
+        padding: 14px;
+        font-size: 20px;
+    }
+
+    .image-section {
+        display: none;
+    }
+
+    .register {
+        align-items: center;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .register a {
+        width: 100%;
+        text-align: center;
+        padding: 10px 0;
+    }
+}

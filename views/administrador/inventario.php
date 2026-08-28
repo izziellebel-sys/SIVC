@@ -508,14 +508,14 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                                 <th>stock</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
-                            </tr>
+                            </tr>   
                         </thead>
                         <tbody>
                             <?php if ($productosResult && $productosResult->num_rows > 0): ?>
-                                <?php while ($prod = $productosResult->fetch_assoc()): ?>
+                                <?php while ($producto = $productosResult->fetch_assoc()): ?>
                                     <?php 
                                         // Determinar clase de stock y estado badge
-                                        $stock = (int)$product['stock_Actual'];
+                                        $stock = (int)$producto['stock_Actual'];
                                         if ($stock === 0) {
                                             $stockClass = "empty";
                                             $statusText = "Sin Stock";
@@ -531,7 +531,7 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                                         }
 
                                         // Fallback de imagen
-                                        $imgPath = (isset($prod['imagen']) && !is_null($product['imagen'])) ? htmlspecialchars($product['imagen']) : '';
+                                        $imgPath = (isset($producto['imagen']) && !is_null($producto['imagen'])) ? htmlspecialchars($producto['imagen']) : '';
                                         if (empty($imgPath)) {
                                             $imgPath = "../../public/img/tienda.png";
                                         }
@@ -539,18 +539,18 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                                     <tr>
                                         <td>
                                             <div class="product-cell">
-                                                <img src="<?= $imgPath; ?>" alt="<?= htmlspecialchars($product['nombre']); ?>" class="product-cell-img">
+                                                <img src="<?= $imgPath; ?>" alt="<?= htmlspecialchars($producto['nombre']); ?>" class="product-cell-img">
                                                 <div class="product-cell-info">
-                                                    <strong><?= htmlspecialchars($product['nombre']); ?></strong>
-                                                    <span>Codigo <?= htmlspecialchars($product['codigo_Producto']); ?></span>
+                                                    <strong><?= htmlspecialchars($producto['nombre']); ?></strong>
+                                                    <span>Codigo <?= htmlspecialchars($producto['codigo_Producto']); ?></span>
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="category-badge"><?= htmlspecialchars($product['unidad_Medida']); ?></span>
+                                            <span class="category-badge"><?= htmlspecialchars($producto['unidad_Medida']); ?></span>
                                         </td>
                                         <td style="font-weight: 600;">
-                                            $<?= number_format($prod['precio_Venta'], 0, ',', '.'); ?>
+                                            $<?= number_format($producto['precio_Venta'], 0, ',', '.'); ?>
                                         </td>
                                         <td>
                                             <span class="stock-text <?= $stockClass; ?>"><?= $stock; ?></span>
@@ -561,41 +561,41 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                                         <td>
                                             <div class="actions-cell">
                                                 <button type="button" class="action-icon-btn view" title="Ver Detalle"
-                                                        data-id="<?= $prod['id_Producto']; ?>"
-                                                        data-codigo="<?= htmlspecialchars($product['codigo_Producto']); ?>"
-                                                        data-nombre="<?= htmlspecialchars($product['nombre']); ?>"
-                                                        data-proveedor="<?= $prod['id_Proveedor']; ?>"
-                                                        data-descripcion="<?= htmlspecialchars($product['descripcion'] ?? ''); ?>"
-                                                        data-compra="<?= $prod['precio_Compra']; ?>"
-                                                        data-venta="<?= $prod['precio_Venta']; ?>"
-                                                        data-stock="<?= $prod['stock_Actual']; ?>"
-                                                        data-minimo="<?= $prod['stock_Minimo']; ?>"
-                                                        data-categoria="<?= htmlspecialchars($prod['unidad_Medida'] ?? ''); ?>"
-                                                        data-estado="<?= htmlspecialchars($prod['estado']); ?>"
+                                                        data-id="<?= $producto['id_Producto']; ?>"
+                                                        data-codigo="<?= htmlspecialchars($producto['codigo_Producto']); ?>"
+                                                        data-nombre="<?= htmlspecialchars($producto['nombre']); ?>"
+                                                        data-proveedor="<?= $producto['id_Proveedor']; ?>"
+                                                        data-descripcion="<?= htmlspecialchars($producto['descripcion'] ?? ''); ?>"
+                                                        data-compra="<?= $producto['precio_Compra']; ?>"
+                                                        data-venta="<?= $producto['precio_Venta']; ?>"
+                                                        data-stock="<?= $producto['stock_Actual']; ?>"
+                                                        data-minimo="<?= $producto['stock_Minimo']; ?>"
+                                                        data-categoria="<?= htmlspecialchars($producto['unidad_Medida'] ?? ''); ?>"
+                                                        data-estado="<?= htmlspecialchars($producto['estado']); ?>"
                                                         data-imagen="<?= $imgPath; ?>"
                                                         onclick="abrirModalDetalle(this)"
                                                         style="border:none; cursor:pointer;">
                                                     <i class="fa-regular fa-eye"></i>
                                                 </button>
                                                 <button type="button" class="action-icon-btn edit" title="Editar Producto"
-                                                        data-id="<?= $prod['id_Producto']; ?>"
-                                                        data-codigo="<?= htmlspecialchars($prod['codigo_Producto']); ?>"
-                                                        data-nombre="<?= htmlspecialchars($prod['nombre']); ?>"
-                                                        data-proveedor="<?= $prod['id_Proveedor']; ?>"
-                                                        data-descripcion="<?= htmlspecialchars($prod['descripcion'] ?? ''); ?>"
-                                                        data-compra="<?= $prod['precio_Compra']; ?>"
-                                                        data-venta="<?= $prod['precio_Venta']; ?>"
-                                                        data-stock="<?= $prod['stock_Actual']; ?>"
-                                                        data-minimo="<?= $prod['stock_Minimo']; ?>"
-                                                        data-categoria="<?= htmlspecialchars($prod['unidad_Medida'] ?? ''); ?>"
-                                                        data-estado="<?= htmlspecialchars($prod['estado']); ?>"
+                                                        data-id="<?= $producto['id_Producto']; ?>"
+                                                        data-codigo="<?= htmlspecialchars($producto['codigo_Producto']); ?>"
+                                                        data-nombre="<?= htmlspecialchars($producto['nombre']); ?>"
+                                                        data-proveedor="<?= $producto['id_Proveedor']; ?>"
+                                                        data-descripcion="<?= htmlspecialchars($producto['descripcion'] ?? ''); ?>"
+                                                        data-compra="<?= $producto['precio_Compra']; ?>"
+                                                        data-venta="<?= $producto['precio_Venta']; ?>"
+                                                        data-stock="<?= $producto['stock_Actual']; ?>"
+                                                        data-minimo="<?= $producto['stock_Minimo']; ?>"
+                                                        data-categoria="<?= htmlspecialchars($producto['unidad_Medida'] ?? ''); ?>"
+                                                        data-estado="<?= htmlspecialchars($producto['estado']); ?>"
                                                         data-imagen="<?= $imgPath; ?>"
                                                         onclick="abrirModalEditar(this)"
                                                         style="border:none; cursor:pointer;">
-                                                    <i class="fa-solid fa-pencil"></i>
+                                                    <i class="fa-solid fa-pencil"></i>x
                                                 </button>
                                                 <button type="button" class="action-icon-btn delete" title="Eliminar Producto"
-                                                        onclick="confirmarEliminar(<?= $prod['id_Producto']; ?>, '<?= addslashes($prod['nombre']); ?>', '<?= $imgPath; ?>')"
+                                                        onclick="confirmarEliminar(<?= $producto ['id_Producto']; ?>, '<?= addslashes($producto['nombre']); ?>', '<?= $imgPath; ?>')"
                                                         style="border:none; cursor:pointer;">
                                                     <i class="fa-regular fa-trash-can"></i>
                                                 </button>

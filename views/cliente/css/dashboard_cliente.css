@@ -659,3 +659,38 @@ tr:last-child td {
         grid-template-columns: 1fr !important;
     }
 }
+
+@media (max-width: 576px) {
+    .topbar {
+        padding: 0 15px;
+        flex-direction: column;
+        height: auto;
+        padding-top: 60px; /* space for toggle button */
+        padding-bottom: 10px;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .dashboard-content {
+        padding: 15px;
+    }
+
+    .welcome-section {
+        padding: 15px;
+        align-items: center;
+        text-align: center;
+    }
+
+    .welcome-text h1 {
+        font-size: 22px;
+    }
+
+    .current-date {
+        align-self: center;
+    }
+
+    th, td {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+}

@@ -580,3 +580,21 @@
         text-align: center;
     }
 }
+
+@media (max-width: 576px) {
+    .debts-table th, .debts-table td {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    .modal-content {
+        padding: 15px;
+        border-radius: 16px;
+    }
+
+    .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
+}

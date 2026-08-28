@@ -310,3 +310,15 @@ input:checked + .slider-round:before {
         width: 100%;
     }
 }
+
+@media (max-width: 576px) {
+    .config-footer-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-config-reset, .btn-config-save {
+        width: 100%;
+        text-align: center;
+    }
+}

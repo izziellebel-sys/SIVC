@@ -181,4 +181,9 @@ footer {
     .buttons {
         flex-direction: column;
     }
+
+    .modules {
+        padding: 40px 20px;
+        gap: 20px;
+    }
 }

@@ -515,7 +515,7 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                                 <?php while ($prod = $productosResult->fetch_assoc()): ?>
                                     <?php 
                                         // Determinar clase de stock y estado badge
-                                        $stock = (int)$prod['stock_Actual'];
+                                        $stock = (int)$product['stock_Actual'];
                                         if ($stock === 0) {
                                             $stockClass = "empty";
                                             $statusText = "Sin Stock";
@@ -531,7 +531,7 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                                         }
 
                                         // Fallback de imagen
-                                        $imgPath = (isset($prod['imagen']) && !is_null($prod['imagen'])) ? htmlspecialchars($prod['imagen']) : '';
+                                        $imgPath = (isset($prod['imagen']) && !is_null($product['imagen'])) ? htmlspecialchars($product['imagen']) : '';
                                         if (empty($imgPath)) {
                                             $imgPath = "../../public/img/tienda.png";
                                         }
@@ -539,15 +539,15 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                                     <tr>
                                         <td>
                                             <div class="product-cell">
-                                                <img src="<?= $imgPath; ?>" alt="<?= htmlspecialchars($prod['nombre']); ?>" class="product-cell-img">
+                                                <img src="<?= $imgPath; ?>" alt="<?= htmlspecialchars($product['nombre']); ?>" class="product-cell-img">
                                                 <div class="product-cell-info">
-                                                    <strong><?= htmlspecialchars($prod['nombre']); ?></strong>
-                                                    <span>Codigo <?= htmlspecialchars($prod['codigo_Producto']); ?></span>
+                                                    <strong><?= htmlspecialchars($product['nombre']); ?></strong>
+                                                    <span>Codigo <?= htmlspecialchars($product['codigo_Producto']); ?></span>
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="category-badge"><?= htmlspecialchars($prod['unidad_Medida']); ?></span>
+                                            <span class="category-badge"><?= htmlspecialchars($product['unidad_Medida']); ?></span>
                                         </td>
                                         <td style="font-weight: 600;">
                                             $<?= number_format($prod['precio_Venta'], 0, ',', '.'); ?>
@@ -562,10 +562,10 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                                             <div class="actions-cell">
                                                 <button type="button" class="action-icon-btn view" title="Ver Detalle"
                                                         data-id="<?= $prod['id_Producto']; ?>"
-                                                        data-codigo="<?= htmlspecialchars($prod['codigo_Producto']); ?>"
-                                                        data-nombre="<?= htmlspecialchars($prod['nombre']); ?>"
+                                                        data-codigo="<?= htmlspecialchars($product['codigo_Producto']); ?>"
+                                                        data-nombre="<?= htmlspecialchars($product['nombre']); ?>"
                                                         data-proveedor="<?= $prod['id_Proveedor']; ?>"
-                                                        data-descripcion="<?= htmlspecialchars($prod['descripcion'] ?? ''); ?>"
+                                                        data-descripcion="<?= htmlspecialchars($product['descripcion'] ?? ''); ?>"
                                                         data-compra="<?= $prod['precio_Compra']; ?>"
                                                         data-venta="<?= $prod['precio_Venta']; ?>"
                                                         data-stock="<?= $prod['stock_Actual']; ?>"

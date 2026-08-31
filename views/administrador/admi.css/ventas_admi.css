@@ -613,79 +613,335 @@
 /* TABLA DE HISTORIAL DE VENTAS */
 .sales-history-card {
     background-color: #ffffff;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #e2e8f0;
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
     margin-bottom: 40px;
 }
 
-.sales-history-card .card-header {
-    padding: 20px 24px;
-    border-bottom: 1px solid #e5e7eb;
+.card-header-with-filters {
+    padding: 16px 22px;
+    border-bottom: 1px solid #e2e8f0;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background-color: #ffffff;
+    flex-wrap: wrap;
+    gap: 16px;
 }
 
-.sales-history-card .card-header h2 {
+.header-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.header-title-group h2 {
     font-size: 16px;
-    font-weight: 700;
-    color: #111827;
+    font-weight: 800;
+    color: #0f172a;
     margin: 0;
     letter-spacing: -0.2px;
 }
 
-.sales-history-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
+.header-title-group .header-subtitle {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
 }
 
-.sales-history-table th {
-    background-color: #f9fafb;
-    color: #4b5563;
-    font-weight: 600;
-    padding: 14px 20px;
-    text-align: left;
-    border-bottom: 1px solid #e5e7eb;
+/* Formulario de Filtros */
+.sales-filters-form {
+    display: flex;
+    align-items: flex-end;
+    gap: 20px; /* Separación clara entre producto y fecha */
+    flex-wrap: wrap;
+}
+
+.sales-filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.sales-filter-item label {
     font-size: 12px;
+    font-weight: 700;
+    color: #475569;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
+.sales-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 220px; /* Mismo ancho exacto para producto y fecha */
+    height: 38px; /* Misma altura exacta */
+    box-sizing: border-box;
+}
+
+.sales-input-wrapper .input-icon-left {
+    position: absolute;
+    left: 12px;
+    font-size: 14px;
+    color: #64748b;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.sales-input-wrapper select,
+.sales-input-wrapper input[type="date"] {
+    width: 100%;
+    height: 100%;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 500;
+    background-color: #ffffff;
+    outline: none;
+    color: #1e293b;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.sales-input-wrapper select {
+    padding: 0 32px 0 36px;
+    appearance: none;
+    -webkit-appearance: none;
+    text-overflow: ellipsis;
+}
+
+.sales-input-wrapper input[type="date"] {
+    padding: 0 12px 0 36px;
+}
+
+.sales-input-wrapper select:focus,
+.sales-input-wrapper input[type="date"]:focus {
+    border-color: #014235;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(1, 66, 53, 0.1);
+}
+
+.sales-input-wrapper .select-chevron-custom {
+    position: absolute;
+    right: 12px;
+    font-size: 11px;
+    color: #64748b;
+    pointer-events: none;
+}
+
+.btn-clear-sales-filters {
+    height: 38px;
+    padding: 0 16px;
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1.5px solid #fecaca;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.btn-clear-sales-filters:hover {
+    background-color: #fee2e2;
+    border-color: #f87171;
+    transform: translateY(-1px);
+}
+
+/* Tabla de Historial de Ventas - Compacta en una sola línea */
+.sales-history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.sales-history-table th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-weight: 700;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1.5px solid #e2e8f0;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
 .sales-history-table td {
-    padding: 16px 20px;
-    border-bottom: 1px solid #f3f4f6;
+    padding: 9px 14px;
+    border-bottom: 1px solid #f1f5f9;
     vertical-align: middle;
+    color: #334155;
+    font-size: 13px;
+    white-space: nowrap;
 }
 
 .sales-history-table tr:last-child td {
     border-bottom: none;
 }
 
-.sales-history-table tr:nth-child(even) {
-    background-color: #fcfcfc;
+.sales-history-table tr:hover {
+    background-color: #f8fafc;
 }
 
-.action-icon-btn.print-new {
-    border: 1px solid #d2d6dc;
+.sale-id-cell {
+    font-weight: 700;
+    color: var(--color-purple, #6f2dbd);
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.customer-cell {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.date-cell {
+    color: #475569;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.total-cell {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 13.5px;
+    white-space: nowrap;
+}
+
+.payment-method-tag {
+    background-color: #f1f5f9;
+    color: #334155;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.sales-history-table .status-badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.action-icon-btn.print {
+    border: 1px solid #e2e8f0;
     background-color: #ffffff;
-    color: #4b5563;
-    width: 32px;
-    height: 32px;
+    color: #6f2dbd;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    font-size: 13px;
 }
 
-.action-icon-btn.print-new:hover {
-    background-color: #f3f4f6;
-    border-color: #9fa6b2;
-    color: #111827;
+.action-icon-btn.print:hover {
+    background-color: #f5f3ff;
+    border-color: #6f2dbd;
+    color: #6f2dbd;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(111, 45, 189, 0.15);
+}
+
+.empty-table-cell {
+    text-align: center;
+    padding: 38px 20px;
+    color: #94a3b8;
+}
+
+.empty-table-cell i {
+    font-size: 30px;
+    color: #cbd5e1;
+    margin-bottom: 6px;
+}
+
+.empty-table-cell p {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+/* Paginación de Ventas */
+.sales-pagination-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    background-color: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.sales-pagination-wrapper .pagination-info {
+    font-size: 13.5px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.sales-pagination-wrapper .pagination-links {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.sales-pagination-wrapper .page-btn {
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border-radius: 7px;
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 600;
+    transition: all 0.15s ease;
+}
+
+.sales-pagination-wrapper .page-btn:hover {
+    border-color: #014235;
+    color: #014235;
+    background-color: #f0fdf4;
+}
+
+.sales-pagination-wrapper .page-btn.active {
+    background-color: #014235;
+    color: #ffffff;
+    border-color: #014235;
+    font-weight: 700;
+}
+
+.sales-pagination-wrapper .page-btn.disabled {
+    opacity: 0.35;
+    pointer-events: none;
 }
 
 /* RESPONSIVE DESIGN */
@@ -711,6 +967,19 @@
     }
     .form-group-item.qty-field {
         flex: 1;
+    }
+    .card-header-with-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .sales-filters-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .sales-pagination-wrapper {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
     }
 }
 

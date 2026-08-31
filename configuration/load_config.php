@@ -50,8 +50,20 @@ function obtenerConfiguracionUsuario() {
     return $default_config;
 }
 
+function obtenerConfiguracionFuentes() {
+    $configFile = __DIR__ . '/fuentes_config.json';
+    if (file_exists($configFile)) {
+        $data = json_decode(file_get_contents($configFile), true);
+        if (is_array($data)) {
+            return $data;
+        }
+    }
+    return null;
+}
+
 function aplicarConfiguracionEstilos() {
     $config = obtenerConfiguracionUsuario();
+    $fuentesConfig = obtenerConfiguracionFuentes();
     
     // Mapeo de Temas según Mockup (Configura colores primarios y del Sidebar)
     $themeSettings = [
@@ -110,9 +122,10 @@ function aplicarConfiguracionEstilos() {
     ];
     $import_css = $fontsImports[$config['tipografia']] ?? "";
 
-    // Tamaño de fuente
-    $font_size = $config['tamaño_Fuente'];
-
+    // Escala tipográfica jerárquica
+    $fontSizeKey = $config['tamaño_Fuente'] ?? '14px';
+    $escalaActual = $fuentesConfig['escalas_usuario'][$fontSizeKey] ?? $fuentesConfig['escalas_usuario']['14px'] ?? null;
+    
     // Modo Oscuro CSS
     $modo_oscuro = (int)$config['modo_Oscuro'];
 
@@ -134,10 +147,29 @@ function aplicarConfiguracionEstilos() {
     echo "    font-family: $font_family !important;\n";
     echo "  }\n";
     
-    // Sobreescrituras de tamaño de fuente
-    echo "  body, .main-content, .sidebar, input, select, button, table, td, th {\n";
-    echo "    font-size: $font_size !important;\n";
-    echo "  }\n";
+    // Jerarquía de tamaños de fuente
+    if ($escalaActual) {
+        $h1_size = $escalaActual['titulos']['h1'] ?? '22px';
+        $h2_size = $escalaActual['titulos']['h2'] ?? '18px';
+        $h3_size = $escalaActual['titulos']['h3'] ?? '16px';
+        $sub_size = $escalaActual['subtitulos'] ?? '14px';
+        $p_size = $escalaActual['parrafos'] ?? '13px';
+        $th_size = $escalaActual['tablas']['th'] ?? '12px';
+        $td_size = $escalaActual['tablas']['td'] ?? '13px';
+        $detail_size = $escalaActual['detalles'] ?? '11px';
+        $input_size = $escalaActual['inputs_botones'] ?? '13px';
+
+        echo "  /* JERARQUÍA TIPOGRÁFICA (Títulos, Subtítulos, Párrafos, Tablas) */\n";
+        echo "  h1, .page-header-title h1 { font-size: $h1_size !important; }\n";
+        echo "  h2, .stat-box-card h2, .chart-panel-card h2 { font-size: $h2_size !important; }\n";
+        echo "  h3, .config-info h3, .stat-title, .card-header h2 { font-size: $h3_size !important; }\n";
+        echo "  .header-subtitle, .card-subtitle, .stat-desc, .config-info p { font-size: $sub_size !important; }\n";
+        echo "  body, .main-content, p, .sidebar-link-card span { font-size: $p_size !important; }\n";
+        echo "  table th { font-size: $th_size !important; }\n";
+        echo "  table td { font-size: $td_size !important; }\n";
+        echo "  .status-badge, .payment-method-tag, .pagination-info, label, .card-subtext { font-size: $detail_size !important; }\n";
+        echo "  input, select, .btn-primary, .btn-secondary, button:not(.action-icon-btn) { font-size: $input_size !important; }\n";
+    }
 
     if ($modo_oscuro === 1) {
         echo "  /* MODO OSCURO GLOBAL OVERRIDES */\n";

@@ -1,0 +1,118 @@
+{
+    "estandar_inicial": {
+        "descripcion": "Estándar inicial por defecto para títulos, subtítulos y párrafos",
+        "titulos": {
+            "h1": "22px",
+            "h2": "18px",
+            "h3": "16px",
+            "line_height": "1.3",
+            "font_weight": "700"
+        },
+        "subtitulos": {
+            "font_size": "14px",
+            "line_height": "1.4",
+            "font_weight": "600"
+        },
+        "parrafos": {
+            "font_size": "13px",
+            "line_height": "1.5",
+            "font_weight": "400"
+        },
+        "tablas": {
+            "th": "12px",
+            "td": "13px",
+            "line_height": "1.4"
+        },
+        "detalles_pequenos": {
+            "font_size": "11px",
+            "line_height": "1.4"
+        }
+    },
+    "escalas_usuario": {
+        "12px": {
+            "clave": "pequeño",
+            "nombre": "Pequeño",
+            "titulos": {
+                "h1": "18px",
+                "h2": "15px",
+                "h3": "13px"
+            },
+            "subtitulos": "12px",
+            "parrafos": "11px",
+            "tablas": {
+                "th": "10.5px",
+                "td": "11px"
+            },
+            "detalles": "9.5px",
+            "inputs_botones": "11px"
+        },
+        "14px": {
+            "clave": "mediano",
+            "nombre": "Mediano (Estándar)",
+            "titulos": {
+                "h1": "22px",
+                "h2": "18px",
+                "h3": "16px"
+            },
+            "subtitulos": "14px",
+            "parrafos": "13px",
+            "tablas": {
+                "th": "12px",
+                "td": "13px"
+            },
+            "detalles": "11px",
+            "inputs_botones": "13px"
+        },
+        "16px": {
+            "clave": "grande",
+            "nombre": "Grande",
+            "titulos": {
+                "h1": "24px",
+                "h2": "20px",
+                "h3": "18px"
+            },
+            "subtitulos": "16px",
+            "parrafos": "14.5px",
+            "tablas": {
+                "th": "13.5px",
+                "td": "14.5px"
+            },
+            "detalles": "12px",
+            "inputs_botones": "14.5px"
+        },
+        "18px": {
+            "clave": "muy_grande",
+            "nombre": "Muy Grande",
+            "titulos": {
+                "h1": "26px",
+                "h2": "22px",
+                "h3": "20px"
+            },
+            "subtitulos": "18px",
+            "parrafos": "16px",
+            "tablas": {
+                "th": "15px",
+                "td": "16px"
+            },
+            "detalles": "13.5px",
+            "inputs_botones": "16px"
+        },
+        "20px": {
+            "clave": "gigante",
+            "nombre": "Gigante",
+            "titulos": {
+                "h1": "30px",
+                "h2": "25px",
+                "h3": "22px"
+            },
+            "subtitulos": "20px",
+            "parrafos": "18px",
+            "tablas": {
+                "th": "16.5px",
+                "td": "18px"
+            },
+            "detalles": "15px",
+            "inputs_botones": "18px"
+        }
+    }
+}

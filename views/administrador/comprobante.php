@@ -10,9 +10,26 @@ if (!isset($_SESSION['usuario']) || ($_SESSION['rol'] !== 'Administrador' && $_S
 require_once __DIR__ . '/../../configuration/database.php';
 
 $id_venta = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$auto_download = isset($_GET['auto']) && $_GET['auto'] == '1';
 
 if ($id_venta <= 0) {
     die("ID de venta inválido.");
+}
+
+// Cargar configuración de la empresa
+$empresaConfig = [
+    'nombre' => 'DOÑA MARINA',
+    'nit' => '123456789-1',
+    'telefono' => '3001234567',
+    'correo' => 'info@donamarina.com',
+    'direccion' => 'Calle 10 # 5-20, Barrio Central'
+];
+$empresaConfigFile = __DIR__ . '/../../configuration/empresa_config.json';
+if (file_exists($empresaConfigFile)) {
+    $loadedEmpresa = json_decode(file_get_contents($empresaConfigFile), true);
+    if (is_array($loadedEmpresa)) {
+        $empresaConfig = array_merge($empresaConfig, $loadedEmpresa);
+    }
 }
 
 // 1. Obtener datos de la venta y del cliente
@@ -57,52 +74,157 @@ if ($stmtD) {
 
 <head>
     <meta charset="UTF-8">
-    <title>Comprobante de Venta #<?= $id_venta; ?> | SIVC</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <!-- Library for client-side PDF generation and download -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprobante de Venta #<?= str_pad($id_venta, 5, '0', STR_PAD_LEFT); ?> | SIVC</title>
+    
+    <!-- Fuentes e Iconos -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <!-- Librería html2pdf.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Montserrat', sans-serif;
-            background: #ffffff;
-            color: #333;
+            background: #f1f5f9;
+            color: #1e293b;
             margin: 0;
-            padding: 30px;
+            padding: 24px 16px;
             font-size: 13px;
         }
 
-        .receipt-container {
-            max-width: 600px;
-            margin: 0 auto;
-            border: 2px dashed #dcdcdc;
-            padding: 30px;
+        /* Barra de Acciones Superior */
+        .print-btn-bar {
+            max-width: 620px;
+            margin: 0 auto 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+            padding: 12px 18px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+        }
+
+        .bar-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bar-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-action-pdf {
+            background-color: #014235;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            font-size: 12.5px;
+            font-weight: 700;
             border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action-pdf:hover {
+            background-color: #002b22;
+            transform: translateY(-1px);
+        }
+
+        .btn-action-print {
+            background-color: #6f2dbd;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            font-size: 12.5px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action-print:hover {
+            background-color: #581c87;
+            transform: translateY(-1px);
+        }
+
+        .btn-action-close {
+            background-color: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+            padding: 8px 12px;
+            font-size: 12.5px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action-close:hover {
+            background-color: #e2e8f0;
+            color: #0f172a;
+        }
+
+        /* Contenedor del Comprobante */
+        .receipt-container {
+            max-width: 620px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            padding: 36px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
         }
 
         .header {
             text-align: center;
-            border-bottom: 2px dashed #333;
+            border-bottom: 2px dashed #cbd5e1;
             padding-bottom: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 22px;
         }
 
         .header h1 {
-            margin: 0 0 5px;
-            font-size: 24px;
+            margin: 0 0 4px;
+            font-size: 22px;
             font-weight: 800;
-            color: #6f2dbd;
+            color: #014235;
+            letter-spacing: -0.5px;
         }
 
         .header p {
-            margin: 4px 0;
-            color: #666;
+            margin: 3px 0;
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 500;
         }
 
         .info-section {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 20px;
+            margin-bottom: 22px;
             line-height: 1.6;
+            gap: 20px;
         }
 
         .info-section div {
@@ -110,15 +232,26 @@ if ($stmtD) {
         }
 
         .title-accent {
-            font-weight: 700;
+            font-weight: 800;
             color: #6f2dbd;
             text-transform: uppercase;
             font-size: 11px;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
+            letter-spacing: 0.6px;
+            margin-bottom: 6px;
             display: block;
         }
 
+        .info-item-row {
+            font-size: 12px;
+            color: #334155;
+            margin-bottom: 2px;
+        }
+
+        .info-item-row strong {
+            color: #0f172a;
+        }
+
+        /* Tabla de Productos */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -127,17 +260,23 @@ if ($stmtD) {
         }
 
         th {
-            border-bottom: 2px solid #333;
-            padding: 8px;
+            background-color: #f8fafc;
+            border-top: 1.5px solid #e2e8f0;
+            border-bottom: 1.5px solid #0f172a;
+            padding: 9px 8px;
             text-align: left;
             font-weight: 700;
             font-size: 11px;
+            color: #0f172a;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         td {
             padding: 10px 8px;
-            border-bottom: 1px dashed #dcdcdc;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 12.5px;
+            color: #334155;
         }
 
         .text-right {
@@ -148,9 +287,9 @@ if ($stmtD) {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            margin-top: 20px;
-            border-top: 2px dashed #333;
-            padding-top: 15px;
+            margin-top: 15px;
+            border-top: 2px dashed #cbd5e1;
+            padding-top: 14px;
         }
 
         .totals-row {
@@ -158,59 +297,52 @@ if ($stmtD) {
             justify-content: space-between;
             width: 250px;
             margin-bottom: 6px;
-            font-size: 14px;
+            font-size: 12.5px;
+            color: #475569;
+        }
+
+        .totals-row strong {
+            color: #0f172a;
         }
 
         .totals-row.grand-total {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 800;
-            color: #6f2dbd;
-            border-top: 1px solid #333;
-            padding-top: 6px;
-            margin-top: 4px;
+            color: #014235;
+            border-top: 1.5px solid #0f172a;
+            padding-top: 8px;
+            margin-top: 6px;
+        }
+
+        .totals-row.grand-total strong {
+            color: #014235;
         }
 
         .footer {
             text-align: center;
-            margin-top: 40px;
-            color: #888;
+            margin-top: 35px;
+            padding-top: 15px;
+            border-top: 1px solid #f1f5f9;
+            color: #94a3b8;
             font-size: 11px;
-        }
-
-        .print-btn-bar {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .print-btn {
-            background-color: #6f2dbd;
-            color: #fff;
-            border: none;
-            padding: 10px 24px;
-            font-size: 14px;
-            font-weight: 700;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .print-btn:hover {
-            background-color: #531e90;
-            transform: scale(1.05);
+            line-height: 1.5;
         }
 
         @media print {
             .print-btn-bar {
-                display: none;
+                display: none !important;
             }
 
             body {
+                background: #ffffff;
                 padding: 0;
             }
 
             .receipt-container {
                 border: none;
+                box-shadow: none;
                 padding: 0;
+                max-width: 100%;
             }
         }
     </style>
@@ -218,35 +350,49 @@ if ($stmtD) {
 
 <body>
 
+    <!-- Barra Superior de Acciones -->
     <div class="print-btn-bar">
-        <button onclick="window.print();" class="print-btn">Imprimir Comprobante</button>
+        <div class="bar-title">
+            <i class="fa-solid fa-receipt" style="color: #014235;"></i> Comprobante #SIVC-<?= str_pad($id_venta, 5, '0', STR_PAD_LEFT); ?>
+        </div>
+        <div class="bar-actions">
+            <button type="button" onclick="descargarPDF()" class="btn-action-pdf" id="btnDownloadPDF">
+                <i class="fa-solid fa-download"></i> Descargar PDF
+            </button>
+            <button type="button" onclick="window.print()" class="btn-action-print">
+                <i class="fa-solid fa-print"></i> Imprimir
+            </button>
+            <button type="button" onclick="window.close()" class="btn-action-close">
+                <i class="fa-solid fa-xmark"></i> Cerrar
+            </button>
+        </div>
     </div>
 
-    <div class="receipt-container">
+    <!-- Contenido del Comprobante -->
+    <div class="receipt-container" id="receiptContainer">
         <div class="header">
-            <h1>DOÑA MARINA</h1>
-            <p>TIENDA DE BARRIO</p>
-            <p>NIT: 123456789-1</p>
-            <p>Calle 10 # 5-20, Barrio Central</p>
-            <p>Teléfono: 3001234567</p>
+            <h1><?= htmlspecialchars(strtoupper($empresaConfig['nombre'])); ?></h1>
+            <p>NIT: <?= htmlspecialchars($empresaConfig['nit']); ?></p>
+            <p><?= htmlspecialchars($empresaConfig['direccion']); ?></p>
+            <p>Tel: <?= htmlspecialchars($empresaConfig['telefono']); ?> | <?= htmlspecialchars($empresaConfig['correo']); ?></p>
         </div>
 
         <div class="info-section">
             <div>
                 <span class="title-accent">Datos de Venta</span>
-                <strong>Comprobante #:</strong> SIVC-<?= str_pad($venta['id_Venta'], 5, '0', STR_PAD_LEFT); ?><br>
-                <strong>Fecha:</strong> <?= htmlspecialchars($venta['fecha_Venta']); ?><br>
-                <strong>Método Pago:</strong> <?= htmlspecialchars($venta['metodo_Pago']); ?><br>
-                <strong>Estado:</strong> <?= htmlspecialchars($venta['estado']); ?>
+                <div class="info-item-row"><strong>N° Factura:</strong> #SIVC-<?= str_pad($venta['id_Venta'], 5, '0', STR_PAD_LEFT); ?></div>
+                <div class="info-item-row"><strong>Fecha y Hora:</strong> <?= htmlspecialchars($venta['fecha_Venta']); ?></div>
+                <div class="info-item-row"><strong>Método Pago:</strong> <?= htmlspecialchars($venta['metodo_Pago']); ?></div>
+                <div class="info-item-row"><strong>Estado:</strong> <?= htmlspecialchars($venta['estado']); ?></div>
             </div>
             <div style="text-align: right;">
                 <span class="title-accent">Cliente</span>
-                <strong>Nombre:</strong> <?= htmlspecialchars(($venta['cliente_nombre'] ?? 'General') . ' ' . ($venta['cliente_apellido'] ?? '')); ?><br>
+                <div class="info-item-row"><strong>Nombre:</strong> <?= htmlspecialchars(($venta['cliente_nombre'] ?? 'Cliente') . ' ' . ($venta['cliente_apellido'] ?? 'General')); ?></div>
                 <?php if (!empty($venta['numero_Documento'])): ?>
-                    <strong>C.C. / D.N.I.:</strong> <?= htmlspecialchars($venta['numero_Documento']); ?><br>
+                    <div class="info-item-row"><strong>Documento:</strong> <?= htmlspecialchars($venta['numero_Documento']); ?></div>
                 <?php endif; ?>
                 <?php if (!empty($venta['telefono'])): ?>
-                    <strong>Teléfono:</strong> <?= htmlspecialchars($venta['telefono']); ?><br>
+                    <div class="info-item-row"><strong>Teléfono:</strong> <?= htmlspecialchars($venta['telefono']); ?></div>
                 <?php endif; ?>
             </div>
         </div>
@@ -254,10 +400,10 @@ if ($stmtD) {
         <table>
             <thead>
                 <tr>
-                    <th>Detalle Producto</th>
-                    <th class="text-right">Cant.</th>
-                    <th class="text-right">Precio Unit.</th>
-                    <th class="text-right">Subtotal</th>
+                    <th>Producto</th>
+                    <th class="text-right" style="width: 70px;">Cant.</th>
+                    <th class="text-right" style="width: 100px;">P. Unit</th>
+                    <th class="text-right" style="width: 110px;">Subtotal</th>
                 </tr>
             </thead>
             <tbody>
@@ -265,11 +411,11 @@ if ($stmtD) {
                     <tr>
                         <td>
                             <strong><?= htmlspecialchars($det['producto_nombre']); ?></strong><br>
-                            <span style="font-size: 10px; color: #666;">Cód: <?= htmlspecialchars($det['codigo_Producto']); ?></span>
+                            <span style="font-size: 10.5px; color: #64748b;">SKU: <?= htmlspecialchars($det['codigo_Producto']); ?></span>
                         </td>
                         <td class="text-right"><?= $det['cantidad']; ?></td>
                         <td class="text-right">$<?= number_format($det['precio_Unitario'], 0, ',', '.'); ?></td>
-                        <td class="text-right">$<?= number_format($det['subtotal'], 0, ',', '.'); ?></td>
+                        <td class="text-right"><strong>$<?= number_format($det['subtotal'], 0, ',', '.'); ?></strong></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -296,41 +442,52 @@ if ($stmtD) {
 
         <div class="footer">
             <p>¡Gracias por su compra!</p>
-            <p>SIVC - Sistema de Información de Ventas y Crédito</p>
+            <p>SIVC - Sistema de Información de Ventas y Comercio</p>
         </div>
     </div>
 
-    <!-- Auto trigger PDF download on load -->
+    <!-- Lógica de Generación de PDF -->
     <script>
-        window.addEventListener('load', () => {
-            const element = document.querySelector('.receipt-container');
-            const options = {
-                margin:       10,
-                filename:     'comprobante_SIVC_<?= $id_venta; ?>.pdf',
+        function descargarPDF() {
+            const element = document.getElementById('receiptContainer');
+            const btn = document.getElementById('btnDownloadPDF');
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generando...';
+
+            const opt = {
+                margin:       [10, 10, 10, 10],
+                filename:     'comprobante_SIVC_<?= str_pad($id_venta, 5, '0', STR_PAD_LEFT); ?>.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
+                html2canvas:  { 
+                    scale: 2, 
+                    useCORS: true, 
+                    letterRendering: true,
+                    scrollY: 0
+                },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
-            
-            // Generar y descargar el PDF usando html2pdf.js
-            html2pdf().set(options).from(element).save().then(() => {
-                // Notificar a la ventana padre si está en un iframe
+
+            return html2pdf().set(opt).from(element).save().then(() => {
+                if (btn) btn.innerHTML = '<i class="fa-solid fa-check"></i> Descargado';
+                setTimeout(() => {
+                    if (btn) btn.innerHTML = '<i class="fa-solid fa-download"></i> Descargar PDF';
+                }, 3000);
+
                 if (window.parent && window.parent !== window) {
                     window.parent.postMessage('pdf_downloaded', '*');
-                } else {
-                    // Si se abrió directamente en una pestaña nueva, cerrarla tras descargar
-                    setTimeout(() => {
-                        window.close();
-                    }, 1000);
                 }
             }).catch(err => {
                 console.error('Error al generar PDF:', err);
-                // Asegurar redirección en caso de error
-                if (window.parent && window.parent !== window) {
-                    window.parent.postMessage('pdf_downloaded', '*');
-                }
+                if (btn) btn.innerHTML = '<i class="fa-solid fa-download"></i> Reintentar PDF';
             });
+        }
+
+        <?php if ($auto_download): ?>
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                descargarPDF();
+            }, 300);
         });
+        <?php endif; ?>
     </script>
 
 </body>

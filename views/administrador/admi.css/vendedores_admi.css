@@ -396,8 +396,9 @@
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(18, 14, 36, 0.45);
-    backdrop-filter: blur(4px);
+    background-color: rgba(15, 23, 42, 0.45);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
     align-items: center;
     justify-content: center;
 }
@@ -407,19 +408,19 @@
 }
 
 .modal-content {
-    background-color: var(--card-bg);
-    border: var(--border-style);
-    border-radius: var(--radius-md);
+    background-color: var(--card-bg, #ffffff);
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
     width: 90%;
-    max-width: 580px;
-    box-shadow: 0 15px 40px rgba(111, 45, 189, 0.15);
+    max-width: 560px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
     overflow: hidden;
     animation: slideDown 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 @keyframes slideDown {
     from {
-        transform: translateY(-30px);
+        transform: translateY(-25px);
         opacity: 0;
     }
     to {
@@ -429,42 +430,44 @@
 }
 
 .modal-header {
-    background-color: #f8f4fc;
-    padding: 20px 28px;
-    border-bottom: 2px solid #ebd0f0;
+    background-color: #fdf4ff;
+    padding: 18px 24px;
+    border-bottom: 1.5px solid #f5d0fe;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .modal-header h2 {
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 800;
-    color: var(--color-purple);
+    color: var(--color-purple, #6f2dbd);
     margin: 0;
+    letter-spacing: -0.2px;
 }
 
 .modal-close-btn {
     background: none;
     border: none;
-    font-size: 18px;
-    color: var(--text-muted);
+    font-size: 20px;
+    color: #94a3b8;
     cursor: pointer;
-    transition: var(--transition);
+    transition: var(--transition, all 0.2s);
+    line-height: 1;
 }
 
 .modal-close-btn:hover {
-    color: var(--color-pink);
+    color: #ec4899;
 }
 
 .modal-body {
-    padding: 28px;
+    padding: 22px 24px;
 }
 
 .modal-grid-form {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px 20px;
+    gap: 12px 18px;
 }
 
 .form-full-row {
@@ -474,77 +477,121 @@
 .form-field-group {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
 }
 
 .form-field-group label {
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 700;
-    color: var(--text-dark);
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
 }
 
-.form-field-group input, .form-field-group select {
+.form-field-group input, 
+.form-field-group select {
     width: 100%;
-    background-color: #fdfbff;
-    border: 1px solid #ebd0f0;
-    border-radius: 10px;
-    padding: 10px 14px;
+    background-color: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 9px;
+    padding: 9px 13px;
     font-family: inherit;
     font-size: 13px;
-    font-weight: 600;
-    color: var(--text-dark);
+    font-weight: 500;
+    color: #1e293b;
     outline: none;
-    transition: var(--transition);
+    transition: all 0.2s;
+    box-sizing: border-box;
 }
 
-.form-field-group input:focus, .form-field-group select:focus {
-    border-color: var(--color-purple);
+.form-field-group input:focus, 
+.form-field-group select:focus {
+    border-color: #a855f7;
     background-color: #ffffff;
-    box-shadow: 0 0 0 3px rgba(111, 45, 189, 0.08);
+    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+}
+
+/* Toggle Contraseña */
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.password-input-wrapper input {
+    padding-right: 38px;
+}
+
+.toggle-password-btn {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    transition: color 0.15s;
+}
+
+.toggle-password-btn:hover {
+    color: #a855f7;
 }
 
 .form-actions-row {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
-    margin-top: 25px;
+    margin-top: 20px;
 }
 
 .btn-modal-cancel {
-    background-color: #ffffff;
-    border: 2px solid #ebd0f0;
-    border-radius: 10px;
-    padding: 10px 22px;
-    color: var(--text-dark);
+    background-color: #fce7f3;
+    border: 1px solid #fbcfe8;
+    border-radius: 9px;
+    padding: 9px 18px;
+    color: #db2777;
     font-family: inherit;
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 700;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .btn-modal-cancel:hover {
-    border-color: var(--color-purple);
-    color: var(--color-purple);
+    background-color: #fbcfe8;
+    color: #be185d;
+    border-color: #f472b6;
+    transform: translateY(-1px);
 }
 
 .btn-modal-submit {
-    background: var(--grad-purple);
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
     border: none;
-    border-radius: 10px;
-    padding: 10px 24px;
+    border-radius: 9px;
+    padding: 9px 20px;
     color: #ffffff;
     font-family: inherit;
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(111, 45, 189, 0.2);
-    transition: var(--transition);
+    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.25);
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .btn-modal-submit:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 14px rgba(111, 45, 189, 0.3);
+    box-shadow: 0 6px 16px rgba(236, 72, 153, 0.35);
 }
 
 /* VENDEDOR DETALLE PANEL */

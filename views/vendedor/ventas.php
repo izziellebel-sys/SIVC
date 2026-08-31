@@ -608,18 +608,25 @@ if (isset($_GET['success']) && $_GET['success'] == '1') {
             }
         });
 
-        // Imprimir Comprobante usando iframe oculto para autodescarga
+        // Imprimir Comprobante usando iframe fuera de pantalla (con dimensiones de render para html2pdf)
         function imprimirComprobante(id) {
             const iframe = document.createElement('iframe');
-            iframe.src = `../administrador/comprobante.php?id=${id}`;
-            iframe.style.display = 'none';
+            iframe.src = `../administrador/comprobante.php?id=${id}&auto=1`;
+            iframe.style.position = 'fixed';
+            iframe.style.left = '-9999px';
+            iframe.style.top = '0';
+            iframe.style.width = '750px';
+            iframe.style.height = '1050px';
+            iframe.style.opacity = '0';
+            iframe.style.pointerEvents = 'none';
+            iframe.style.border = '0';
             document.body.appendChild(iframe);
         }
 
         // Escuchar el mensaje del iframe indicando que el PDF ha sido descargado
         window.addEventListener('message', (event) => {
             if (event.data === 'pdf_downloaded') {
-                window.location.href = 'ventas.php';
+                console.log('Comprobante descargado correctamente.');
             }
         });
 

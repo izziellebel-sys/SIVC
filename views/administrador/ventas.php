@@ -143,12 +143,84 @@ if ($productosResult) {
     }
 }
 
-// OBTENER VENTAS RECIENTES (Historial de 5 registros)
-$ventasRecientes = $conn->query("SELECT v.*, u.nombre as cliente_nombre, u.apellido as cliente_apellido 
-                                FROM venta v 
-                                LEFT JOIN cliente c ON v.id_Cliente = c.id_Cliente 
-                                LEFT JOIN usuarios u ON c.numero_Documento = u.numero_Documento 
-                                ORDER BY v.id_Venta DESC LIMIT 5");
+// Obtener todos los productos para el filtro
+$todosProductosResult = $conn->query("SELECT id_Producto, nombre, codigo_Producto FROM producto ORDER BY nombre ASC");
+$listaProductosFiltro = [];
+if ($todosProductosResult) {
+    while ($p = $todosProductosResult->fetch_assoc()) {
+        $listaProductosFiltro[] = $p;
+    }
+}
+
+// RECUPERAR FILTROS Y PARÁMETROS DE HISTORIAL DE VENTAS
+$filtro_producto = isset($_GET['filtro_producto']) ? (int)$_GET['filtro_producto'] : 0;
+$filtro_fecha = isset($_GET['filtro_fecha']) ? trim($_GET['filtro_fecha']) : '';
+$pagina_ventas = isset($_GET['pagina_ventas']) ? max(1, (int)$_GET['pagina_ventas']) : 1;
+$limite_ventas = 5;
+
+// CONSTRUIR CONSULTA SQL DINÁMICA CON FILTROS
+$whereVentas = [];
+$paramsVentas = [];
+$typesVentas = "";
+
+if ($filtro_producto > 0) {
+    $whereVentas[] = "v.id_Venta IN (SELECT id_Venta FROM detalle_venta WHERE id_Producto = ?)";
+    $paramsVentas[] = $filtro_producto;
+    $typesVentas .= "i";
+}
+
+if ($filtro_fecha !== '') {
+    $whereVentas[] = "DATE(v.fecha_Venta) = ?";
+    $paramsVentas[] = $filtro_fecha;
+    $typesVentas .= "s";
+}
+
+$whereVentasSql = "";
+if (count($whereVentas) > 0) {
+    $whereVentasSql = "WHERE " . implode(" AND ", $whereVentas);
+}
+
+// Contar total de ventas filtradas
+$countQueryVentas = "SELECT COUNT(*) as total FROM venta v $whereVentasSql";
+$stmtCountV = $conn->prepare($countQueryVentas);
+if ($stmtCountV) {
+    if (count($paramsVentas) > 0) {
+        $stmtCountV->bind_param($typesVentas, ...$paramsVentas);
+    }
+    $stmtCountV->execute();
+    $totalVentasFiltradas = (int)$stmtCountV->get_result()->fetch_assoc()['total'];
+    $stmtCountV->close();
+} else {
+    $totalVentasFiltradas = 0;
+}
+
+$totalPaginasVentas = max(1, (int)ceil($totalVentasFiltradas / $limite_ventas));
+if ($pagina_ventas > $totalPaginasVentas) {
+    $pagina_ventas = $totalPaginasVentas;
+}
+$offset_ventas = ($pagina_ventas - 1) * $limite_ventas;
+
+// Consultar ventas paginadas
+$sqlVentas = "SELECT v.*, u.nombre as cliente_nombre, u.apellido as cliente_apellido 
+              FROM venta v 
+              LEFT JOIN cliente c ON v.id_Cliente = c.id_Cliente 
+              LEFT JOIN usuarios u ON c.numero_Documento = u.numero_Documento 
+              $whereVentasSql 
+              ORDER BY v.id_Venta DESC 
+              LIMIT ?, ?";
+
+$stmtVentas = $conn->prepare($sqlVentas);
+$ventasRecientes = false;
+if ($stmtVentas) {
+    $execParamsVentas = $paramsVentas;
+    $execTypesVentas = $typesVentas . "ii";
+    $execParamsVentas[] = $offset_ventas;
+    $execParamsVentas[] = $limite_ventas;
+    
+    $stmtVentas->bind_param($execTypesVentas, ...$execParamsVentas);
+    $stmtVentas->execute();
+    $ventasRecientes = $stmtVentas->get_result();
+}
 ?>
 
 <!DOCTYPE html>
@@ -172,7 +244,7 @@ $ventasRecientes = $conn->query("SELECT v.*, u.nombre as cliente_nombre, u.apell
 
     <!-- CSS Dashboard & Ventas Local (Cache Busted) -->
     <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=2">
-    <link rel="stylesheet" href="admi.css/ventas_admi.css?v=4">
+    <link rel="stylesheet" href="admi.css/ventas_admi.css?v=8">
     
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -536,12 +608,52 @@ $ventasRecientes = $conn->query("SELECT v.*, u.nombre as cliente_nombre, u.apell
                 </div>
             </section>
 
-            <!-- Sales History Section (Recent 5 Sales) -->
-            <section class="table-section">
+            <!-- Sales History Section (Recent 5 Sales with Filters & Pagination) -->
+            <section class="table-section" id="historial-ventas">
                 <div class="sales-history-card">
-                    <div class="card-header">
-                        <h2>Historial de Ventas Recientes</h2>
+                    <div class="card-header-with-filters">
+                        <div class="header-title-group">
+                            <h2>Historial de Ventas Recientes</h2>
+                            <span class="header-subtitle">Listado y facturas emitidas</span>
+                        </div>
+
+                        <!-- Formulario de Filtros Estilizado -->
+                        <form action="ventas.php" method="GET" class="sales-filters-form" id="salesFiltersForm">
+                            <!-- Filtro Producto Vendido -->
+                            <div class="sales-filter-item">
+                                <label for="filtro_producto">Producto</label>
+                                <div class="sales-input-wrapper">
+                                    <i class="fa-solid fa-box input-icon-left"></i>
+                                    <select name="filtro_producto" id="filtro_producto" onchange="this.form.submit()">
+                                        <option value="0">Todos los productos</option>
+                                        <?php foreach ($listaProductosFiltro as $prod): ?>
+                                            <option value="<?= $prod['id_Producto']; ?>" <?= $filtro_producto === (int)$prod['id_Producto'] ? 'selected' : ''; ?>>
+                                                <?= htmlspecialchars($prod['nombre']); ?> (SKU: <?= htmlspecialchars($prod['codigo_Producto']); ?>)
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <i class="fa-solid fa-chevron-down select-chevron-custom"></i>
+                                </div>
+                            </div>
+
+                            <!-- Filtro Fecha -->
+                            <div class="sales-filter-item">
+                                <label for="filtro_fecha">Fecha</label>
+                                <div class="sales-input-wrapper">
+                                    <i class="fa-regular fa-calendar input-icon-left"></i>
+                                    <input type="date" name="filtro_fecha" id="filtro_fecha" value="<?= htmlspecialchars($filtro_fecha); ?>" onchange="this.form.submit()">
+                                </div>
+                            </div>
+
+                            <!-- Botón Limpiar Filtros -->
+                            <?php if ($filtro_producto > 0 || $filtro_fecha !== ''): ?>
+                                <a href="ventas.php#historial-ventas" class="btn-clear-sales-filters" title="Restablecer filtros">
+                                    <i class="fa-solid fa-rotate-left"></i> Limpiar
+                                </a>
+                            <?php endif; ?>
+                        </form>
                     </div>
+
                     <div class="table-responsive">
                         <table class="sales-history-table">
                             <thead>
@@ -552,35 +664,35 @@ $ventasRecientes = $conn->query("SELECT v.*, u.nombre as cliente_nombre, u.apell
                                     <th>Total Venta</th>
                                     <th>Método Pago</th>
                                     <th>Estado</th>
-                                    <th style="width: 100px;">Acciones</th>
+                                    <th style="width: 70px; text-align: center;">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php if ($ventasRecientes && $ventasRecientes->num_rows > 0): ?>
                                     <?php while ($v = $ventasRecientes->fetch_assoc()): ?>
                                         <tr>
-                                            <td style="font-weight: 700; color: var(--color-purple);">
+                                            <td class="sale-id-cell">
                                                 #SIVC-<?= str_pad($v['id_Venta'], 5, '0', STR_PAD_LEFT); ?>
                                             </td>
-                                            <td>
-                                                <?= htmlspecialchars(($v['cliente_nombre'] ?? 'General') . ' ' . ($v['cliente_apellido'] ?? '')); ?>
+                                            <td class="customer-cell">
+                                                <?= htmlspecialchars(($v['cliente_nombre'] ?? 'Cliente') . ' ' . ($v['cliente_apellido'] ?? 'General')); ?>
                                             </td>
-                                            <td>
+                                            <td class="date-cell">
                                                 <?= htmlspecialchars($v['fecha_Venta']); ?>
                                             </td>
-                                            <td style="font-weight: 600;">
+                                            <td class="total-cell">
                                                 $<?= number_format($v['total'], 0, ',', '.'); ?>
                                             </td>
                                             <td>
-                                                <?= htmlspecialchars($v['metodo_Pago']); ?>
+                                                <span class="payment-method-tag"><?= htmlspecialchars($v['metodo_Pago']); ?></span>
                                             </td>
                                             <td>
-                                                <span class="status-badge disponible" style="padding: 4px 10px; border-radius: 12px; font-size: 11px;">
+                                                <span class="status-badge disponible">
                                                     <?= htmlspecialchars($v['estado']); ?>
                                                 </span>
                                             </td>
-                                            <td>
-                                                <a href="comprobante.php?id=<?= $v['id_Venta']; ?>" target="_blank" class="action-icon-btn view" title="Imprimir Comprobante">
+                                            <td style="text-align: center;">
+                                                <a href="comprobante.php?id=<?= $v['id_Venta']; ?>" target="_blank" class="action-icon-btn print" title="Imprimir Comprobante">
                                                     <i class="fa-solid fa-print"></i>
                                                 </a>
                                             </td>
@@ -588,13 +700,42 @@ $ventasRecientes = $conn->query("SELECT v.*, u.nombre as cliente_nombre, u.apell
                                     <?php endwhile; ?>
                                 <?php else: ?>
                                     <tr>
-                                        <td colspan="7" style="text-align: center; padding: 30px; color: var(--text-muted);">
-                                            No se han registrado ventas aún.
+                                        <td colspan="7" class="empty-table-cell">
+                                            <i class="fa-regular fa-folder-open"></i>
+                                            <p>No se encontraron ventas con los filtros seleccionados.</p>
                                         </td>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Paginación de Ventas (5 por página) -->
+                    <div class="sales-pagination-wrapper">
+                        <div class="pagination-info">
+                            Mostrando <?= ($totalVentasFiltradas > 0) ? ($offset_ventas + 1) : 0; ?> a <?= min($offset_ventas + $limite_ventas, $totalVentasFiltradas); ?> de <?= $totalVentasFiltradas; ?> facturas
+                        </div>
+
+                        <div class="pagination-links">
+                            <!-- Anterior Button -->
+                            <a href="?filtro_producto=<?= $filtro_producto; ?>&filtro_fecha=<?= urlencode($filtro_fecha); ?>&pagina_ventas=<?= $pagina_ventas - 1; ?>#historial-ventas" 
+                               class="page-btn <?= $pagina_ventas <= 1 ? 'disabled' : ''; ?>" title="Página Anterior">
+                               <i class="fa-solid fa-chevron-left"></i>
+                            </a>
+
+                            <?php for ($i = 1; $i <= $totalPaginasVentas; $i++): ?>
+                                <a href="?filtro_producto=<?= $filtro_producto; ?>&filtro_fecha=<?= urlencode($filtro_fecha); ?>&pagina_ventas=<?= $i; ?>#historial-ventas" 
+                                   class="page-btn <?= $pagina_ventas === $i ? 'active' : ''; ?>">
+                                   <?= $i; ?>
+                                </a>
+                            <?php endfor; ?>
+
+                            <!-- Siguiente Button -->
+                            <a href="?filtro_producto=<?= $filtro_producto; ?>&filtro_fecha=<?= urlencode($filtro_fecha); ?>&pagina_ventas=<?= $pagina_ventas + 1; ?>#historial-ventas" 
+                               class="page-btn <?= $pagina_ventas >= $totalPaginasVentas ? 'disabled' : ''; ?>" title="Página Siguiente">
+                               <i class="fa-solid fa-chevron-right"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -846,22 +987,22 @@ $ventasRecientes = $conn->query("SELECT v.*, u.nombre as cliente_nombre, u.apell
         });
     </script>
 
-    <!-- Direct Auto Download via Hidden Iframe -->
-    <?php if (!empty($mensaje_exito)): ?>
-        <iframe id="print_frame" src="comprobante.php?id=<?= $venta_id_reciente; ?>" style="display:none;"></iframe>
+    <!-- Direct Auto Download via Offscreen Iframe (with real layout dimensions for html2pdf) -->
+    <?php if (!empty($mensaje_exito) && !empty($venta_id_reciente)): ?>
+        <iframe id="print_frame" src="comprobante.php?id=<?= $venta_id_reciente; ?>&auto=1" style="position: fixed; left: -9999px; top: 0; width: 750px; height: 1050px; opacity: 0; pointer-events: none; border: 0;"></iframe>
         <script>
-            // Escuchar el mensaje del iframe indicando que el PDF ha sido descargado
-            window.addEventListener('message', (event) => {
-                if (event.data === 'pdf_downloaded') {
-                    window.location.href = 'ventas.php';
-                }
+            Swal.fire({
+                icon: 'success',
+                title: '¡Venta Registrada con Éxito!',
+                html: 'La venta <strong>#SIVC-<?= str_pad($venta_id_reciente, 5, '0', STR_PAD_LEFT); ?></strong> ha sido procesada con éxito.<br><br><span style="color: #014235; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> El comprobante PDF se ha descargado correctamente.</span>',
+                confirmButtonColor: '#014235',
+                confirmButtonText: '<i class="fa-solid fa-check"></i> Aceptar'
             });
 
-            // Fallback por si hay algún problema con la red o CDN y el script del iframe no responde
-            window.addEventListener('load', () => {
-                setTimeout(() => {
-                    window.location.href = 'ventas.php';
-                }, 8000);
+            window.addEventListener('message', (event) => {
+                if (event.data === 'pdf_downloaded') {
+                    console.log('PDF comprobante descargado con éxito.');
+                }
             });
         </script>
     <?php endif; ?>

@@ -7,11 +7,10 @@ if (!isset($_SESSION['usuario']) || $_SESSION['rol'] !== 'Administrador') {
     exit();
 }
 
-require_once __DIR__ . '/../../configuration/load_config.php';
-
-$mensaje = "";
-$tipo_alerta = "";
-$titulo_alerta = "";
+// Redirigir a la vista de vendedores donde ahora se abre como modal difuminado
+header("Location: vendedores.php");
+exit();
+?>
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nombre = trim($_POST['nombre'] ?? '');

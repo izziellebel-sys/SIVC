@@ -299,7 +299,7 @@ if ($stmt) {
 
     <!-- CSS Dashboard & Vendedores Local (Cache Busted) -->
     <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=5">
-    <link rel="stylesheet" href="admi.css/vendedores_admi.css?v=6">
+    <link rel="stylesheet" href="admi.css/vendedores_admi.css?v=7">
     
     <!-- Cargar configuración dinámica de temas y fuentes -->
     <?php aplicarConfiguracionEstilos(); ?>
@@ -508,10 +508,10 @@ if ($stmt) {
                         </button>
                     </div>
 
-                    <!-- Add Seller Button (Top Right) -->
-                    <a href="crear_vendedor.php" class="btn-add-vendedor" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                    <!-- Add Seller Button (Opens Modal) -->
+                    <button type="button" class="btn-add-vendedor" onclick="abrirModalAgregar()" style="display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer;">
                         <i class="fa-solid fa-plus"></i> Agregar vendedor
-                    </a>
+                    </button>
                 </form>
             </section>
 
@@ -639,6 +639,73 @@ if ($stmt) {
     <!-- ==========================================
          MODALES DE OPERACIÓN
     =========================================== -->
+    
+    <!-- 1. MODAL: REGISTRAR VENDEDOR -->
+    <div class="modal" id="modalAgregar">
+        <div class="modal-content modal-compact">
+            <div class="modal-header">
+                <h2>Registrar Vendedor</h2>
+                <button type="button" class="modal-close-btn" onclick="cerrarModalAgregar()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form action="vendedores.php" method="POST" id="formAgregar">
+                    <input type="hidden" name="action" value="agregar">
+                    
+                    <div class="modal-grid-form">
+                        <div class="form-field-group">
+                            <label for="addNombre">Nombre *</label>
+                            <input type="text" name="nombre" id="addNombre" placeholder="Ej. Tatiana" required>
+                        </div>
+                        <div class="form-field-group">
+                            <label for="addApellido">Apellido *</label>
+                            <input type="text" name="apellido" id="addApellido" placeholder="Ej. Herrera" required>
+                        </div>
+                        <div class="form-field-group">
+                            <label for="addDocumento">Documento de Identidad *</label>
+                            <input type="text" name="documento" id="addDocumento" placeholder="N° C.C. / D.N.I." required>
+                        </div>
+                        <div class="form-field-group">
+                            <label for="addTelefono">Teléfono</label>
+                            <input type="text" name="telefono" id="addTelefono" placeholder="Ej. 3001234567">
+                        </div>
+                        <div class="form-field-group form-full-row">
+                            <label for="addCorreo">Correo Electrónico *</label>
+                            <input type="email" name="correo" id="addCorreo" placeholder="ejemplo@gmail.com" required>
+                        </div>
+                        <div class="form-field-group">
+                            <label for="addUsuario">Nombre de Usuario *</label>
+                            <input type="text" name="usuario" id="addUsuario" placeholder="Ej. Tatus23" required>
+                        </div>
+                        <div class="form-field-group">
+                            <label for="addPassword">Contraseña *</label>
+                            <div class="password-input-wrapper">
+                                <input type="password" name="contraseña" id="addPassword" placeholder="••••••••" required>
+                                <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('addPassword', this)">
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-field-group form-full-row">
+                            <label for="addEstado">Estado Inicial *</label>
+                            <select name="estado" id="addEstado" required>
+                                <option value="Activo" selected>Activo</option>
+                                <option value="Inactivo">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-actions-row">
+                        <button type="button" class="btn-modal-cancel" onclick="cerrarModalAgregar()">
+                            <i class="fa-solid fa-arrow-left"></i> Volver
+                        </button>
+                        <button type="submit" class="btn-modal-submit">
+                            <i class="fa-solid fa-user-plus"></i> Registrar Vendedor
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     
     <!-- 2. MODAL: EDITAR VENDEDOR -->
     <div class="modal" id="modalEditar">
@@ -854,8 +921,37 @@ if ($stmt) {
         sidebarClose.addEventListener('click', () => sidebar.classList.remove('open'));
 
         // Modales de Operación
+        const modalAgregar = document.getElementById('modalAgregar');
         const modalEditar = document.getElementById('modalEditar');
         const modalDetalle = document.getElementById('modalDetalle');
+
+        function abrirModalAgregar() {
+            modalAgregar.classList.add('open');
+        }
+        function cerrarModalAgregar() {
+            modalAgregar.classList.remove('open');
+            document.getElementById('formAgregar').reset();
+        }
+
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('open');
+            }
+        });
 
         function abrirModalEditar(btn) {
             document.getElementById('editId').value = btn.getAttribute('data-id');

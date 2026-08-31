@@ -154,6 +154,73 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             }
         }
+    } elseif ($action === 'agregar') {
+        $codigo = trim($_POST['codigo_Producto'] ?? '');
+        $nombre = trim($_POST['nombre'] ?? '');
+        $id_proveedor = (int)($_POST['id_Proveedor'] ?? 0);
+        $descripcion = trim($_POST['descripcion'] ?? '');
+        $precio_compra = (float)($_POST['precio_Compra'] ?? 0);
+        $precio_venta = (float)($_POST['precio_Venta'] ?? 0);
+        $stock_actual = (int)($_POST['stock_Actual'] ?? 0);
+        $stock_minimo = (int)($_POST['stock_Minimo'] ?? 0);
+        $unidad_medida = trim($_POST['unidad_Medida'] ?? '');
+        $estado = $_POST['estado'] ?? 'Activo';
+
+        if ($codigo && $nombre && $id_proveedor > 0) {
+            // Verificar duplicado de código
+            $stmtCheck = $conn->prepare("SELECT id_Producto FROM producto WHERE codigo_Producto = ?");
+            if ($stmtCheck) {
+                $stmtCheck->bind_param("s", $codigo);
+                $stmtCheck->execute();
+                $resCheck = $stmtCheck->get_result();
+
+                if ($resCheck->num_rows > 0) {
+                    $mensaje = "El código de producto ya está registrado en el sistema.";
+                    $tipo_alerta = "error";
+                    $titulo_alerta = "Duplicado";
+                } else {
+                    // Subir imagen si existe
+                    $db_image_path = null;
+                    if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == UPLOAD_ERR_OK) {
+                        $tmpName = $_FILES['imagen']['tmp_name'];
+                        $fileName = basename($_FILES['imagen']['name']);
+                        $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+                        $allowedExts = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+
+                        if (in_array($fileExt, $allowedExts)) {
+                            $newFileName = time() . '_' . uniqid() . '.' . $fileExt;
+                            $uploadDir = __DIR__ . '/../../public/uploads/productos/';
+                            if (!is_dir($uploadDir)) {
+                                mkdir($uploadDir, 0777, true);
+                            }
+                            if (move_uploaded_file($tmpName, $uploadDir . $newFileName)) {
+                                $db_image_path = '../../public/uploads/productos/' . $newFileName;
+                            }
+                        }
+                    }
+
+                    $stmtInsert = $conn->prepare("INSERT INTO producto (codigo_Producto, nombre, id_Proveedor, descripcion, precio_Compra, precio_Venta, stock_Actual, stock_Minimo, unidad_Medida, estado, imagen) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    if ($stmtInsert) {
+                        $stmtInsert->bind_param("ssisddiisss", $codigo, $nombre, $id_proveedor, $descripcion, $precio_compra, $precio_venta, $stock_actual, $stock_minimo, $unidad_medida, $estado, $db_image_path);
+                        if ($stmtInsert->execute()) {
+                            $mensaje = "El producto ha sido registrado correctamente.";
+                            $tipo_alerta = "success";
+                            $titulo_alerta = "¡Éxito!";
+                        } else {
+                            $mensaje = "Error al registrar el producto en la base de datos.";
+                            $tipo_alerta = "error";
+                            $titulo_alerta = "Error";
+                        }
+                        $stmtInsert->close();
+                    }
+                }
+                $stmtCheck->close();
+            }
+        } else {
+            $mensaje = "El código, nombre y proveedor son obligatorios.";
+            $tipo_alerta = "warning";
+            $titulo_alerta = "Campos vacíos";
+        }
     }
 }
 
@@ -330,7 +397,7 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
 
     <!-- CSS Dashboard & Inventario Local (Cache Busted) -->
     <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=2">
-    <link rel="stylesheet" href="admi.css/inventario_admi.css?v=3">
+    <link rel="stylesheet" href="admi.css/inventario_admi.css?v=4">
     <?php 
     require_once __DIR__ . '/../../configuration/load_config.php';
     aplicarConfiguracionEstilos();
@@ -559,9 +626,9 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
 
                     <!-- Add Product Button (Inside Filters Bar) -->
                     <div class="filter-btn-container">
-                        <a href="agregar_producto.php" class="btn-add-product-new">
+                        <button type="button" class="btn-add-product-new" onclick="abrirModalAgregar()">
                             <i class="fa-solid fa-plus"></i> Agregar producto
-                        </a>
+                        </button>
                     </div>
                 </form>
             </section>
@@ -722,7 +789,104 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
          MODALES DE OPERACIÓN
     =========================================== -->
 
+    <!-- 1. MODAL: REGISTRAR PRODUCTO -->
+    <div class="modal" id="modalAgregar">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Registrar Producto</h2>
+                <button class="modal-close-btn" onclick="cerrarModalAgregar()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form action="inventario.php" method="POST" enctype="multipart/form-data" id="formAgregar">
+                    <input type="hidden" name="action" value="agregar">
+                    
+                    <div class="modal-grid-form">
+                        <!-- Columna 1 -->
+                        <div class="form-field-group">
+                            <label for="addCodigo">Código *</label>
+                            <input type="text" name="codigo_Producto" id="addCodigo" placeholder="Ej. 104" required>
+                        </div>
+                        <!-- Columna 2 -->
+                        <div class="form-field-group">
+                            <label for="addNombre">Nombre del Producto *</label>
+                            <input type="text" name="nombre" id="addNombre" placeholder="Ej. Leche entera 1L" required>
+                        </div>
+                        <!-- Columna 3 -->
+                        <div class="form-field-group">
+                            <label for="addCategoria">Categoría *</label>
+                            <input type="text" name="unidad_Medida" id="addCategoria" placeholder="Ej. Lácteos" required>
+                        </div>
 
+                        <!-- Columna 1 -->
+                        <div class="form-field-group">
+                            <label for="addProveedor">Proveedor *</label>
+                            <select name="id_Proveedor" id="addProveedor" required>
+                                <option value="" disabled selected>Seleccione...</option>
+                                <?php foreach ($proveedores as $prov): ?>
+                                    <option value="<?= $prov['id_Proveedor']; ?>"><?= htmlspecialchars($prov['nombre']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <!-- Columna 2 -->
+                        <div class="form-field-group">
+                            <label for="addPrecioCompra">Precio Compra *</label>
+                            <input type="number" step="0.01" name="precio_Compra" id="addPrecioCompra" placeholder="Ej. 1800.00" required>
+                        </div>
+                        <!-- Columna 3 -->
+                        <div class="form-field-group">
+                            <label for="addPrecioVenta">Precio Venta *</label>
+                            <input type="number" step="0.01" name="precio_Venta" id="addPrecioVenta" placeholder="Ej. 2400.00" required>
+                        </div>
+
+                        <!-- Columna 1 -->
+                        <div class="form-field-group">
+                            <label for="addStock">Stock Inicial *</label>
+                            <input type="number" name="stock_Actual" id="addStock" placeholder="Ej. 30" required>
+                        </div>
+                        <!-- Columna 2 -->
+                        <div class="form-field-group">
+                            <label for="addStockMinimo">Stock Mínimo *</label>
+                            <input type="number" name="stock_Minimo" id="addStockMinimo" value="5" required>
+                        </div>
+                        <!-- Columna 3 -->
+                        <div class="form-field-group">
+                            <label for="addEstado">Estado *</label>
+                            <select name="estado" id="addEstado" required>
+                                <option value="Activo" selected>Activo</option>
+                                <option value="Inactivo">Inactivo</option>
+                            </select>
+                        </div>
+
+                        <!-- Fila 4: Subir foto con vista previa inline (Span 1) -->
+                        <div class="form-field-group">
+                            <label for="addImagen">Foto del Producto</label>
+                            <div class="photo-upload-compact">
+                                <label for="addImagen" class="btn-compact-file">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                                    <span>Subir foto</span>
+                                </label>
+                                <input type="file" name="imagen" id="addImagen" accept="image/*" onchange="previewImage(this, 'addPreview')" style="display: none;">
+                                <div class="compact-preview-box">
+                                    <img id="addPreview" src="../../public/img/tienda.png" alt="Vista previa">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fila 4: Descripción compacta (Span 2) -->
+                        <div class="form-field-group form-col-span-2">
+                            <label for="addDescripcion">Descripción</label>
+                            <textarea name="descripcion" id="addDescripcion" placeholder="Escribe una breve descripción del producto..." rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-actions-row">
+                        <button type="button" class="btn-modal-cancel" onclick="cerrarModalAgregar()">Cancelar</button>
+                        <button type="submit" class="btn-modal-submit">Registrar Producto</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- 2. MODAL: EDITAR PRODUCTO -->
     <div class="modal" id="modalEditar">
@@ -738,18 +902,23 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                     <input type="hidden" name="imagen_actual" id="editImagenActual">
                     
                     <div class="modal-grid-form">
+                        <!-- Columna 1 -->
                         <div class="form-field-group">
-                            <label for="editCodigo">Código del Producto *</label>
+                            <label for="editCodigo">Código *</label>
                             <input type="text" name="codigo_Producto" id="editCodigo" required>
                         </div>
+                        <!-- Columna 2 -->
                         <div class="form-field-group">
                             <label for="editNombre">Nombre del Producto *</label>
                             <input type="text" name="nombre" id="editNombre" required>
                         </div>
+                        <!-- Columna 3 -->
                         <div class="form-field-group">
                             <label for="editCategoria">Categoría *</label>
                             <input type="text" name="unidad_Medida" id="editCategoria" required>
                         </div>
+
+                        <!-- Columna 1 -->
                         <div class="form-field-group">
                             <label for="editProveedor">Proveedor *</label>
                             <select name="id_Proveedor" id="editProveedor" required>
@@ -758,22 +927,28 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                                 <?php endforeach; ?>
                             </select>
                         </div>
+                        <!-- Columna 2 -->
                         <div class="form-field-group">
                             <label for="editPrecioCompra">Precio Compra *</label>
                             <input type="number" step="0.01" name="precio_Compra" id="editPrecioCompra" required>
                         </div>
+                        <!-- Columna 3 -->
                         <div class="form-field-group">
                             <label for="editPrecioVenta">Precio Venta *</label>
                             <input type="number" step="0.01" name="precio_Venta" id="editPrecioVenta" required>
                         </div>
+
+                        <!-- Columna 1 -->
                         <div class="form-field-group">
                             <label for="editStock">Cantidad / Stock Actual *</label>
                             <input type="number" name="stock_Actual" id="editStock" required>
                         </div>
+                        <!-- Columna 2 -->
                         <div class="form-field-group">
                             <label for="editStockMinimo">Stock Mínimo *</label>
                             <input type="number" name="stock_Minimo" id="editStockMinimo" required>
                         </div>
+                        <!-- Columna 3 -->
                         <div class="form-field-group">
                             <label for="editEstado">Estado *</label>
                             <select name="estado" id="editEstado" required>
@@ -781,21 +956,26 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                                 <option value="Inactivo">Inactivo</option>
                             </select>
                         </div>
+
+                        <!-- Fila 4: Subir foto con vista previa inline (Span 1) -->
                         <div class="form-field-group">
                             <label for="editImagen">Subir Foto</label>
-                            <input type="file" name="imagen" id="editImagen" accept="image/*" onchange="previewImage(this, 'editPreview')">
-                        </div>
-                        <div class="form-field-group form-full-row">
-                            <div class="image-preview-container">
-                                <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Vista Previa de Imagen</span>
-                                <div class="image-preview-box">
+                            <div class="photo-upload-compact">
+                                <label for="editImagen" class="btn-compact-file">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                                    <span>Cambiar foto</span>
+                                </label>
+                                <input type="file" name="imagen" id="editImagen" accept="image/*" onchange="previewImage(this, 'editPreview')" style="display: none;">
+                                <div class="compact-preview-box">
                                     <img id="editPreview" src="../../public/img/tienda.png" alt="Vista previa">
                                 </div>
                             </div>
                         </div>
-                        <div class="form-field-group form-full-row">
+
+                        <!-- Fila 4: Descripción compacta (Span 2) -->
+                        <div class="form-field-group form-col-span-2">
                             <label for="editDescripcion">Descripción</label>
-                            <textarea name="descripcion" id="editDescripcion"></textarea>
+                            <textarea name="descripcion" id="editDescripcion" placeholder="Descripción del producto..." rows="2"></textarea>
                         </div>
                     </div>
 
@@ -810,55 +990,53 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
 
     <!-- 3. MODAL: DETALLE DEL PRODUCTO -->
     <div class="modal" id="modalDetalle">
-        <div class="modal-content" style="max-width: 550px;">
+        <div class="modal-content" style="max-width: 680px;">
             <div class="modal-header">
                 <h2>Detalle del Producto</h2>
                 <button class="modal-close-btn" onclick="cerrarModalDetalle()">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="product-profile-card">
-                    <img id="detImagen" src="../../public/img/tienda.png" alt="Imagen del producto" class="product-avatar-img">
-                    <h3 id="detNombre">Nombre Producto</h3>
-                    <span id="detEstadoBadge" class="status-badge">Disponible</span>
+                <div class="product-profile-card-compact">
+                    <img id="detImagen" src="../../public/img/tienda.png" alt="Imagen del producto" class="product-avatar-img-compact">
+                    <div class="product-profile-info-compact">
+                        <h3 id="detNombre">Nombre Producto</h3>
+                        <span id="detEstadoBadge" class="status-badge disponible">Disponible</span>
+                    </div>
                 </div>
 
-                <div class="details-grid">
-                    <div class="detail-item">
+                <div class="details-grid-compact">
+                    <div class="detail-item-compact">
                         <strong>Código</strong>
                         <span id="detCodigo">101</span>
                     </div>
-                    <div class="detail-item">
+                    <div class="detail-item-compact">
                         <strong>Categoría</strong>
                         <span id="detCategoria">Granos</span>
                     </div>
-                    <div class="detail-item">
-                        <strong>Precio Compra</strong>
-                        <span id="detPrecioCompra">$0.00</span>
-                    </div>
-                    <div class="detail-item">
-                        <strong>Precio Venta</strong>
-                        <span id="detPrecioVenta">$0.00</span>
-                    </div>
-                    <div class="detail-item">
-                        <strong>Stock Actual</strong>
-                        <span id="detStockActual">0</span>
-                    </div>
-                    <div class="detail-item">
-                        <strong>Stock Mínimo</strong>
-                        <span id="detStockMinimo">5</span>
-                    </div>
-                    <div class="detail-item form-full-row">
+                    <div class="detail-item-compact">
                         <strong>Proveedor</strong>
                         <span id="detProveedor">Proveedor Central</span>
                     </div>
-                    <div class="detail-item form-full-row">
+                    <div class="detail-item-compact">
+                        <strong>Precio Compra</strong>
+                        <span id="detPrecioCompra">$0.00</span>
+                    </div>
+                    <div class="detail-item-compact">
+                        <strong>Precio Venta</strong>
+                        <span id="detPrecioVenta">$0.00</span>
+                    </div>
+                    <div class="detail-item-compact">
+                        <strong>Stock (Actual / Mín)</strong>
+                        <span><span id="detStockActual">0</span> / <span id="detStockMinimo">5</span></span>
+                    </div>
+                    <div class="detail-item-compact form-full-row">
                         <strong>Descripción</strong>
-                        <span id="detDescripcion" style="font-weight: 500; white-space: pre-wrap;">Sin descripción</span>
+                        <span id="detDescripcion" style="font-weight: 500; font-size: 11.5px; white-space: pre-wrap;">Sin descripción</span>
                     </div>
                 </div>
 
-                <div class="form-actions-row" style="margin-top: 20px;">
-                    <button type="button" class="btn-modal-submit" onclick="cerrarModalDetalle()" style="width: 100px;">Cerrar</button>
+                <div class="form-actions-row">
+                    <button type="button" class="btn-modal-submit" onclick="cerrarModalDetalle()" style="padding: 7px 18px;">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -892,6 +1070,7 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
         sidebarClose.addEventListener('click', closeSidebar);
 
         // Modales de Operación
+        const modalAgregar = document.getElementById('modalAgregar');
         const modalEditar = document.getElementById('modalEditar');
         const modalDetalle = document.getElementById('modalDetalle');
 
@@ -915,6 +1094,16 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
         }
 
 
+
+        // Registrar Producto
+        function abrirModalAgregar() {
+            modalAgregar.classList.add('open');
+        }
+        function cerrarModalAgregar() {
+            modalAgregar.classList.remove('open');
+            document.getElementById('formAgregar').reset();
+            document.getElementById('addPreview').src = "../../public/img/tienda.png";
+        }
 
         // Editar Producto
         function abrirModalEditar(btn) {
@@ -1009,6 +1198,7 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
 
         // Cerrar modales al hacer clic fuera del contenido
         window.onclick = function(event) {
+            if (event.target == modalAgregar) cerrarModalAgregar();
             if (event.target == modalEditar) cerrarModalEditar();
             if (event.target == modalDetalle) cerrarModalDetalle();
         }
@@ -1020,6 +1210,10 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                 title: '<?= $titulo_alerta; ?>',
                 text: '<?= $mensaje; ?>',
                 confirmButtonColor: '#6f2dbd'
+            }).then(() => {
+                <?php if ($tipo_alerta === 'success'): ?>
+                    window.location.href = 'inventario.php';
+                <?php endif; ?>
             });
         <?php endif; ?>
     </script>

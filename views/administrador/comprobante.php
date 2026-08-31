@@ -2,7 +2,7 @@
 session_start();
 
 // Protección de acceso
-if (!isset($_SESSION['usuario']) || $_SESSION['rol'] !== 'Administrador') {
+if (!isset($_SESSION['usuario']) || ($_SESSION['rol'] !== 'Administrador' && $_SESSION['rol'] !== 'Vendedor')) {
     header("Location: ../login.php");
     exit();
 }
@@ -59,6 +59,8 @@ if ($stmtD) {
     <meta charset="UTF-8">
     <title>Comprobante de Venta #<?= $id_venta; ?> | SIVC</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Library for client-side PDF generation and download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
@@ -276,11 +278,15 @@ if ($stmtD) {
         <div class="totals-section">
             <div class="totals-row">
                 <span>Subtotal:</span>
-                <strong>$<?= number_format($venta['total'], 0, ',', '.'); ?></strong>
+                <strong>$<?= number_format($venta['subtotal'], 0, ',', '.'); ?></strong>
             </div>
             <div class="totals-row">
-                <span>Descuento / IVA:</span>
+                <span>Descuento:</span>
                 <strong>$0</strong>
+            </div>
+            <div class="totals-row">
+                <span>IVA (19%):</span>
+                <strong>$<?= number_format($venta['total'] - $venta['subtotal'], 0, ',', '.'); ?></strong>
             </div>
             <div class="totals-row grand-total">
                 <span>Total a Pagar:</span>
@@ -294,11 +300,36 @@ if ($stmtD) {
         </div>
     </div>
 
-    <!-- Auto trigger printing on load -->
+    <!-- Auto trigger PDF download on load -->
     <script>
         window.addEventListener('load', () => {
-            // Uncomment if you want to automatically pop up print dialog
-            // window.print();
+            const element = document.querySelector('.receipt-container');
+            const options = {
+                margin:       10,
+                filename:     'comprobante_SIVC_<?= $id_venta; ?>.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            // Generar y descargar el PDF usando html2pdf.js
+            html2pdf().set(options).from(element).save().then(() => {
+                // Notificar a la ventana padre si está en un iframe
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage('pdf_downloaded', '*');
+                } else {
+                    // Si se abrió directamente en una pestaña nueva, cerrarla tras descargar
+                    setTimeout(() => {
+                        window.close();
+                    }, 1000);
+                }
+            }).catch(err => {
+                console.error('Error al generar PDF:', err);
+                // Asegurar redirección en caso de error
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage('pdf_downloaded', '*');
+                }
+            });
         });
     </script>
 

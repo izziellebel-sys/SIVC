@@ -1,0 +1,5 @@
+{
+    "stock_bajo_limite": 5,
+    "alerta_correo": "admin@sivc.com",
+    "enviar_alertas": 0
+}

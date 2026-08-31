@@ -8,6 +8,31 @@ if (!isset($_SESSION['usuario']) || $_SESSION['rol'] !== 'Vendedor') {
 }
 
 require_once __DIR__ . '/../../configuration/load_config.php';
+$id_usuario = $_SESSION['id_Usuario'] ?? 0;
+
+// Cargar perfil del vendedor
+$sellerEmail = "vendedor@sivc.com";
+$nombreCompleto = $_SESSION['usuario'] ?? 'Vendedor';
+$resSeller = $conn->query("SELECT correo, nombre, apellido FROM usuarios WHERE id_Usuario = $id_usuario");
+if ($resSeller && $sRow = $resSeller->fetch_assoc()) {
+    $sellerEmail = $sRow['correo'];
+    $nombreCompleto = $sRow['nombre'] . ' ' . $sRow['apellido'];
+}
+
+// Obtener fecha actual en español
+$dias = [
+    1 => 'Lunes', 2 => 'Martes', 3 => 'Miércoles', 4 => 'Jueves',
+    5 => 'Viernes', 6 => 'Sábado', 7 => 'Domingo'
+];
+$meses = [
+    1 => 'enero', 2 => 'febrero', 3 => 'marzo', 4 => 'abril',
+    5 => 'mayo', 6 => 'junio', 7 => 'julio', 8 => 'agosto',
+    9 => 'septiembre', 10 => 'octubre', 11 => 'noviembre', 12 => 'diciembre'
+];
+$diaSemana = date('N');
+$mes = date('n');
+$fechaString = $dias[$diaSemana] . ', ' . date('d') . ' de ' . $meses[$mes] . ' de ' . date('Y');
+$horaString = date('h:i a');
 
 // OBTENER ESTADÍSTICAS DEL INVENTARIO GENERAL
 // 1. Total Productos
@@ -149,14 +174,16 @@ $resCategorias = $conn->query("SELECT DISTINCT unidad_Medida FROM producto ORDER
         =========================================== -->
         <aside class="sidebar" id="sidebar">
             <button class="sidebar-toggle-btn" id="sidebarClose">
-                <i class="fa-solid fa-bars"></i>
+                <i class="fa-solid fa-xmark"></i>
             </button>
 
-            <!-- Store Logo -->
+            <!-- Store Logo Section -->
             <div class="sidebar-logo-section">
-                <img src="../../public/img/tienda.png" alt="Doña Marina Logo" class="brand-logo-img">
-                <h2 class="brand-title">DOÑA MARINA</h2>
-                <span class="brand-subtitle">TIENDA DE BARRIO</span>
+                <i class="fa-solid fa-store brand-icon"></i>
+                <div class="logo-text-details">
+                    <h2 class="brand-title">SIVC</h2>
+                    <span class="brand-subtitle">Sistema de Inventario<br>y Ventas para Comercios</span>
+                </div>
             </div>
 
             <!-- Navigation Links -->
@@ -166,15 +193,14 @@ $resCategorias = $conn->query("SELECT DISTINCT unidad_Medida FROM producto ORDER
                         <i class="fa-solid fa-house"></i>
                         <span>Inicio</span>
                     </div>
-                    <span class="link-arrow">></span>
                 </a>
 
                 <a href="inventario.php" class="sidebar-link-card active">
                     <div class="link-left">
-                        <i class="fa-solid fa-basket-shopping"></i>
+                        <i class="fa-solid fa-box"></i>
                         <span>Inventario</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="ventas.php" class="sidebar-link-card">
@@ -182,7 +208,7 @@ $resCategorias = $conn->query("SELECT DISTINCT unidad_Medida FROM producto ORDER
                         <i class="fa-solid fa-cart-shopping"></i>
                         <span>Ventas</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="clientes.php" class="sidebar-link-card">
@@ -190,7 +216,7 @@ $resCategorias = $conn->query("SELECT DISTINCT unidad_Medida FROM producto ORDER
                         <i class="fa-solid fa-users"></i>
                         <span>Clientes</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
             </nav>
 
@@ -198,7 +224,7 @@ $resCategorias = $conn->query("SELECT DISTINCT unidad_Medida FROM producto ORDER
             <div class="sidebar-footer-section">
                 <a href="../../controllers/logout.php" class="sidebar-logout-btn">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                    <span>Cerrar sesion</span>
+                    <span>Cerrar sesión</span>
                 </a>
             </div>
         </aside>
@@ -213,12 +239,33 @@ $resCategorias = $conn->query("SELECT DISTINCT unidad_Medida FROM producto ORDER
             </button>
 
             <!-- Header Section -->
-            <header class="header-with-illustration">
-                <div class="welcome-header-text">
-                    <h1 style="font-size: 56px; font-weight: 800; color: #000000; margin: 0;">Stock</h1>
+            <header class="content-header">
+                <div class="header-left">
+                    <span class="welcome-label" style="font-size: 11px; font-weight: 700; color: var(--color-green); letter-spacing: 1px; text-transform: uppercase;">Módulo de Inventario</span>
+                    <h1 style="margin: 0; font-size: 32px; font-weight: 800; color: var(--text-dark);">Stock de Inventario</h1>
+                    <p style="margin: 4px 0 0 0; font-size: 14px; color: var(--text-muted); font-weight: 500;">Administra los niveles de stock físico disponibles en el local.</p>
                 </div>
-                <div class="header-illustration">
-                    <img src="../../public/img/store_shelves_illustration.jpg" alt="Illustration" class="header-illustration-img">
+                
+                <div class="header-widgets">
+                    <!-- Widget Calendario -->
+                    <div class="datetime-badge">
+                        <i class="fa-regular fa-calendar-days"></i>
+                        <div class="datetime-details">
+                            <strong><?= $fechaString; ?></strong>
+                            <span><?= $horaString; ?></span>
+                        </div>
+                    </div>
+                    <!-- Widget Perfil Vendedor -->
+                    <div class="user-profile-badge">
+                        <div class="profile-avatar">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="profile-info">
+                            <strong><?= htmlspecialchars($nombreCompleto); ?></strong>
+                            <span><?= htmlspecialchars($sellerEmail); ?></span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down profile-chevron"></i>
+                    </div>
                 </div>
             </header>
 

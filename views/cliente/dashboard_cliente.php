@@ -7,7 +7,7 @@ if (!isset($_SESSION['usuario']) || $_SESSION['rol'] !== 'Cliente') {
     exit();
 }
 
-require_once __DIR__ . '/../../configuration/database.php';
+require_once __DIR__ . '/../../configuration/load_config.php';
 
 $nombreUsuario = $_SESSION['usuario'] ?? 'Cliente';
 $rolUsuario = $_SESSION['rol'] ?? 'Cliente';
@@ -120,6 +120,9 @@ $section = $_GET['section'] ?? 'dashboard';
 
     <!-- CSS Dashboard -->
     <link rel="stylesheet" href="css/dashboard_cliente.css">
+    
+    <!-- Cargar configuración de base de datos -->
+    <?php aplicarConfiguracionEstilos(); ?>
 </head>
 
 <body>
@@ -327,7 +330,7 @@ $section = $_GET['section'] ?? 'dashboard';
                                                     </td>
                                                     <td class="text-right"><strong>$<?= number_format($compra['total'], 0, ',', '.'); ?></strong></td>
                                                     <td class="text-center">
-                                                        <a href="comprobante.php?id=<?= $compra['id_Venta']; ?>" target="_blank" class="btn-action-icon" style="color: #6f2dbd; font-size: 18px;" title="Ver Comprobante">
+                                                        <a href="comprobante.php?id=<?= $compra['id_Venta']; ?>" target="_blank" class="btn-action-icon" style="color: var(--primary-color); font-size: 18px;" title="Ver Comprobante">
                                                             <i class="fa-solid fa-file-pdf"></i>
                                                         </a>
                                                     </td>
@@ -393,7 +396,7 @@ $section = $_GET['section'] ?? 'dashboard';
                                                         </span>
                                                     </td>
                                                     <td class="text-center">
-                                                        <a href="comprobante.php?id=<?= $compra['id_Venta']; ?>" target="_blank" class="btn-action-view" style="display: inline-flex; align-items: center; gap: 5px; padding: 6px 15px; border-radius: 20px; background: #f3e5f5; color: #6f2dbd; text-decoration: none; font-size: 13px; font-weight: 600;">
+                                                         <a href="comprobante.php?id=<?= $compra['id_Venta']; ?>" target="_blank" class="btn-action-view" style="display: inline-flex; align-items: center; gap: 5px; padding: 6px 15px; border-radius: 20px; background: var(--primary-light); color: var(--primary-color); text-decoration: none; font-size: 13px; font-weight: 600;">
                                                             <i class="fa-solid fa-download"></i> Comprobante
                                                         </a>
                                                     </td>
@@ -529,9 +532,9 @@ $section = $_GET['section'] ?? 'dashboard';
                             <div style="padding: 30px;">
                                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; text-align: center;">
                                     <div style="background-color: #f9f9f9; padding: 25px; border-radius: 15px; border: 1px solid #eee;">
-                                        <i class="fa-solid fa-receipt" style="font-size: 32px; color: #6f2dbd; margin-bottom: 10px;"></i>
+                                        <i class="fa-solid fa-receipt" style="font-size: 32px; color: var(--primary-color); margin-bottom: 10px;"></i>
                                         <h3 style="margin: 0; color: #555; font-size: 14px; font-weight: 500;">Compras Realizadas</h3>
-                                        <div style="font-size: 28px; font-weight: 700; color: #6f2dbd; margin-top: 5px;"><?= $total_compras_realizadas; ?></div>
+                                        <div style="font-size: 28px; font-weight: 700; color: var(--primary-color); margin-top: 5px;"><?= $total_compras_realizadas; ?></div>
                                     </div>
 
                                     <div style="background-color: #f9f9f9; padding: 25px; border-radius: 15px; border: 1px solid #eee;">

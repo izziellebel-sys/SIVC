@@ -78,18 +78,21 @@ class VendedorModel {
         $this->db->begin_transaction();
 
         try {
-            // Calcular total de la venta
-            $total_venta = 0.00;
+            // Calcular subtotal de la venta
+            $subtotal_venta = 0.00;
             foreach ($cart_items as $item) {
-                $total_venta += (float)$item['subtotal'];
+                $subtotal_venta += (float)$item['subtotal'];
             }
+            // Calcular IVA (19%) y Total
+            $iva_venta = $subtotal_venta * 0.19;
+            $total_venta = $subtotal_venta + $iva_venta;
 
             $fecha_actual = date('Y-m-d H:i:s');
             $estado_venta = 'Completada';
 
             // 1. Insertar Cabecera de Venta
             $stmtV = $this->db->prepare("INSERT INTO venta (id_Cliente, fecha_Venta, subtotal, descuento, total, metodo_Pago, estado, id_Usuario) VALUES (?, ?, ?, 0.00, ?, ?, ?, ?)");
-            $stmtV->bind_param("isddssi", $id_cliente, $fecha_actual, $total_venta, $total_venta, $metodo_pago, $estado_venta, $id_usuario);
+            $stmtV->bind_param("isddssi", $id_cliente, $fecha_actual, $subtotal_venta, $total_venta, $metodo_pago, $estado_venta, $id_usuario);
             $stmtV->execute();
             $id_venta = $this->db->insert_id;
             $stmtV->close();

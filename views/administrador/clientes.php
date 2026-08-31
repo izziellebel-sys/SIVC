@@ -25,7 +25,7 @@ $meses = [
 ];
 $diaSemana = date('N');
 $mes = date('n');
-$fechaString = $dias[$diaSemana] . ' ' . date('d') . ' de ' . $meses[$mes];
+$fechaString = $dias[$diaSemana] . ', ' . date('d') . ' de ' . $meses[$mes] . ' de ' . date('Y');
 $horaString = date('h:i a');
 
 // PROCESAR POST ACCIONES (Agregar, Editar)
@@ -148,9 +148,14 @@ $clientesActivos = $resActivos ? (int)$resActivos->fetch_assoc()['total'] : 0;
 $resNuevos = $conn->query("SELECT COUNT(*) as total FROM cliente WHERE MONTH(fecha_Registro) = MONTH(CURRENT_DATE()) AND YEAR(fecha_Registro) = YEAR(CURRENT_DATE())");
 $nuevosMes = $resNuevos ? (int)$resNuevos->fetch_assoc()['total'] : 0;
 
+// 4. Total en compras
+$resTotalCompras = $conn->query("SELECT SUM(total) as total FROM venta WHERE estado = 'Completada'");
+$totalComprasClientes = $resTotalCompras ? (float)$resTotalCompras->fetch_assoc()['total'] : 0.0;
+
 // FILTROS Y BÚSQUEDA
 $buscar = isset($_GET['buscar']) ? trim($_GET['buscar']) : '';
 $estadoFiltro = isset($_GET['estado']) ? trim($_GET['estado']) : 'Todos';
+$grupoFiltro = isset($_GET['grupo']) ? trim($_GET['grupo']) : 'Todos';
 
 $whereClauses = [];
 $params = [];
@@ -169,6 +174,16 @@ if ($estadoFiltro !== 'Todos') {
     $whereClauses[] = "c.estado = ?";
     $params[] = $estadoFiltro;
     $types .= "s";
+}
+
+if ($grupoFiltro !== 'Todos') {
+    if ($grupoFiltro === 'VIP') {
+        $whereClauses[] = "(SELECT COUNT(*) FROM venta v WHERE v.id_Cliente = c.id_Cliente AND v.estado = 'Completada') >= 9";
+    } elseif ($grupoFiltro === 'Frecuente') {
+        $whereClauses[] = "(SELECT COUNT(*) FROM venta v WHERE v.id_Cliente = c.id_Cliente AND v.estado = 'Completada') BETWEEN 5 AND 8";
+    } elseif ($grupoFiltro === 'General') {
+        $whereClauses[] = "(SELECT COUNT(*) FROM venta v WHERE v.id_Cliente = c.id_Cliente AND v.estado = 'Completada') < 5";
+    }
 }
 
 $whereSql = "";
@@ -233,6 +248,21 @@ if ($stmt) {
     }
     $stmt->close();
 }
+
+// 4. Información del Administrador logueado
+$id_admin = $_SESSION['id_Usuario'] ?? 0;
+$adminEmail = 'admin@sivc.com';
+$nombreUsuario = 'Administrador';
+if ($id_admin > 0) {
+    $resAdmin = $conn->query("SELECT correo, nombre, apellido FROM usuarios WHERE id_Usuario = $id_admin");
+    if ($resAdmin && $rowAdmin = $resAdmin->fetch_assoc()) {
+        $adminEmail = $rowAdmin['correo'] ?? 'admin@sivc.com';
+        $nombreUsuario = trim(($rowAdmin['nombre'] ?? '') . ' ' . ($rowAdmin['apellido'] ?? ''));
+        if (empty($nombreUsuario)) {
+            $nombreUsuario = $_SESSION['usuario'] ?? 'Administrador';
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -259,7 +289,7 @@ if ($stmt) {
 
     <!-- CSS Clientes & Dashboard -->
     <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=3">
-    <link rel="stylesheet" href="admi.css/clientes_admi.css?v=4">
+    <link rel="stylesheet" href="admi.css/clientes_admi.css?v=7">
     <?php 
     require_once __DIR__ . '/../../configuration/load_config.php';
     aplicarConfiguracionEstilos();
@@ -275,14 +305,16 @@ if ($stmt) {
         =========================================== -->
         <aside class="sidebar" id="sidebar">
             <button class="sidebar-toggle-btn" id="sidebarClose">
-                <i class="fa-solid fa-bars"></i>
+                <i class="fa-solid fa-xmark"></i>
             </button>
 
-            <!-- Store Logo -->
+            <!-- Store Logo Section (Matches SIVC mockup) -->
             <div class="sidebar-logo-section">
-                <img src="../../public/img/tienda.png" alt="Doña Marina Logo" class="brand-logo-img">
-                <h2 class="brand-title">DOÑA MARINA</h2>
-                <span class="brand-subtitle">TIENDA DE BARRIO</span>
+                <i class="fa-solid fa-store brand-icon"></i>
+                <div class="logo-text-details">
+                    <h2 class="brand-title">SIVC</h2>
+                    <span class="brand-subtitle">Sistema de Inventario<br>y Ventas para Comercios</span>
+                </div>
             </div>
 
             <!-- Navigation Links -->
@@ -290,17 +322,16 @@ if ($stmt) {
                 <a href="dashboar_admi.php" class="sidebar-link-card">
                     <div class="link-left">
                         <i class="fa-solid fa-house"></i>
-                        <span>Inicio</span>
+                        <span>Dashboard</span>
                     </div>
-                    <span class="link-arrow">></span>
                 </a>
 
                 <a href="inventario.php" class="sidebar-link-card">
                     <div class="link-left">
-                        <i class="fa-solid fa-basket-shopping"></i>
+                        <i class="fa-solid fa-box"></i>
                         <span>Inventario</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="ventas.php" class="sidebar-link-card">
@@ -308,7 +339,7 @@ if ($stmt) {
                         <i class="fa-solid fa-cart-shopping"></i>
                         <span>Ventas</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="clientes.php" class="sidebar-link-card active">
@@ -316,7 +347,7 @@ if ($stmt) {
                         <i class="fa-solid fa-users"></i>
                         <span>Clientes</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="vendedores.php" class="sidebar-link-card">
@@ -324,7 +355,7 @@ if ($stmt) {
                         <i class="fa-solid fa-user-tie"></i>
                         <span>Vendedores</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="reportes.php" class="sidebar-link-card">
@@ -332,29 +363,29 @@ if ($stmt) {
                         <i class="fa-solid fa-chart-simple"></i>
                         <span>Reportes</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="configuracion.php" class="sidebar-link-card">
                     <div class="link-left">
                         <i class="fa-solid fa-gear"></i>
-                        <span>Configuracion</span>
+                        <span>Configuración</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
             </nav>
 
-            <!-- Logout -->
+            <!-- Logout Link -->
             <div class="sidebar-footer-section">
                 <a href="../../controllers/logout.php" class="sidebar-logout-btn">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                    <span>Cerrar sesion</span>
+                    <span>Cerrar sesión</span>
                 </a>
             </div>
         </aside>
 
         <!-- ==========================================
-             MAIN CONTENT
+             MAIN CONTENT (CONTENIDO PRINCIPAL)
         =========================================== -->
         <main class="main-content">
             <!-- Mobile Toggle Menu Button -->
@@ -362,13 +393,34 @@ if ($stmt) {
                 <i class="fa-solid fa-bars"></i>
             </button>
 
-            <!-- Header Section -->
-            <header class="header-with-illustration">
+            <!-- Content Header -->
+            <header class="content-header">
                 <div class="welcome-header-text">
-                    <h1 style="font-size: 56px; font-weight: 800; color: #000000; margin: 0;">Clientes</h1>
+                    <h1>Clientes</h1>
+                    <p>Administra la información de tus clientes.</p>
                 </div>
-                <div class="header-illustration">
-                    <img src="../../public/img/store_shelves_illustration.jpg" alt="Illustration" class="header-illustration-img">
+
+                <div class="header-right-widgets">
+                    <!-- Date Widget -->
+                    <div class="datetime-card">
+                        <i class="fa-regular fa-calendar"></i>
+                        <div class="datetime-details">
+                            <strong><?= htmlspecialchars($fechaString); ?></strong>
+                            <span><?= htmlspecialchars($horaString); ?></span>
+                        </div>
+                    </div>
+
+                    <!-- User Profile Dropdown -->
+                    <div class="profile-card">
+                        <div class="profile-avatar">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="profile-info">
+                            <strong><?= htmlspecialchars($nombreUsuario); ?></strong>
+                            <span><?= htmlspecialchars($adminEmail); ?></span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down profile-chevron"></i>
+                    </div>
                 </div>
             </header>
 
@@ -376,64 +428,94 @@ if ($stmt) {
             <section class="clients-stats-row">
                 <!-- Total Clientes -->
                 <div class="stat-box-card">
-                    <div class="stat-box-icon-circle" style="background-color: #ffd6ff;">
-                        <i class="fa-solid fa-users" style="color: #f72585;"></i>
+                    <div class="stat-box-icon-circle circle-green" style="background-color: #e6f7f0; color: #10b981;">
+                        <i class="fa-solid fa-users"></i>
                     </div>
                     <div class="stat-box-details">
-                        <span class="stat-name">Total Clientes</span>
+                        <span class="stat-name">Total clientes</span>
                         <span class="stat-number"><?= $totalClientes; ?></span>
-                        <span class="stat-desc">Clientes Registrados</span>
+                        <span class="stat-desc">Registrados</span>
                     </div>
                 </div>
 
                 <!-- Clientes Activos -->
                 <div class="stat-box-card">
-                    <div class="stat-box-icon-circle" style="background-color: #e2e2ff;">
-                        <i class="fa-solid fa-user-check" style="color: #3f37c9;"></i>
+                    <div class="stat-box-icon-circle circle-blue" style="background-color: #eef2ff; color: #3b82f6;">
+                        <i class="fa-solid fa-user-check"></i>
                     </div>
                     <div class="stat-box-details">
-                        <span class="stat-name">Clientes Activos</span>
+                        <span class="stat-name">Clientes activos</span>
                         <span class="stat-number"><?= $clientesActivos; ?></span>
-                        <span class="stat-desc">Han Comprado</span>
+                        <span class="stat-desc">Han comprado</span>
                     </div>
                 </div>
 
                 <!-- Nuevos este mes -->
                 <div class="stat-box-card">
-                    <div class="stat-box-icon-circle" style="background-color: #ffd8eb;">
-                        <i class="fa-solid fa-user-plus" style="color: #b5179e;"></i>
+                    <div class="stat-box-icon-circle circle-orange" style="background-color: #fff0e6; color: #f97316;">
+                        <i class="fa-solid fa-user-plus"></i>
                     </div>
                     <div class="stat-box-details">
                         <span class="stat-name">Nuevos este mes</span>
                         <span class="stat-number"><?= $nuevosMes; ?></span>
-                        <span class="stat-desc">Nuevos Clientes</span>
+                        <span class="stat-desc">Nuevos clientes</span>
+                    </div>
+                </div>
+
+                <!-- Total en compras -->
+                <div class="stat-box-card">
+                    <div class="stat-box-icon-circle circle-purple" style="background-color: #f5ebfa; color: #a855f7;">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                    <div class="stat-box-details">
+                        <span class="stat-name">Total en compras</span>
+                        <span class="stat-number">$<?= number_format($totalComprasClientes, 0, ',', '.'); ?></span>
+                        <span class="stat-desc">De todos los clientes</span>
                     </div>
                 </div>
             </section>
 
             <!-- Filters Bar -->
             <section class="filters-section">
-                <form action="clientes.php" method="GET" class="filter-bar-form" id="filtersForm">
-                    <!-- Search Input -->
-                    <div class="filter-input-group">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" name="buscar" value="<?= htmlspecialchars($buscar); ?>" placeholder="Buscar Cliente..." onchange="this.form.submit();">
+                <form action="clientes.php" method="GET" class="filter-bar-form-new" id="filtersForm">
+                    <div class="filter-controls-left">
+                        <!-- Search Input -->
+                        <div class="filter-input-group">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" name="buscar" value="<?= htmlspecialchars($buscar); ?>" placeholder="Buscar cliente..." onchange="this.form.submit();">
+                        </div>
+
+                        <!-- State Filter -->
+                        <div class="filter-select-group">
+                            <label>Estado</label>
+                            <select name="estado" onchange="this.form.submit();">
+                                <option value="Todos" <?= $estadoFiltro === 'Todos' ? 'selected' : ''; ?>>Todos</option>
+                                <option value="Activo" <?= $estadoFiltro === 'Activo' ? 'selected' : ''; ?>>Activo</option>
+                                <option value="Inactivo" <?= $estadoFiltro === 'Inactivo' ? 'selected' : ''; ?>>Inactivo</option>
+                            </select>
+                        </div>
+
+                        <!-- Group Filter -->
+                        <div class="filter-select-group">
+                            <label>Grupo</label>
+                            <select name="grupo" onchange="this.form.submit();">
+                                <option value="Todos" <?= $grupoFiltro === 'Todos' ? 'selected' : ''; ?>>Todos</option>
+                                <option value="General" <?= $grupoFiltro === 'General' ? 'selected' : ''; ?>>General</option>
+                                <option value="Frecuente" <?= $grupoFiltro === 'Frecuente' ? 'selected' : ''; ?>>Frecuente</option>
+                                <option value="VIP" <?= $grupoFiltro === 'VIP' ? 'selected' : ''; ?>>VIP</option>
+                            </select>
+                        </div>
+
+                        <!-- Clear Filters Link -->
+                        <a href="clientes.php" class="btn-clear-filters-new">
+                            <i class="fa-solid fa-filter-circle-xmark"></i> Limpiar filtros
+                        </a>
                     </div>
 
-                    <!-- State Filter -->
-                    <div class="filter-select-group">
-                        <label>Estado</label>
-                        <select name="estado" onchange="this.form.submit();">
-                            <option value="Todos" <?= $estadoFiltro === 'Todos' ? 'selected' : ''; ?>>Todos</option>
-                            <option value="Activo" <?= $estadoFiltro === 'Activo' ? 'selected' : ''; ?>>Activos</option>
-                            <option value="Inactivo" <?= $estadoFiltro === 'Inactivo' ? 'selected' : ''; ?>>Inactivos</option>
-                        </select>
-                    </div>
-
-                    <!-- Clear Filters Link -->
-                    <a href="clientes.php" class="btn-clear-filters">
-                        <i class="fa-solid fa-rotate-left"></i> Limpiar Filtros
-                    </a>
+                    <!-- Add Client Button (Mockup position: top right) -->
+                    <button type="button" class="btn-add-client-top" onclick="abrirModalAgregar()">
+                        <i class="fa-solid fa-plus"></i> Agregar cliente
+                    </button>
                 </form>
             </section>
 
@@ -445,25 +527,57 @@ if ($stmt) {
                             <tr>
                                 <th>Cliente</th>
                                 <th>Contacto</th>
+                                <th>Grupo</th>
                                 <th>Compras</th>
-                                <th>Total</th>
+                                <th>Total comprado</th>
                                 <th>Ultima Compra</th>
-                                <th>Detalle del cliente</th>
+                                <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (count($clientes) > 0): ?>
-                                <?php foreach ($clientes as $c): ?>
+                                <?php foreach ($clientes as $c): 
+                                    // Calculate dynamic group
+                                    $comprasCant = (int)$c['compras_cant'];
+                                    if ($comprasCant >= 9) {
+                                        $grupo = 'VIP';
+                                        $grupoClass = 'badge-vip';
+                                    } elseif ($comprasCant >= 5) {
+                                        $grupo = 'Frecuente';
+                                        $grupoClass = 'badge-frecuente';
+                                    } else {
+                                        $grupo = 'General';
+                                        $grupoClass = 'badge-general';
+                                    }
+
+                                    // Initials for avatar
+                                    $iniciales = strtoupper(substr($c['nombre'], 0, 1) . substr($c['apellido'], 0, 1));
+                                    
+                                    // Avatar color class based on id_Cliente
+                                    $coloresInitials = ['circle-green', 'circle-blue', 'circle-orange', 'circle-pink', 'circle-teal'];
+                                    $colorClass = $coloresInitials[$c['id_Cliente'] % count($coloresInitials)];
+                                ?>
                                     <tr>
                                         <td>
-                                            <span class="client-name-cell"><?= htmlspecialchars($c['nombre'] . ' ' . $c['apellido']); ?></span>
+                                            <div class="client-profile-cell">
+                                                <div class="client-avatar-mini <?= $colorClass; ?>">
+                                                    <?= $iniciales; ?>
+                                                </div>
+                                                <div class="client-name-details">
+                                                    <strong><?= htmlspecialchars($c['nombre'] . ' ' . $c['apellido']); ?></strong>
+                                                    <span>ID: CLI-<?= str_pad($c['id_Cliente'], 4, '0', STR_PAD_LEFT); ?></span>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td>
                                             <div class="contact-info-cell">
                                                 <span><?= htmlspecialchars($c['correo'] ?? 'Sin correo'); ?></span>
                                                 <small><?= htmlspecialchars($c['telefono'] ?? 'Sin teléfono'); ?></small>
                                             </div>
+                                        </td>
+                                        <td>
+                                            <span class="<?= $grupoClass; ?>"><?= $grupo; ?></span>
                                         </td>
                                         <td>
                                             <?= htmlspecialchars($c['compras_cant']); ?> Compras
@@ -475,12 +589,13 @@ if ($stmt) {
                                             <?= htmlspecialchars($c['ultima_compra']); ?>
                                         </td>
                                         <td>
-                                            <a href="cliente_detalle.php?id=<?= $c['id_Cliente']; ?>" class="btn-view-details">
-                                                <i class="fa-regular fa-eye"></i> Ver detalle del cliente
-                                            </a>
+                                            <span class="status-badge <?= strtolower($c['estado']); ?>"><?= htmlspecialchars($c['estado']); ?></span>
                                         </td>
                                         <td>
                                             <div class="actions-cell">
+                                                <a href="cliente_detalle.php?id=<?= $c['id_Cliente']; ?>" class="action-icon-btn view" title="Ver Detalle del Cliente">
+                                                    <i class="fa-regular fa-eye"></i>
+                                                </a>
                                                 <button class="action-icon-btn edit" title="Editar Cliente" onclick='abrirModalEditar(<?= json_encode($c); ?>)'>
                                                     <i class="fa-solid fa-pencil"></i>
                                                 </button>
@@ -493,7 +608,7 @@ if ($stmt) {
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="7" style="text-align: center; padding: 30px; color: var(--text-muted);">
+                                    <td colspan="8" style="text-align: center; padding: 30px; color: var(--text-muted);">
                                         No se encontraron clientes registrados.
                                     </td>
                                 </tr>
@@ -504,28 +619,23 @@ if ($stmt) {
             </section>
 
             <!-- Table Footer & Pagination -->
-            <section class="clients-footer-section">
-                <!-- Add Client Button -->
-                <button class="btn-add-client" onclick="abrirModalAgregar()">
-                    <i class="fa-solid fa-plus"></i> Agregar Cliente
-                </button>
-
+            <section class="clients-footer-section" style="justify-content: flex-end;">
                 <!-- Pagination -->
                 <div class="pagination-controls">
                     <div class="pagination-links">
-                        <a href="?buscar=<?= urlencode($buscar); ?>&estado=<?= urlencode($estadoFiltro); ?>&pagina=<?= $pagina - 1; ?>" 
+                        <a href="?buscar=<?= urlencode($buscar); ?>&estado=<?= urlencode($estadoFiltro); ?>&grupo=<?= urlencode($grupoFiltro); ?>&pagina=<?= $pagina - 1; ?>" 
                            class="page-btn <?= $pagina <= 1 ? 'disabled' : ''; ?>">
                            &lt;
                         </a>
 
                         <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
-                            <a href="?buscar=<?= urlencode($buscar); ?>&estado=<?= urlencode($estadoFiltro); ?>&pagina=<?= $i; ?>" 
+                            <a href="?buscar=<?= urlencode($buscar); ?>&estado=<?= urlencode($estadoFiltro); ?>&grupo=<?= urlencode($grupoFiltro); ?>&pagina=<?= $i; ?>" 
                                class="page-btn <?= $pagina === $i ? 'active' : ''; ?>">
                                <?= $i; ?>
                             </a>
                         <?php endfor; ?>
 
-                        <a href="?buscar=<?= urlencode($buscar); ?>&estado=<?= urlencode($estadoFiltro); ?>&pagina=<?= $pagina + 1; ?>" 
+                        <a href="?buscar=<?= urlencode($buscar); ?>&estado=<?= urlencode($estadoFiltro); ?>&grupo=<?= urlencode($grupoFiltro); ?>&pagina=<?= $pagina + 1; ?>" 
                            class="page-btn <?= $pagina >= $totalPaginas ? 'disabled' : ''; ?>">
                            &gt;
                         </a>

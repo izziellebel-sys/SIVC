@@ -13,6 +13,30 @@ require_once __DIR__ . '/../../models/vendedor_model.php';
 $id_usuario = $_SESSION['id_Usuario'] ?? 0;
 $nombreUsuario = $_SESSION['usuario'] ?? 'Vendedor';
 
+// Cargar perfil del vendedor
+$sellerEmail = "vendedor@sivc.com";
+$nombreCompleto = $nombreUsuario;
+$resSeller = $conn->query("SELECT correo, nombre, apellido FROM usuarios WHERE id_Usuario = $id_usuario");
+if ($resSeller && $sRow = $resSeller->fetch_assoc()) {
+    $sellerEmail = $sRow['correo'];
+    $nombreCompleto = $sRow['nombre'] . ' ' . $sRow['apellido'];
+}
+
+// Obtener fecha actual en español
+$dias = [
+    1 => 'Lunes', 2 => 'Martes', 3 => 'Miércoles', 4 => 'Jueves',
+    5 => 'Viernes', 6 => 'Sábado', 7 => 'Domingo'
+];
+$meses = [
+    1 => 'enero', 2 => 'febrero', 3 => 'marzo', 4 => 'abril',
+    5 => 'mayo', 6 => 'junio', 7 => 'julio', 8 => 'agosto',
+    9 => 'septiembre', 10 => 'octubre', 11 => 'noviembre', 12 => 'diciembre'
+];
+$diaSemana = date('N');
+$mes = date('n');
+$fechaString = $dias[$diaSemana] . ', ' . date('d') . ' de ' . $meses[$mes] . ' de ' . date('Y');
+$horaString = date('h:i a');
+
 $model = new VendedorModel();
 
 // OBTENER ESTADÍSTICAS DEL VENDEDOR ACTIVO
@@ -114,6 +138,8 @@ if (isset($_GET['success']) && $_GET['success'] == '1') {
             border-radius: 12px;
         }
     </style>
+    <!-- Cargar configuración de base de datos -->
+    <?php aplicarConfiguracionEstilos(); ?>
 </head>
 
 <body>
@@ -125,14 +151,16 @@ if (isset($_GET['success']) && $_GET['success'] == '1') {
         =========================================== -->
         <aside class="sidebar" id="sidebar">
             <button class="sidebar-toggle-btn" id="sidebarClose">
-                <i class="fa-solid fa-bars"></i>
+                <i class="fa-solid fa-xmark"></i>
             </button>
 
-            <!-- Store Logo -->
+            <!-- Store Logo Section -->
             <div class="sidebar-logo-section">
-                <img src="../../public/img/tienda.png" alt="Doña Marina Logo" class="brand-logo-img">
-                <h2 class="brand-title">DOÑA MARINA</h2>
-                <span class="brand-subtitle">TIENDA DE BARRIO</span>
+                <i class="fa-solid fa-store brand-icon"></i>
+                <div class="logo-text-details">
+                    <h2 class="brand-title">SIVC</h2>
+                    <span class="brand-subtitle">Sistema de Inventario<br>y Ventas para Comercios</span>
+                </div>
             </div>
 
             <!-- Navigation Links -->
@@ -142,15 +170,14 @@ if (isset($_GET['success']) && $_GET['success'] == '1') {
                         <i class="fa-solid fa-house"></i>
                         <span>Inicio</span>
                     </div>
-                    <span class="link-arrow">></span>
                 </a>
 
                 <a href="inventario.php" class="sidebar-link-card">
                     <div class="link-left">
-                        <i class="fa-solid fa-basket-shopping"></i>
+                        <i class="fa-solid fa-box"></i>
                         <span>Inventario</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="ventas.php" class="sidebar-link-card active">
@@ -158,7 +185,7 @@ if (isset($_GET['success']) && $_GET['success'] == '1') {
                         <i class="fa-solid fa-cart-shopping"></i>
                         <span>Ventas</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="clientes.php" class="sidebar-link-card">
@@ -166,7 +193,7 @@ if (isset($_GET['success']) && $_GET['success'] == '1') {
                         <i class="fa-solid fa-users"></i>
                         <span>Clientes</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
             </nav>
 
@@ -174,7 +201,7 @@ if (isset($_GET['success']) && $_GET['success'] == '1') {
             <div class="sidebar-footer-section">
                 <a href="../../controllers/logout.php" class="sidebar-logout-btn">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                    <span>Cerrar sesion</span>
+                    <span>Cerrar sesión</span>
                 </a>
             </div>
         </aside>
@@ -189,12 +216,33 @@ if (isset($_GET['success']) && $_GET['success'] == '1') {
             </button>
 
             <!-- Header Section -->
-            <header class="header-with-illustration">
-                <div class="welcome-header-text">
-                    <h1 style="font-size: 56px; font-weight: 800; color: #000000; margin: 0;">Ventas (POS)</h1>
+            <header class="content-header">
+                <div class="header-left">
+                    <span class="welcome-label" style="font-size: 11px; font-weight: 700; color: var(--color-green); letter-spacing: 1px; text-transform: uppercase;">Punto de Venta</span>
+                    <h1 style="margin: 0; font-size: 32px; font-weight: 800; color: var(--text-dark);">Registrar Ventas (POS)</h1>
+                    <p style="margin: 4px 0 0 0; font-size: 14px; color: var(--text-muted); font-weight: 500;">Genera nuevas boletas de venta, consulta productos y procesa pagos.</p>
                 </div>
-                <div class="header-illustration">
-                    <img src="../../public/img/store_shelves_illustration.jpg" alt="Illustration" class="header-illustration-img">
+                
+                <div class="header-widgets">
+                    <!-- Widget Calendario -->
+                    <div class="datetime-badge">
+                        <i class="fa-regular fa-calendar-days"></i>
+                        <div class="datetime-details">
+                            <strong><?= $fechaString; ?></strong>
+                            <span><?= $horaString; ?></span>
+                        </div>
+                    </div>
+                    <!-- Widget Perfil Vendedor -->
+                    <div class="user-profile-badge">
+                        <div class="profile-avatar">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="profile-info">
+                            <strong><?= htmlspecialchars($nombreCompleto); ?></strong>
+                            <span><?= htmlspecialchars($sellerEmail); ?></span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down profile-chevron"></i>
+                    </div>
                 </div>
             </header>
 
@@ -351,11 +399,15 @@ if (isset($_GET['success']) && $_GET['success'] == '1') {
                                     <span id="labelSubtotal">$0</span>
                                 </div>
                                 <div class="totals-breakdown-row">
-                                    <span>Descuento / IVA</span>
+                                    <span>Descuento</span>
                                     <span>$0</span>
                                 </div>
+                                <div class="totals-breakdown-row">
+                                    <span>IVA (19%)</span>
+                                    <span id="labelIva">$0</span>
+                                </div>
                                 <div class="totals-breakdown-row total-grand">
-                                    <span>Total</span>
+                                    <span>Total a pagar</span>
                                     <span id="labelTotal">$0</span>
                                 </div>
                             </div>
@@ -443,6 +495,7 @@ if (isset($_GET['success']) && $_GET['success'] == '1') {
         const cartTableBody = document.getElementById('cartTableBody');
         const cartEmptyRow = document.getElementById('cartEmptyRow');
         const labelSubtotal = document.getElementById('labelSubtotal');
+        const labelIva = document.getElementById('labelIva');
         const labelTotal = document.getElementById('labelTotal');
         const productosDataInput = document.getElementById('productosDataInput');
         const checkoutForm = document.getElementById('checkoutForm');
@@ -510,6 +563,7 @@ if (isset($_GET['success']) && $_GET['success'] == '1') {
             if (cart.length === 0) {
                 cartEmptyRow.style.display = '';
                 labelSubtotal.innerText = '$0';
+                labelIva.innerText = '$0';
                 labelTotal.innerText = '$0';
                 productosDataInput.value = '[]';
                 return;
@@ -537,8 +591,12 @@ if (isset($_GET['success']) && $_GET['success'] == '1') {
                 cartTableBody.appendChild(tr);
             });
 
-            labelSubtotal.innerText = '$' + grandTotal.toLocaleString('es-CO');
-            labelTotal.innerText = '$' + grandTotal.toLocaleString('es-CO');
+            const iva = grandTotal * 0.19;
+            const total = grandTotal + iva;
+
+            labelSubtotal.innerText = '$' + grandTotal.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            labelIva.innerText = '$' + iva.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            labelTotal.innerText = '$' + total.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
             productosDataInput.value = JSON.stringify(cart);
         }
 
@@ -550,12 +608,20 @@ if (isset($_GET['success']) && $_GET['success'] == '1') {
             }
         });
 
-        // Imprimir Comprobante
+        // Imprimir Comprobante usando iframe oculto para autodescarga
         function imprimirComprobante(id) {
-            const url = `../administrador/comprobante.php?id=${id}`;
-            const win = window.open(url, '_blank');
-            win.focus();
+            const iframe = document.createElement('iframe');
+            iframe.src = `../administrador/comprobante.php?id=${id}`;
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
         }
+
+        // Escuchar el mensaje del iframe indicando que el PDF ha sido descargado
+        window.addEventListener('message', (event) => {
+            if (event.data === 'pdf_downloaded') {
+                window.location.href = 'ventas.php';
+            }
+        });
 
         // SweetAlert de alertas GET
         <?php if ($alerta_msg !== ''): ?>
@@ -567,9 +633,13 @@ if (isset($_GET['success']) && $_GET['success'] == '1') {
             }).then(() => {
                 <?php if ($venta_imprimir_id > 0): ?>
                     imprimirComprobante(<?= $venta_imprimir_id; ?>);
+                    // Fallback de redirección
+                    setTimeout(() => {
+                        window.location.href = 'ventas.php';
+                    }, 8000);
+                <?php else: ?>
+                    window.location.href = 'ventas.php';
                 <?php endif; ?>
-                // Limpiar query string
-                window.location.href = 'ventas.php';
             });
         <?php endif; ?>
     </script>

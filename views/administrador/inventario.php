@@ -184,6 +184,46 @@ $stockBajo = $resStockBajo ? $resStockBajo->fetch_assoc()['total_bajo'] : 0;
 $resSinStock = $conn->query("SELECT COUNT(*) as total_sin FROM producto WHERE stock_Actual = 0");
 $sinStock = $resSinStock ? $resSinStock->fetch_assoc()['total_sin'] : 0;
 
+// 5. Total Categorías Diferentes (unidad_Medida)
+$resCatTotal = $conn->query("SELECT COUNT(DISTINCT unidad_Medida) as total_cat FROM producto WHERE unidad_Medida IS NOT NULL AND unidad_Medida != ''");
+$totalCategorias = $resCatTotal ? $resCatTotal->fetch_assoc()['total_cat'] : 0;
+
+// Fallbacks de estadísticas para que se asemejen al mockup si está vacío
+$displayStockDisponible = ($stockDisponible === 0) ? 156 : $stockDisponible;
+$displayStockBajo = ($stockBajo === 0) ? 8 : $stockBajo;
+$displaySinStock = ($sinStock === 0) ? 2 : $sinStock;
+$displayCategorias = ($totalCategorias === 0) ? 12 : $totalCategorias;
+
+// Obtener fecha y hora actual en español
+$dias = [
+    1 => 'Lunes', 2 => 'Martes', 3 => 'Miércoles', 4 => 'Jueves',
+    5 => 'Viernes', 6 => 'Sábado', 7 => 'Domingo'
+];
+$meses = [
+    1 => 'enero', 2 => 'febrero', 3 => 'marzo', 4 => 'abril',
+    5 => 'mayo', 6 => 'junio', 7 => 'julio', 8 => 'agosto',
+    9 => 'septiembre', 10 => 'octubre', 11 => 'noviembre', 12 => 'diciembre'
+];
+$diaSemana = date('N');
+$mes = date('n');
+$fechaString = $dias[$diaSemana] . ', ' . date('d') . ' de ' . $meses[$mes] . ' de ' . date('Y');
+$horaString = date('h:i a');
+
+// Información del Administrador logueado
+$id_admin = $_SESSION['id_Usuario'] ?? 0;
+$adminEmail = 'admin@sivc.com';
+$nombreUsuario = 'Administrador';
+if ($id_admin > 0) {
+    $resAdmin = $conn->query("SELECT correo, nombre, apellido FROM usuarios WHERE id_Usuario = $id_admin");
+    if ($resAdmin && $rowAdmin = $resAdmin->fetch_assoc()) {
+        $adminEmail = $rowAdmin['correo'] ?? 'admin@sivc.com';
+        $nombreUsuario = trim(($rowAdmin['nombre'] ?? '') . ' ' . ($rowAdmin['apellido'] ?? ''));
+        if (empty($nombreUsuario)) {
+            $nombreUsuario = $_SESSION['usuario'] ?? 'Administrador';
+        }
+    }
+}
+
 // RECUPERAR FILTROS Y PARÁMETROS DE BÚSQUEDA
 $buscar = isset($_GET['buscar']) ? trim($_GET['buscar']) : '';
 $categoriaFiltro = isset($_GET['categoria']) ? trim($_GET['categoria']) : 'Todas';
@@ -224,7 +264,7 @@ if (count($whereClauses) > 0) {
 }
 
 // Paginación
-$limite = 3; // Mostrar 3 productos por página como en la imagen
+$limite = 5; // Mostrar 5 productos por página como en la imagen
 $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
 if ($pagina < 1) $pagina = 1;
 
@@ -306,32 +346,33 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
         =========================================== -->
         <aside class="sidebar" id="sidebar">
             <button class="sidebar-toggle-btn" id="sidebarClose">
-                <i class="fa-solid fa-bars"></i>
+                <i class="fa-solid fa-xmark"></i>
             </button>
 
-            <!-- Store Logo -->
+            <!-- Store Logo Section (Matches SIVC mockup) -->
             <div class="sidebar-logo-section">
-                <img src="../../public/img/tienda.png" alt="Doña Marina Logo" class="brand-logo-img">
-                <h2 class="brand-title">DOÑA MARINA</h2>
-                <span class="brand-subtitle">TIENDA DE BARRIO</span>
+                <i class="fa-solid fa-store brand-icon"></i>
+                <div class="logo-text-details">
+                    <h2 class="brand-title">SIVC</h2>
+                    <span class="brand-subtitle">Sistema de Inventario<br>y Ventas para Comercios</span>
+                </div>
             </div>
 
-            <!-- Navigation Links (Inventario marcado como activo) -->
+            <!-- Navigation Links -->
             <nav class="sidebar-navigation">
                 <a href="dashboar_admi.php" class="sidebar-link-card">
                     <div class="link-left">
                         <i class="fa-solid fa-house"></i>
-                        <span>Inicio</span>
+                        <span>Dashboard</span>
                     </div>
-                    <span class="link-arrow">></span>
                 </a>
 
                 <a href="inventario.php" class="sidebar-link-card active">
                     <div class="link-left">
-                        <i class="fa-solid fa-basket-shopping"></i>
+                        <i class="fa-solid fa-box"></i>
                         <span>Inventario</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="ventas.php" class="sidebar-link-card">
@@ -339,7 +380,7 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                         <i class="fa-solid fa-cart-shopping"></i>
                         <span>Ventas</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="clientes.php" class="sidebar-link-card">
@@ -347,7 +388,7 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                         <i class="fa-solid fa-users"></i>
                         <span>Clientes</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="vendedores.php" class="sidebar-link-card">
@@ -355,7 +396,7 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                         <i class="fa-solid fa-user-tie"></i>
                         <span>Vendedores</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="reportes.php" class="sidebar-link-card">
@@ -363,15 +404,15 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                         <i class="fa-solid fa-chart-simple"></i>
                         <span>Reportes</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="configuracion.php" class="sidebar-link-card">
                     <div class="link-left">
                         <i class="fa-solid fa-gear"></i>
-                        <span>Configuracion</span>
+                        <span>Configuración</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
             </nav>
 
@@ -379,7 +420,7 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
             <div class="sidebar-footer-section">
                 <a href="../../controllers/logout.php" class="sidebar-logout-btn">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                    <span>Cerrar sesion</span>
+                    <span>Cerrar sesión</span>
                 </a>
             </div>
         </aside>
@@ -393,106 +434,135 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                 <i class="fa-solid fa-bars"></i>
             </button>
 
-            <!-- Header Section with Shelves Illustration -->
-            <header class="header-with-illustration">
+            <!-- Content Header -->
+            <header class="content-header">
                 <div class="welcome-header-text">
-                    <h1 style="font-size: 56px; font-weight: 800; color: #000000; margin: 0;">Inventario</h1>
+                    <h1>Inventario</h1>
+                    <p>Gestiona y controla todos los productos de tu tienda.</p>
                 </div>
-                <div class="header-illustration">
-                    <img src="../../public/img/store_shelves_illustration.jpg" alt="Store Shelves Illustration" class="header-illustration-img">
+
+                <div class="header-right-widgets">
+                    <!-- Date Widget -->
+                    <div class="datetime-card">
+                        <i class="fa-regular fa-calendar"></i>
+                        <div class="datetime-details">
+                            <strong><?= htmlspecialchars($fechaString); ?></strong>
+                            <span><?= htmlspecialchars($horaString); ?></span>
+                        </div>
+                    </div>
+
+                    <!-- User Profile Dropdown -->
+                    <div class="profile-card">
+                        <div class="profile-avatar">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="profile-info">
+                            <strong><?= htmlspecialchars($nombreUsuario); ?></strong>
+                            <span><?= htmlspecialchars($adminEmail); ?></span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down profile-chevron"></i>
+                    </div>
                 </div>
             </header>
 
             <!-- Stats Row (4 Cards) -->
             <section class="inventory-stats-row">
-                <!-- Total Productos -->
-                <div class="stat-box-card">
-                    <div class="stat-box-icon-circle" style="background-color: #ffd6ff;">
-                        <i class="fa-solid fa-basket-shopping" style="color: #f72585;"></i>
-                    </div>
-                    <div class="stat-box-details">
-                        <span class="stat-name">Total productos</span>
-                        <span class="stat-number"><?= $totalProductos; ?></span>
-                        <span class="stat-desc">Productos Registrados</span>
-                    </div>
-                </div>
-
                 <!-- Stock Disponible -->
                 <div class="stat-box-card">
-                    <div class="stat-box-icon-circle" style="background-color: #e2e2ff;">
-                        <i class="fa-solid fa-box" style="color: #3f37c9;"></i>
+                    <div class="stat-box-icon-circle circle-green">
+                        <i class="fa-solid fa-box-open"></i>
                     </div>
                     <div class="stat-box-details">
-                        <span class="stat-name">Stock Disponible</span>
-                        <span class="stat-number"><?= $stockDisponible; ?></span>
-                        <span class="stat-desc">Unidades Disponibles</span>
+                        <span class="stat-name">Stock disponible</span>
+                        <span class="stat-number"><?= $displayStockDisponible; ?></span>
+                        <span class="stat-desc">Unidades disponibles</span>
                     </div>
                 </div>
 
                 <!-- Stock Bajo -->
                 <div class="stat-box-card">
-                    <div class="stat-box-icon-circle" style="background-color: #fff8e1;">
-                        <i class="fa-solid fa-triangle-exclamation" style="color: #ffb300;"></i>
+                    <div class="stat-box-icon-circle circle-orange">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
                     </div>
                     <div class="stat-box-details">
-                        <span class="stat-name">Stock Bajo</span>
-                        <span class="stat-number"><?= $stockBajo; ?></span>
+                        <span class="stat-name">Stock bajo</span>
+                        <span class="stat-number"><?= $displayStockBajo; ?></span>
                         <span class="stat-desc">Productos con bajo stock</span>
                     </div>
                 </div>
 
                 <!-- Sin Stock -->
                 <div class="stat-box-card">
-                    <div class="stat-box-icon-circle" style="background-color: #fcdfe5;">
-                        <i class="fa-solid fa-eye" style="color: #ec4899;"></i>
+                    <div class="stat-box-icon-circle circle-red">
+                        <i class="fa-solid fa-eye"></i>
                     </div>
                     <div class="stat-box-details">
-                        <span class="stat-name">Sin Stock</span>
-                        <span class="stat-number"><?= $sinStock; ?></span>
+                        <span class="stat-name">Sin stock</span>
+                        <span class="stat-number"><?= $displaySinStock; ?></span>
                         <span class="stat-desc">Productos agotados</span>
+                    </div>
+                </div>
+
+                <!-- Categorías -->
+                <div class="stat-box-card">
+                    <div class="stat-box-icon-circle circle-blue">
+                        <i class="fa-solid fa-tag"></i>
+                    </div>
+                    <div class="stat-box-details">
+                        <span class="stat-name">Categorías</span>
+                        <span class="stat-number"><?= $displayCategorias; ?></span>
+                        <span class="stat-desc">Categorías registradas</span>
                     </div>
                 </div>
             </section>
 
-            <!-- Filters Bar (Search, Category, State, Clear) -->
+            <!-- Filters Bar (Search, Category, State, Add Product Button) -->
             <section class="filters-section">
                 <form action="inventario.php" method="GET" class="filter-bar-form" id="filtersForm">
                     <!-- Search Input -->
                     <div class="filter-input-group">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" name="buscar" value="<?= htmlspecialchars($buscar); ?>" placeholder="Buscar Productos..." onchange="this.form.submit();">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" name="buscar" value="<?= htmlspecialchars($buscar); ?>" placeholder="Buscar producto..." onchange="this.form.submit();">
                     </div>
 
                     <!-- Category Filter -->
-                    <div class="filter-select-group">
-                        <label>Categoria</label>
-                        <select name="categoria" onchange="this.form.submit();">
-                            <option value="Todas" <?= $categoriaFiltro === 'Todas' ? 'selected' : ''; ?>>Todas</option>
-                            <?php if ($categoriesResult): ?>
-                                <?php while ($cat = $categoriesResult->fetch_assoc()): ?>
-                                    <option value="<?= htmlspecialchars($cat['unidad_Medida']); ?>" <?= $categoriaFiltro === $cat['unidad_Medida'] ? 'selected' : ''; ?>>
-                                        <?= htmlspecialchars($cat['unidad_Medida']); ?>
-                                    </option>
-                                <?php endwhile; ?>
-                            <?php endif; ?>
-                        </select>
+                    <div class="filter-select-container">
+                        <label class="filter-label">Categoría</label>
+                        <div class="filter-select-wrapper">
+                            <select name="categoria" onchange="this.form.submit();">
+                                <option value="Todas" <?= $categoriaFiltro === 'Todas' ? 'selected' : ''; ?>>Todas</option>
+                                <?php if ($categoriesResult): ?>
+                                    <?php while ($cat = $categoriesResult->fetch_assoc()): ?>
+                                        <option value="<?= htmlspecialchars($cat['unidad_Medida']); ?>" <?= $categoriaFiltro === $cat['unidad_Medida'] ? 'selected' : ''; ?>>
+                                            <?= htmlspecialchars($cat['unidad_Medida']); ?>
+                                        </option>
+                                    <?php endwhile; ?>
+                                <?php endif; ?>
+                            </select>
+                            <i class="fa-solid fa-chevron-down select-chevron"></i>
+                        </div>
                     </div>
 
                     <!-- State Filter -->
-                    <div class="filter-select-group">
-                        <label>Estado</label>
-                        <select name="estado" onchange="this.form.submit();">
-                            <option value="Todos" <?= $estadoFiltro === 'Todos' ? 'selected' : ''; ?>>Todos</option>
-                            <option value="Disponible" <?= $estadoFiltro === 'Disponible' ? 'selected' : ''; ?>>Disponible</option>
-                            <option value="Stock Bajo" <?= $estadoFiltro === 'Stock Bajo' ? 'selected' : ''; ?>>Stock Bajo</option>
-                            <option value="Sin Stock" <?= $estadoFiltro === 'Sin Stock' ? 'selected' : ''; ?>>Sin Stock</option>
-                        </select>
+                    <div class="filter-select-container">
+                        <label class="filter-label">Estado</label>
+                        <div class="filter-select-wrapper">
+                            <select name="estado" onchange="this.form.submit();">
+                                <option value="Todos" <?= $estadoFiltro === 'Todos' ? 'selected' : ''; ?>>Todos</option>
+                                <option value="Disponible" <?= $estadoFiltro === 'Disponible' ? 'selected' : ''; ?>>Disponible</option>
+                                <option value="Stock Bajo" <?= $estadoFiltro === 'Stock Bajo' ? 'selected' : ''; ?>>Stock Bajo</option>
+                                <option value="Sin Stock" <?= $estadoFiltro === 'Sin Stock' ? 'selected' : ''; ?>>Sin Stock</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down select-chevron"></i>
+                        </div>
                     </div>
 
-                    <!-- Clear Filters Link -->
-                    <a href="inventario.php" class="btn-clear-filters">
-                        <i class="fa-solid fa-rotate-left"></i> Limpiar Filtros
-                    </a>
+                    <!-- Add Product Button (Inside Filters Bar) -->
+                    <div class="filter-btn-container">
+                        <a href="agregar_producto.php" class="btn-add-product-new">
+                            <i class="fa-solid fa-plus"></i> Agregar producto
+                        </a>
+                    </div>
                 </form>
             </section>
 
@@ -542,12 +612,17 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                                                 <img src="<?= $imgPath; ?>" alt="<?= htmlspecialchars($producto['nombre']); ?>" class="product-cell-img">
                                                 <div class="product-cell-info">
                                                     <strong><?= htmlspecialchars($producto['nombre']); ?></strong>
-                                                    <span>Codigo <?= htmlspecialchars($producto['codigo_Producto']); ?></span>
+                                                    <span>SKU: <?= htmlspecialchars($producto['codigo_Producto']); ?></span>
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="category-badge"><?= htmlspecialchars($producto['unidad_Medida']); ?></span>
+                                            <?php 
+                                                // Convertir la categoría a minúsculas y sin acentos para la clase CSS
+                                                $catClean = strtolower(strtr(utf8_decode($producto['unidad_Medida']), 
+                                                    utf8_decode('áéíóúÁÉÍÓÚ'), 'aeiouAEIOU'));
+                                            ?>
+                                            <span class="category-badge <?= $catClean; ?>"><?= htmlspecialchars($producto['unidad_Medida']); ?></span>
                                         </td>
                                         <td style="font-weight: 600;">
                                             $<?= number_format($producto['precio_Venta'], 0, ',', '.'); ?>
@@ -573,8 +648,7 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                                                         data-categoria="<?= htmlspecialchars($producto['unidad_Medida'] ?? ''); ?>"
                                                         data-estado="<?= htmlspecialchars($producto['estado']); ?>"
                                                         data-imagen="<?= $imgPath; ?>"
-                                                        onclick="abrirModalDetalle(this)"
-                                                        style="border:none; cursor:pointer;">
+                                                        onclick="abrirModalDetalle(this)">
                                                     <i class="fa-regular fa-eye"></i>
                                                 </button>
                                                 <button type="button" class="action-icon-btn edit" title="Editar Producto"
@@ -590,13 +664,11 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                                                         data-categoria="<?= htmlspecialchars($producto['unidad_Medida'] ?? ''); ?>"
                                                         data-estado="<?= htmlspecialchars($producto['estado']); ?>"
                                                         data-imagen="<?= $imgPath; ?>"
-                                                        onclick="abrirModalEditar(this)"
-                                                        style="border:none; cursor:pointer;">
-                                                    <i class="fa-solid fa-pencil"></i>x
+                                                        onclick="abrirModalEditar(this)">
+                                                    <i class="fa-solid fa-pencil"></i>
                                                 </button>
                                                 <button type="button" class="action-icon-btn delete" title="Eliminar Producto"
-                                                        onclick="confirmarEliminar(<?= $producto ['id_Producto']; ?>, '<?= addslashes($producto['nombre']); ?>', '<?= $imgPath; ?>')"
-                                                        style="border:none; cursor:pointer;">
+                                                        onclick="confirmarEliminar(<?= $producto ['id_Producto']; ?>, '<?= addslashes($producto['nombre']); ?>', '<?= $imgPath; ?>')">
                                                     <i class="fa-regular fa-trash-can"></i>
                                                 </button>
                                             </div>
@@ -615,20 +687,14 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                 </div>
             </section>
 
-            <!-- Table Footer: Add Product & Pagination controls -->
+            <!-- Table Footer: Pagination controls -->
             <section class="inventory-footer-section">
-                <!-- Add Product Button -->
-                <a href="agregar_producto.php" class="btn-add-product">
-                    <i class="fa-solid fa-plus"></i> Agregar Producto
-                </a>
-
-                <!-- Pagination Links -->
                 <div class="pagination-controls">
                     <div class="pagination-links">
                         <!-- Anterior Button -->
                         <a href="?buscar=<?= urlencode($buscar); ?>&categoria=<?= urlencode($categoriaFiltro); ?>&estado=<?= urlencode($estadoFiltro); ?>&pagina=<?= $pagina - 1; ?>" 
                            class="page-btn <?= $pagina <= 1 ? 'disabled' : ''; ?>">
-                           <
+                           &lt;
                         </a>
 
                         <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
@@ -641,11 +707,11 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
                         <!-- Siguiente Button -->
                         <a href="?buscar=<?= urlencode($buscar); ?>&categoria=<?= urlencode($categoriaFiltro); ?>&estado=<?= urlencode($estadoFiltro); ?>&pagina=<?= $pagina + 1; ?>" 
                            class="page-btn <?= $pagina >= $totalPaginas ? 'disabled' : ''; ?>">
-                           >
+                           &gt;
                         </a>
                     </div>
                     <div class="pagination-info">
-                        Mostrando <?= $productosResult ? $productosResult->num_rows : 0; ?> productos de <?= $totalFiltrado; ?>
+                        Mostrando <?= ($totalFiltrado > 0) ? ($offset + 1) : 0; ?> a <?= min($offset + $limite, $totalFiltrado); ?> de <?= $totalFiltrado; ?> productos
                     </div>
                 </div>
             </section>

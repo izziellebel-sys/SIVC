@@ -9,10 +9,31 @@ if (!isset($_SESSION['usuario']) || $_SESSION['rol'] !== 'Administrador') {
 
 require_once __DIR__ . '/../../configuration/load_config.php';
 
+// OBTENER FECHA ACTUAL EN ESPAÑOL
+$dias = [
+    1 => 'Lunes', 2 => 'Martes', 3 => 'Miércoles', 4 => 'Jueves',
+    5 => 'Viernes', 6 => 'Sábado', 7 => 'Domingo'
+];
+$meses = [
+    1 => 'enero', 2 => 'febrero', 3 => 'marzo', 4 => 'abril',
+    5 => 'mayo', 6 => 'junio', 7 => 'julio', 8 => 'agosto',
+    9 => 'septiembre', 10 => 'octubre', 11 => 'noviembre', 12 => 'diciembre'
+];
+$diaSemana = date('N');
+$mes = date('n');
+$fechaString = $dias[$diaSemana] . ', ' . date('d') . ' de ' . $meses[$mes] . ' de ' . date('Y');
+$horaString = date('h:i a');
+
 // Obtener info del administrador logueado para mostrar en el modal del ojo
 $id_admin_logueado = $_SESSION['id_Usuario'] ?? 0;
 $resAdminLogueado = $conn->query("SELECT * FROM usuarios WHERE id_Usuario = $id_admin_logueado");
 $adminLogueadoInfo = $resAdminLogueado ? $resAdminLogueado->fetch_assoc() : null;
+
+$adminEmail = $adminLogueadoInfo['correo'] ?? 'admin@sivc.com';
+$nombreUsuario = trim(($adminLogueadoInfo['nombre'] ?? '') . ' ' . ($adminLogueadoInfo['apellido'] ?? ''));
+if (empty($nombreUsuario)) {
+    $nombreUsuario = $_SESSION['usuario'] ?? 'Administrador';
+}
 
 $mensaje = "";
 $tipo_alerta = "";
@@ -170,6 +191,11 @@ $vendedoresActivos = $resActivos ? (int)$resActivos->fetch_assoc()['total'] : 0;
 $resNuevos = $conn->query("SELECT COUNT(*) as total FROM usuarios WHERE id_Rol = 2 AND MONTH(fecha_Registro) = MONTH(CURRENT_DATE()) AND YEAR(fecha_Registro) = YEAR(CURRENT_DATE())");
 $nuevosMes = $resNuevos ? (int)$resNuevos->fetch_assoc()['total'] : 0;
 
+// 4. Total en comisiones (5% del total de las ventas completadas)
+$resComm = $conn->query("SELECT SUM(total) as total FROM venta WHERE estado = 'Completada'");
+$totalVentasRealizadas = $resComm ? (float)$resComm->fetch_assoc()['total'] : 0.0;
+$totalComisiones = $totalVentasRealizadas * 0.05;
+
 // FILTROS Y BÚSQUEDA
 $buscar = isset($_GET['buscar']) ? trim($_GET['buscar']) : '';
 $estadoFiltro = isset($_GET['estado']) ? trim($_GET['estado']) : 'Todos';
@@ -273,7 +299,7 @@ if ($stmt) {
 
     <!-- CSS Dashboard & Vendedores Local (Cache Busted) -->
     <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=5">
-    <link rel="stylesheet" href="admi.css/vendedores_admi.css?v=5">
+    <link rel="stylesheet" href="admi.css/vendedores_admi.css?v=6">
     
     <!-- Cargar configuración dinámica de temas y fuentes -->
     <?php aplicarConfiguracionEstilos(); ?>
@@ -288,14 +314,16 @@ if ($stmt) {
         =========================================== -->
         <aside class="sidebar" id="sidebar">
             <button class="sidebar-toggle-btn" id="sidebarClose">
-                <i class="fa-solid fa-bars"></i>
+                <i class="fa-solid fa-xmark"></i>
             </button>
 
-            <!-- Store Logo -->
+            <!-- Store Logo Section (Matches SIVC mockup) -->
             <div class="sidebar-logo-section">
-                <img src="../../public/img/tienda.png" alt="Doña Marina Logo" class="brand-logo-img">
-                <h2 class="brand-title">DOÑA MARINA</h2>
-                <span class="brand-subtitle">TIENDA DE BARRIO</span>
+                <i class="fa-solid fa-store brand-icon"></i>
+                <div class="logo-text-details">
+                    <h2 class="brand-title">SIVC</h2>
+                    <span class="brand-subtitle">Sistema de Inventario<br>y Ventas para Comercios</span>
+                </div>
             </div>
 
             <!-- Navigation Links -->
@@ -303,17 +331,16 @@ if ($stmt) {
                 <a href="dashboar_admi.php" class="sidebar-link-card">
                     <div class="link-left">
                         <i class="fa-solid fa-house"></i>
-                        <span>Inicio</span>
+                        <span>Dashboard</span>
                     </div>
-                    <span class="link-arrow">></span>
                 </a>
 
                 <a href="inventario.php" class="sidebar-link-card">
                     <div class="link-left">
-                        <i class="fa-solid fa-basket-shopping"></i>
+                        <i class="fa-solid fa-box"></i>
                         <span>Inventario</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="ventas.php" class="sidebar-link-card">
@@ -321,7 +348,7 @@ if ($stmt) {
                         <i class="fa-solid fa-cart-shopping"></i>
                         <span>Ventas</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="clientes.php" class="sidebar-link-card">
@@ -329,7 +356,7 @@ if ($stmt) {
                         <i class="fa-solid fa-users"></i>
                         <span>Clientes</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="vendedores.php" class="sidebar-link-card active">
@@ -337,7 +364,7 @@ if ($stmt) {
                         <i class="fa-solid fa-user-tie"></i>
                         <span>Vendedores</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="reportes.php" class="sidebar-link-card">
@@ -345,29 +372,29 @@ if ($stmt) {
                         <i class="fa-solid fa-chart-simple"></i>
                         <span>Reportes</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="configuracion.php" class="sidebar-link-card">
                     <div class="link-left">
                         <i class="fa-solid fa-gear"></i>
-                        <span>Configuracion</span>
+                        <span>Configuración</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
             </nav>
 
-            <!-- Logout -->
+            <!-- Logout Link -->
             <div class="sidebar-footer-section">
                 <a href="../../controllers/logout.php" class="sidebar-logout-btn">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                    <span>Cerrar sesion</span>
+                    <span>Cerrar sesión</span>
                 </a>
             </div>
         </aside>
 
         <!-- ==========================================
-             MAIN CONTENT
+             MAIN CONTENT (CONTENIDO PRINCIPAL)
         =========================================== -->
         <main class="main-content">
             <!-- Mobile Toggle Drawer Button -->
@@ -375,13 +402,34 @@ if ($stmt) {
                 <i class="fa-solid fa-bars"></i>
             </button>
 
-            <!-- Header Section -->
-            <header class="header-with-illustration">
+            <!-- Content Header -->
+            <header class="content-header">
                 <div class="welcome-header-text">
-                    <h1 style="font-size: 56px; font-weight: 800; color: #000000; margin: 0;">Vendedores</h1>
+                    <h1>Vendedores</h1>
+                    <p>Gestiona la información de tus vendedores.</p>
                 </div>
-                <div class="header-illustration">
-                    <img src="../../public/img/store_shelves_illustration.jpg" alt="Illustration" class="header-illustration-img">
+
+                <div class="header-right-widgets">
+                    <!-- Date Widget -->
+                    <div class="datetime-card">
+                        <i class="fa-regular fa-calendar"></i>
+                        <div class="datetime-details">
+                            <strong><?= htmlspecialchars($fechaString); ?></strong>
+                            <span><?= htmlspecialchars($horaString); ?></span>
+                        </div>
+                    </div>
+
+                    <!-- User Profile Dropdown -->
+                    <div class="profile-card">
+                        <div class="profile-avatar">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="profile-info">
+                            <strong><?= htmlspecialchars($nombreUsuario); ?></strong>
+                            <span><?= htmlspecialchars($adminEmail); ?></span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down profile-chevron"></i>
+                    </div>
                 </div>
             </header>
 
@@ -389,23 +437,23 @@ if ($stmt) {
             <section class="vendedores-stats-row">
                 <!-- Card 1: Total Vendedores -->
                 <div class="stat-box-card">
-                    <div class="stat-box-icon-circle" style="background-color: #ffd6ff;">
-                        <i class="fa-solid fa-user-tie" style="color: var(--color-pink);"></i>
+                    <div class="stat-box-icon-circle circle-green" style="background-color: #e6f7f0; color: #10b981;">
+                        <i class="fa-solid fa-user-tie"></i>
                     </div>
                     <div class="stat-box-details">
-                        <span class="stat-name">Total Vendedores</span>
+                        <span class="stat-name">Total vendedores</span>
                         <span class="stat-number"><?= $totalVendedores; ?></span>
-                        <span class="stat-desc">Vendedores Registrados</span>
+                        <span class="stat-desc">Vendedores registrados</span>
                     </div>
                 </div>
 
                 <!-- Card 2: Vendedores Activos -->
                 <div class="stat-box-card">
-                    <div class="stat-box-icon-circle" style="background-color: #ffd8eb;">
-                        <i class="fa-solid fa-circle-check" style="color: var(--color-magenta);"></i>
+                    <div class="stat-box-icon-circle circle-blue" style="background-color: #eef2ff; color: #3b82f6;">
+                        <i class="fa-solid fa-circle-check"></i>
                     </div>
                     <div class="stat-box-details">
-                        <span class="stat-name">Vendedores Activos</span>
+                        <span class="stat-name">Vendedores activos</span>
                         <span class="stat-number"><?= $vendedoresActivos; ?></span>
                         <span class="stat-desc">Con sesión iniciada</span>
                     </div>
@@ -413,13 +461,25 @@ if ($stmt) {
 
                 <!-- Card 3: Nuevos del mes -->
                 <div class="stat-box-card">
-                    <div class="stat-box-icon-circle" style="background-color: #e2e2ff;">
-                        <i class="fa-solid fa-calendar-plus" style="color: var(--color-blue);"></i>
+                    <div class="stat-box-icon-circle circle-pink" style="background-color: #fdf2f8; color: #ec4899;">
+                        <i class="fa-solid fa-calendar-plus"></i>
                     </div>
                     <div class="stat-box-details">
-                        <span class="stat-name">Nuevo este Mes</span>
+                        <span class="stat-name">Nuevos este mes</span>
                         <span class="stat-number"><?= $nuevosMes; ?></span>
                         <span class="stat-desc">Vendedores registrados</span>
+                    </div>
+                </div>
+
+                <!-- Card 4: Total en comisiones -->
+                <div class="stat-box-card">
+                    <div class="stat-box-icon-circle circle-orange" style="background-color: #fff0e6; color: #f97316;">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                    <div class="stat-box-details">
+                        <span class="stat-name">Total en comisiones</span>
+                        <span class="stat-number">$<?= number_format($totalComisiones, 0, ',', '.'); ?></span>
+                        <span class="stat-desc">Comisiones acumuladas</span>
                     </div>
                 </div>
             </section>
@@ -430,7 +490,7 @@ if ($stmt) {
                     <div class="filters-left-group">
                         <div class="filter-input-group">
                             <i class="fa-solid fa-magnifying-glass"></i>
-                            <input type="text" name="buscar" placeholder="Buscar Vendedor..." value="<?= htmlspecialchars($buscar); ?>">
+                            <input type="text" name="buscar" placeholder="Buscar vendedor..." value="<?= htmlspecialchars($buscar); ?>" onchange="this.form.submit();">
                         </div>
 
                         <div class="filter-select-wrapper">
@@ -441,13 +501,17 @@ if ($stmt) {
                                 <option value="Inactivo" <?= $estadoFiltro === 'Inactivo' ? 'selected' : ''; ?>>Inactivo</option>
                             </select>
                         </div>
+
+                        <!-- Clean Filters (Always visible) -->
+                        <button type="button" class="btn-clear-filters" onclick="window.location.href='vendedores.php'">
+                            <i class="fa-solid fa-filter-circle-xmark"></i> Limpiar filtros
+                        </button>
                     </div>
 
-                    <?php if ($buscar !== '' || $estadoFiltro !== 'Todos'): ?>
-                        <button type="button" class="btn-clear-filters" onclick="window.location.href='vendedores.php'">
-                            <i class="fa-solid fa-rotate-left"></i> Limpiar Filtros
-                        </button>
-                    <?php endif; ?>
+                    <!-- Add Seller Button (Top Right) -->
+                    <a href="crear_vendedor.php" class="btn-add-vendedor" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-plus"></i> Agregar vendedor
+                    </a>
                 </form>
             </section>
 
@@ -467,9 +531,25 @@ if ($stmt) {
                         </thead>
                         <tbody>
                             <?php if (count($vendedores) > 0): ?>
-                                <?php foreach ($vendedores as $v): ?>
+                                <?php foreach ($vendedores as $v): 
+                                    // Initials for avatar
+                                    $iniciales = strtoupper(substr($v['nombre'], 0, 1) . substr($v['apellido'], 0, 1));
+                                    
+                                    // Avatar color class based on id_Usuario
+                                    $coloresInitials = ['circle-green', 'circle-blue', 'circle-orange', 'circle-pink', 'circle-teal', 'circle-purple'];
+                                    $colorClass = $coloresInitials[$v['id_Usuario'] % count($coloresInitials)];
+                                ?>
                                     <tr>
-                                        <td class="vendedor-name-cell"><?= htmlspecialchars($v['nombre'] . ' ' . $v['apellido']); ?></td>
+                                        <td>
+                                            <div class="vendedor-profile-cell">
+                                                <div class="vendedor-avatar-mini <?= $colorClass; ?>">
+                                                    <?= $iniciales; ?>
+                                                </div>
+                                                <div class="vendedor-name-cell">
+                                                    <?= htmlspecialchars($v['nombre'] . ' ' . $v['apellido']); ?>
+                                                </div>
+                                            </div>
+                                        </td>
                                         <td><?= htmlspecialchars($v['nombre_Usuario']); ?></td>
                                         <td><?= htmlspecialchars($v['correo']); ?></td>
                                         <td><?= date('d/m/Y', strtotime($v['fecha_Registro'])); ?></td>
@@ -531,12 +611,8 @@ if ($stmt) {
                     </table>
                 </div>
 
-                <!-- Footer de la Tabla (Agregar y Paginación) -->
-                <div class="table-footer-row">
-                    <a href="crear_vendedor.php" class="btn-add-vendedor" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
-                        <i class="fa-solid fa-plus"></i> Agregar Vendedor
-                    </a>
-
+                <!-- Footer de la Tabla (Paginación) -->
+                <div class="table-footer-row" style="justify-content: flex-end;">
                     <!-- Controles Paginación -->
                     <div style="display: flex; flex-direction: column; align-items: flex-end;">
                         <div class="pagination-controls">

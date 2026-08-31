@@ -7,7 +7,7 @@ if (!isset($_SESSION['usuario'])) {
     exit();
 }
 
-require_once __DIR__ . '/../../configuration/database.php';
+require_once __DIR__ . '/../../configuration/load_config.php';
 
 $id_Venta = isset($_GET['id']) ? intval($_GET['id']) : 0;
 if ($id_Venta <= 0) {
@@ -76,6 +76,8 @@ $fechaEmision = $comprobante['fecha_Generacion'] ?? $venta['fecha_Venta'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comprobante <?= htmlspecialchars($nroComprobante); ?> | SIVC</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Cargar configuración de base de datos -->
+    <?php aplicarConfiguracionEstilos(); ?>
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
@@ -105,7 +107,7 @@ $fechaEmision = $comprobante['fecha_Generacion'] ?? $venta['fecha_Venta'];
 
         .header h1 {
             margin: 0;
-            color: #6f2dbd;
+            color: var(--color-primary, #014235);
             font-size: 28px;
             font-weight: 700;
         }
@@ -137,7 +139,7 @@ $fechaEmision = $comprobante['fecha_Generacion'] ?? $venta['fecha_Venta'];
         .table-title {
             font-size: 16px;
             font-weight: 600;
-            color: #6f2dbd;
+            color: var(--color-primary, #014235);
             margin-bottom: 12px;
             border-bottom: 1px solid #eee;
             padding-bottom: 5px;
@@ -181,10 +183,10 @@ $fechaEmision = $comprobante['fecha_Generacion'] ?? $venta['fecha_Venta'];
         }
 
         .totals-row.grand-total {
-            border-top: 2px solid #6f2dbd;
+            border-top: 2px solid var(--color-primary, #014235);
             font-weight: 700;
             font-size: 18px;
-            color: #6f2dbd;
+            color: var(--color-primary, #014235);
             padding-top: 12px;
             margin-top: 5px;
         }

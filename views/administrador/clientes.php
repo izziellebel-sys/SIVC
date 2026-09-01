@@ -324,6 +324,7 @@ if ($id_admin > 0) {
                         <i class="fa-solid fa-house"></i>
                         <span>Dashboard</span>
                     </div>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="inventario.php" class="sidebar-link-card">

@@ -249,6 +249,7 @@ if ($stmt) {
                         <i class="fa-solid fa-house"></i>
                         <span>Inicio</span>
                     </div>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="inventario.php" class="sidebar-link-card">
@@ -274,6 +275,14 @@ if ($stmt) {
                     </div>
                     <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
+
+                <a href="configuracion.php" class="sidebar-link-card">
+                    <div class="link-left">
+                        <i class="fa-solid fa-gear"></i>
+                        <span>Configuración</span>
+                    </div>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+                </a>
             </nav>
 
             <!-- Logout -->
@@ -296,15 +305,15 @@ if ($stmt) {
 
             <!-- Header Section -->
             <header class="content-header">
-                <div class="header-left">
-                    <span class="welcome-label" style="font-size: 11px; font-weight: 700; color: var(--color-green); letter-spacing: 1px; text-transform: uppercase;">Módulo de Clientes</span>
-                    <h1 style="margin: 0; font-size: 32px; font-weight: 800; color: var(--text-dark);">Clientes Registrados</h1>
-                    <p style="margin: 4px 0 0 0; font-size: 14px; color: var(--text-muted); font-weight: 500;">Gestiona las fichas de contacto, saldos deudores e historiales de compra.</p>
+                <div class="welcome-header-text">
+                    <span class="welcome-label" style="font-size: 11px; font-weight: 700; color: var(--color-green); letter-spacing: 1px; text-transform: uppercase; display: block; margin-bottom: 2px;">Módulo de Clientes</span>
+                    <h1>Clientes Registrados</h1>
+                    <p>Gestiona las fichas de contacto, saldos deudores e historiales de compra.</p>
                 </div>
                 
-                <div class="header-widgets">
+                <div class="header-right-widgets">
                     <!-- Widget Calendario -->
-                    <div class="datetime-badge">
+                    <div class="datetime-card">
                         <i class="fa-regular fa-calendar-days"></i>
                         <div class="datetime-details">
                             <strong><?= $fechaString; ?></strong>
@@ -312,7 +321,7 @@ if ($stmt) {
                         </div>
                     </div>
                     <!-- Widget Perfil Vendedor -->
-                    <div class="user-profile-badge">
+                    <div class="profile-card">
                         <div class="profile-avatar">
                             <i class="fa-solid fa-user"></i>
                         </div>

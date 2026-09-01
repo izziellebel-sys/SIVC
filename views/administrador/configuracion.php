@@ -121,7 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $id_usuario > 0) {
         $tema = $_POST['tema'] ?? 'dark_green';
         $tipografia = $_POST['tipografia'] ?? 'Segoe UI';
         $tamanho_fuente = $_POST['tamanho_fuente'] ?? '14px';
-        $modo_oscuro = isset($_POST['modo_oscuro']) ? 1 : 0;
+        $modo_oscuro = 0;
 
         // Validar tamaño de fuente seguro
         $font_sizes_valid = ['12px', '14px', '16px', '18px', '20px'];
@@ -334,8 +334,8 @@ $horaString = date('h:i a');
     <link rel="stylesheet" href="../css/style.css">
 
     <!-- CSS Configuración & Dashboard -->
-    <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=6">
-    <link rel="stylesheet" href="admi.css/configuracion_admi.css?v=7">
+    <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=7">
+    <link rel="stylesheet" href="admi.css/configuracion_admi.css?v=8">
     
     <!-- Inyectar estilos cargados de la base de datos -->
     <?php aplicarConfiguracionEstilos(); ?>
@@ -369,6 +369,7 @@ $horaString = date('h:i a');
                         <i class="fa-solid fa-house"></i>
                         <span>Dashboard</span>
                     </div>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="inventario.php" class="sidebar-link-card">
@@ -465,14 +466,14 @@ $horaString = date('h:i a');
 
             <!-- Header Section (Format layout unified with other modules) -->
             <header class="content-header">
-                <div class="header-left">
+                <div class="welcome-header-text">
                     <h1>Configuración</h1>
                     <p>Personaliza la apariencia y el comportamiento del sistema.</p>
                 </div>
                 
-                <div class="header-widgets">
+                <div class="header-right-widgets">
                     <!-- Widget Calendario -->
-                    <div class="datetime-badge">
+                    <div class="datetime-card">
                         <i class="fa-regular fa-calendar-days"></i>
                         <div class="datetime-details">
                             <strong><?= $fechaString; ?></strong>
@@ -480,7 +481,7 @@ $horaString = date('h:i a');
                         </div>
                     </div>
                     <!-- Widget Perfil Administrador -->
-                    <div class="user-profile-badge">
+                    <div class="profile-card">
                         <div class="profile-avatar">
                             <i class="fa-solid fa-user"></i>
                         </div>
@@ -509,7 +510,7 @@ $horaString = date('h:i a');
                         <!-- 1. Color de Fondo / Tema del Sistema -->
                         <div class="config-card">
                             <div style="display: flex; align-items: center; gap: 20px; flex: 1;">
-                                <div class="config-icon-circle" style="background-color: var(--color-green-light); color: var(--color-green);">
+                                <div class="config-icon-circle">
                                     <i class="fa-solid fa-palette"></i>
                                 </div>
                                 <div class="config-info">
@@ -520,30 +521,30 @@ $horaString = date('h:i a');
                             <div class="config-control-panel">
                                 <span class="control-label">Elige un color</span>
                                 <div class="color-palette-group">
-                                    <!-- Opción Dark Green -->
+                                    <!-- 1. Azul (Blue) -->
+                                    <button type="button" class="color-option-btn <?= $config['tema'] === 'blue' ? 'selected' : ''; ?>" 
+                                            style="background-color: #2563eb;" onclick="seleccionarTema('blue', this)" title="Azul">
+                                        <?php if ($config['tema'] === 'blue'): ?><i class="fa-solid fa-check" style="color: #ffffff; font-size: 14px;"></i><?php endif; ?>
+                                    </button>
+                                    <!-- 2. Morado (Purple) -->
+                                    <button type="button" class="color-option-btn <?= ($config['tema'] === 'purple' || $config['tema'] === 'dusty_purple' || $config['tema'] === 'lavender') ? 'selected' : ''; ?>" 
+                                            style="background-color: #7c3aed;" onclick="seleccionarTema('purple', this)" title="Morado">
+                                        <?php if ($config['tema'] === 'purple' || $config['tema'] === 'dusty_purple' || $config['tema'] === 'lavender'): ?><i class="fa-solid fa-check" style="color: #ffffff; font-size: 14px;"></i><?php endif; ?>
+                                    </button>
+                                    <!-- 3. Verde Agua Marina (Aquamarine / Teal) -->
+                                    <button type="button" class="color-option-btn <?= ($config['tema'] === 'teal_green' || $config['tema'] === 'aquamarine') ? 'selected' : ''; ?>" 
+                                            style="background-color: #0d9488;" onclick="seleccionarTema('teal_green', this)" title="Verde Agua Marina">
+                                        <?php if ($config['tema'] === 'teal_green' || $config['tema'] === 'aquamarine'): ?><i class="fa-solid fa-check" style="color: #ffffff; font-size: 14px;"></i><?php endif; ?>
+                                    </button>
+                                    <!-- 4. Verde más oscurito (Dark Green) -->
                                     <button type="button" class="color-option-btn <?= $config['tema'] === 'dark_green' ? 'selected' : ''; ?>" 
-                                            style="background-color: #014235;" onclick="seleccionarTema('dark_green', this)">
+                                            style="background-color: #014235;" onclick="seleccionarTema('dark_green', this)" title="Verde Oscuro">
                                         <?php if ($config['tema'] === 'dark_green'): ?><i class="fa-solid fa-check" style="color: #ffffff; font-size: 14px;"></i><?php endif; ?>
                                     </button>
-                                    <!-- Opción Navy Blue -->
-                                    <button type="button" class="color-option-btn <?= $config['tema'] === 'navy_blue' ? 'selected' : ''; ?>" 
-                                            style="background-color: #0f172a;" onclick="seleccionarTema('navy_blue', this)">
-                                        <?php if ($config['tema'] === 'navy_blue'): ?><i class="fa-solid fa-check" style="color: #ffffff; font-size: 14px;"></i><?php endif; ?>
-                                    </button>
-                                    <!-- Opción Slate Grey -->
-                                    <button type="button" class="color-option-btn <?= $config['tema'] === 'slate_grey' ? 'selected' : ''; ?>" 
-                                            style="background-color: #334155;" onclick="seleccionarTema('slate_grey', this)">
-                                        <?php if ($config['tema'] === 'slate_grey'): ?><i class="fa-solid fa-check" style="color: #ffffff; font-size: 14px;"></i><?php endif; ?>
-                                    </button>
-                                    <!-- Opción Teal Green -->
-                                    <button type="button" class="color-option-btn <?= $config['tema'] === 'teal_green' ? 'selected' : ''; ?>" 
-                                            style="background-color: #0d9488;" onclick="seleccionarTema('teal_green', this)">
-                                        <?php if ($config['tema'] === 'teal_green'): ?><i class="fa-solid fa-check" style="color: #ffffff; font-size: 14px;"></i><?php endif; ?>
-                                    </button>
-                                    <!-- Opción Dusty Purple -->
-                                    <button type="button" class="color-option-btn <?= $config['tema'] === 'dusty_purple' ? 'selected' : ''; ?>" 
-                                            style="background-color: #8b9bb4;" onclick="seleccionarTema('dusty_purple', this)">
-                                        <?php if ($config['tema'] === 'dusty_purple'): ?><i class="fa-solid fa-check" style="color: #ffffff; font-size: 14px;"></i><?php endif; ?>
+                                    <!-- 5. Azul más oscuro (Navy Blue) -->
+                                    <button type="button" class="color-option-btn <?= ($config['tema'] === 'navy_blue' || $config['tema'] === 'slate_grey') ? 'selected' : ''; ?>" 
+                                            style="background-color: #0f172a;" onclick="seleccionarTema('navy_blue', this)" title="Azul Marino Oscuro">
+                                        <?php if ($config['tema'] === 'navy_blue' || $config['tema'] === 'slate_grey'): ?><i class="fa-solid fa-check" style="color: #ffffff; font-size: 14px;"></i><?php endif; ?>
                                     </button>
                                 </div>
                             </div>
@@ -552,7 +553,7 @@ $horaString = date('h:i a');
                         <!-- 2. Tipografía Segmentada -->
                         <div class="config-card">
                             <div style="display: flex; align-items: center; gap: 20px; flex: 1;">
-                                <div class="config-icon-circle" style="background-color: var(--color-green-light); color: var(--color-green);">TT</div>
+                                <div class="config-icon-circle">TT</div>
                                 <div class="config-info">
                                     <h3>Tipografía</h3>
                                     <p>Elige el tipo de letra que prefieres para la interfaz del sistema.</p>
@@ -586,7 +587,7 @@ $horaString = date('h:i a');
                         <!-- 3. Tamaño de la fuente Slider -->
                         <div class="config-card">
                             <div style="display: flex; align-items: center; gap: 20px; flex: 1;">
-                                <div class="config-icon-circle" style="background-color: var(--color-green-light); color: var(--color-green);">Aa</div>
+                                <div class="config-icon-circle">Aa</div>
                                 <div class="config-info">
                                     <h3>Tamaño de la fuente</h3>
                                     <p>Ajusta el tamaño de la fuente para mejorar la legibilidad en menús, paneles y tablas.</p>
@@ -599,7 +600,7 @@ $horaString = date('h:i a');
                                     $slider_val = $sizeMapToVal[$config['tamaño_Fuente']] ?? 2;
                                     $currentLabel = $sizeLabels[$slider_val] ?? 'Mediano';
                                 ?>
-                                <span class="control-label">Tamaño actual: <span id="currentSizeText" style="color:#014235; font-weight:700;"><?= $currentLabel; ?></span></span>
+                                <span class="control-label">Tamaño actual: <span id="currentSizeText" style="font-weight:700; color: var(--color-green);"><?= $currentLabel; ?></span></span>
                                 <div class="font-size-slider-wrapper">
                                     <span class="slider-label-a small">A</span>
                                     
@@ -609,26 +610,6 @@ $horaString = date('h:i a');
                                     
                                     <span class="slider-label-a large">A</span>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- 4. Modo oscuro Switch Toggle -->
-                        <div class="config-card">
-                            <div style="display: flex; align-items: center; gap: 20px; flex: 1;">
-                                <div class="config-icon-circle" style="background-color: var(--color-green-light); color: var(--color-green)">
-                                    <i class="fa-solid fa-moon"></i>
-                                </div>
-                                <div class="config-info">
-                                    <h3>Modo oscuro</h3>
-                                    <p>Activa el modo oscuro para cambiar la apariencia del sistema a colores oscuros.</p>
-                                </div>
-                            </div>
-                            <div class="config-control-panel">
-                                <span class="control-label">Modo oscuro</span>
-                                <label class="switch-toggle-wrapper">
-                                    <input type="checkbox" name="modo_oscuro" id="formModoOscuro" <?= (int)$config['modo_Oscuro'] === 1 ? 'checked' : ''; ?>>
-                                    <span class="slider-round"></span>
-                                </label>
                             </div>
                         </div>
 

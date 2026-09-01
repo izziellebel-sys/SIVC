@@ -119,7 +119,7 @@ $section = $_GET['section'] ?? 'dashboard';
     <link rel="stylesheet" href="../css/style.css">
 
     <!-- CSS Dashboard -->
-    <link rel="stylesheet" href="css/dashboard_cliente.css">
+    <link rel="stylesheet" href="css/dashboard_cliente.css?v=2">
     
     <!-- Cargar configuración de base de datos -->
     <?php aplicarConfiguracionEstilos(); ?>
@@ -162,23 +162,35 @@ $section = $_GET['section'] ?? 'dashboard';
                 <p class="nav-title">MENÚ PRINCIPAL</p>
 
                 <a href="dashboard_cliente.php?section=dashboard" class="nav-item <?= $section === 'dashboard' ? 'active' : ''; ?>">
-                    <span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span>
-                    <span>Dashboard Cliente</span>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span>
+                        <span>Dashboard Cliente</span>
+                    </div>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="dashboard_cliente.php?section=compras" class="nav-item <?= $section === 'compras' ? 'active' : ''; ?>">
-                    <span class="nav-icon"><i class="fa-solid fa-bag-shopping"></i></span>
-                    <span>Mis Compras</span>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="nav-icon"><i class="fa-solid fa-bag-shopping"></i></span>
+                        <span>Mis Compras</span>
+                    </div>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="dashboard_cliente.php?section=deudas" class="nav-item <?= $section === 'deudas' ? 'active' : ''; ?>">
-                    <span class="nav-icon"><i class="fa-solid fa-hand-holding-dollar"></i></span>
-                    <span>Mis Deudas</span>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="nav-icon"><i class="fa-solid fa-hand-holding-dollar"></i></span>
+                        <span>Mis Deudas</span>
+                    </div>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="dashboard_cliente.php?section=consultas" class="nav-item <?= $section === 'consultas' ? 'active' : ''; ?>">
-                    <span class="nav-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></span>
-                    <span>Consultas</span>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="nav-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></span>
+                        <span>Consultas</span>
+                    </div>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
             </nav>
 

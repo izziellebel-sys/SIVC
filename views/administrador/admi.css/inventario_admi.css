@@ -344,8 +344,9 @@
     background-color: #10b981;
 }
 
-.sidebar-menu-item.active .link-chevron i {
-    transform: rotate(180deg);
+.sidebar-menu-item.active .link-chevron i,
+.sidebar-link-card.active .link-chevron i {
+    transform: rotate(-90deg) !important;
 }
 
 .link-chevron {

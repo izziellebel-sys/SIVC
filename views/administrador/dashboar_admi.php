@@ -278,14 +278,15 @@ $actividades = array_slice($actividades, 0, 4);
                         <i class="fa-solid fa-house"></i>
                         <span>Dashboard</span>
                     </div>
-                </a >
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+                </a>
 
                 <a href="inventario.php" class="sidebar-link-card">
                     <div class="link-left">
                         <i class="fa-solid fa-box"></i>
                         <span>Inventario</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="ventas.php" class="sidebar-link-card">
@@ -293,7 +294,7 @@ $actividades = array_slice($actividades, 0, 4);
                         <i class="fa-solid fa-cart-shopping"></i>
                         <span>Ventas</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="clientes.php" class="sidebar-link-card">
@@ -301,7 +302,15 @@ $actividades = array_slice($actividades, 0, 4);
                         <i class="fa-solid fa-users"></i>
                         <span>Clientes</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+                </a>
+
+                <a href="vendedores.php" class="sidebar-link-card">
+                    <div class="link-left">
+                        <i class="fa-solid fa-user-tie"></i>
+                        <span>Vendedores</span>
+                    </div>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="reportes.php" class="sidebar-link-card">
@@ -309,7 +318,7 @@ $actividades = array_slice($actividades, 0, 4);
                         <i class="fa-solid fa-chart-column"></i>
                         <span>Reportes</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
 
                 <a href="configuracion.php" class="sidebar-link-card">
@@ -317,7 +326,7 @@ $actividades = array_slice($actividades, 0, 4);
                         <i class="fa-solid fa-gear"></i>
                         <span>Configuración</span>
                     </div>
-                    <span class="link-arrow">></span>
+                    <span class="link-chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </a>
             </nav>
 

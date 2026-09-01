@@ -199,11 +199,19 @@ body {
     transition: var(--transition-smooth);
 }
 
-.sidebar-link-card .link-arrow {
+.sidebar-link-card .link-arrow,
+.sidebar-link-card .link-chevron {
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.15);
-    font-size: 14px;
+    color: var(--sidebar-text-muted, rgba(255, 255, 255, 0.4));
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     transition: var(--transition-smooth);
+}
+
+.sidebar-link-card .link-chevron i {
+    transition: transform 0.25s ease, color 0.25s ease;
 }
 
 /* Hover State */
@@ -213,7 +221,8 @@ body {
 }
 
 .sidebar-link-card:hover .link-left i,
-.sidebar-link-card:hover .link-arrow {
+.sidebar-link-card:hover .link-arrow,
+.sidebar-link-card:hover .link-chevron i {
     color: #ffffff;
 }
 
@@ -224,8 +233,14 @@ body {
 }
 
 .sidebar-link-card.active .link-left i,
-.sidebar-link-card.active .link-arrow {
-    color: #ffffff;
+.sidebar-link-card.active .link-arrow,
+.sidebar-link-card.active .link-chevron i {
+    color: #ffffff !important;
+}
+
+.sidebar-link-card.active .link-chevron i.fa-chevron-down,
+.sidebar-link-card.active .link-chevron i {
+    transform: rotate(-90deg) !important; /* Convierte la 'v' en '>' */
 }
 
 /* Sidebar Footer (Logout) */
@@ -304,27 +319,27 @@ body {
     font-weight: 500;
 }
 
-.header-right-widgets {
+.header-right-widgets, .header-widgets {
     display: flex;
     align-items: center;
     gap: 16px;
 }
 
 /* Date/Time Widget */
-.datetime-card {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
+.datetime-card, .datetime-badge {
+    background-color: var(--card-bg, #ffffff);
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: var(--radius-md, 12px);
     padding: 10px 16px;
     display: flex;
     align-items: center;
     gap: 12px;
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));
 }
 
-.datetime-card i {
+.datetime-card i, .datetime-badge i {
     font-size: 20px;
-    color: var(--text-muted);
+    color: var(--text-muted, #64748b);
 }
 
 .datetime-details {
@@ -334,31 +349,31 @@ body {
 }
 
 .datetime-details strong {
-    color: var(--text-dark);
+    color: var(--text-dark, #0f172a);
     font-weight: 700;
 }
 
 .datetime-details span {
-    color: var(--text-muted);
+    color: var(--text-muted, #64748b);
     font-weight: 500;
     margin-top: 1px;
 }
 
 /* User Profile Widget */
-.profile-card {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
+.profile-card, .user-profile-badge {
+    background-color: var(--card-bg, #ffffff);
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: var(--radius-md, 12px);
     padding: 8px 16px;
     display: flex;
     align-items: center;
     gap: 12px;
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));
     cursor: pointer;
-    transition: var(--transition-smooth);
+    transition: var(--transition-smooth, all 0.2s ease);
 }
 
-.profile-card:hover {
+.profile-card:hover, .user-profile-badge:hover {
     border-color: #cbd5e1;
 }
 
@@ -367,11 +382,12 @@ body {
     height: 36px;
     border-radius: 50%;
     background-color: #e6f2ed;
-    color: var(--sidebar-active-bg);
+    color: var(--sidebar-active-bg, #006b54);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 16px;
+    flex-shrink: 0;
 }
 
 .profile-info {
@@ -381,19 +397,19 @@ body {
 }
 
 .profile-info strong {
-    color: var(--text-dark);
+    color: var(--text-dark, #0f172a);
     font-weight: 700;
 }
 
 .profile-info span {
-    color: var(--text-muted);
+    color: var(--text-muted, #64748b);
     font-weight: 500;
     margin-top: 1px;
 }
 
 .profile-chevron {
     font-size: 10px;
-    color: var(--text-muted);
+    color: var(--text-muted, #64748b);
     margin-left: 4px;
 }
 

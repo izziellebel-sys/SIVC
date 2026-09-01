@@ -567,7 +567,7 @@ input:checked + .slider-round:before {
         flex-direction: column;
         align-items: flex-start;
         gap: 15px;
-        padding: 20px 25px;
+        padding: 20px 20px;
     }
 
     .config-control-panel {
@@ -577,5 +577,52 @@ input:checked + .slider-round:before {
     
     .font-size-slider-wrapper {
         width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .config-card {
+        padding: 16px 14px;
+        gap: 12px;
+    }
+
+    .config-info-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .config-icon-circle {
+        width: 44px;
+        height: 44px;
+        font-size: 16px;
+    }
+
+    .theme-color-palette {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .backup-option-box {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+        padding: 16px 12px;
+    }
+
+    .btn-backup-download {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .backup-details {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .btn-save-config {
+        width: 100%;
+        justify-content: center;
     }
 }

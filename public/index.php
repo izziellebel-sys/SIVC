@@ -60,7 +60,11 @@
             </div>
 
             <div class="hero-image">
-                <img src="img/hero_pos_mockup.jpg" alt="Sistema SIVC en mostrador de tienda de barrio">
+                <img src="img/hero_pos_mockup.jpg?v=<?php echo file_exists(__DIR__ . '/img/hero_pos_mockup.jpg') ? filemtime(__DIR__ . '/img/hero_pos_mockup.jpg') : time(); ?>" 
+                     alt="Sistema SIVC en mostrador de tienda de barrio"
+                     loading="eager"
+                     decoding="async"
+                     onerror="if (!this.dataset.step) { this.dataset.step = '1'; this.src = './img/hero_pos_mockup.jpg'; } else if (this.dataset.step === '1') { this.dataset.step = '2'; this.src = 'public/img/hero_pos_mockup.jpg'; } else if (this.dataset.step === '2') { this.dataset.step = '3'; this.src = 'https://cdn.jsdelivr.net/gh/izziellebel-sys/SIVC@main/public/img/hero_pos_mockup.jpg'; } else if (this.dataset.step === '3') { this.dataset.step = '4'; this.src = 'img/store_shelves_illustration.jpg'; }">
             </div>
         </section>
 

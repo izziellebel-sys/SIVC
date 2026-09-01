@@ -702,14 +702,19 @@
     .filters-left-group {
         flex-direction: column;
         align-items: stretch;
+        gap: 12px;
+        width: 100%;
     }
 
     .filter-input-group {
         max-width: none;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .btn-clear-filters {
         justify-content: center;
+        width: 100%;
     }
 
     .table-footer-row {
@@ -724,6 +729,15 @@
 
     .btn-add-vendedor {
         justify-content: center;
+        width: 100%;
+    }
+
+    .modal-content {
+        width: 96% !important;
+        max-width: 100% !important;
+        margin: 15px auto;
+        padding: 20px 16px;
+        box-sizing: border-box;
     }
 
     .modal-grid-form {
@@ -737,21 +751,40 @@
 
 @media (max-width: 576px) {
     .vendedores-table-container {
-        padding: 15px;
+        padding: 12px 10px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .vendedores-table th, .vendedores-table td {
-        padding: 10px 12px;
-        font-size: 13px;
+        padding: 10px 10px;
+        font-size: 12px;
+    }
+
+    .vendedor-avatar-mini {
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
     }
 
     .modal-content {
-        padding: 15px;
+        padding: 16px 12px;
         border-radius: 16px;
     }
 
     .modal-header {
-        padding: 15px 0;
+        padding: 10px 0;
+    }
+
+    .form-actions-row {
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+
+    .btn-modal-cancel,
+    .btn-modal-submit {
+        width: 100%;
+        justify-content: center;
     }
 }
 

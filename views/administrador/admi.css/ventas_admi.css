@@ -948,38 +948,115 @@
 @media (max-width: 1280px) {
     .inventory-stats-row {
         grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
     }
 }
 
 @media (max-width: 1200px) {
     .sales-grid-layout {
         grid-template-columns: 1fr;
+        gap: 20px;
     }
 }
 
 @media (max-width: 768px) {
     .inventory-stats-row {
         grid-template-columns: 1fr;
+        gap: 12px;
     }
+
     .add-product-row {
         flex-direction: column;
         align-items: stretch;
+        gap: 12px;
     }
-    .form-group-item.qty-field {
-        flex: 1;
+
+    .form-group-item,
+    .form-group-item.qty-field,
+    .sales-input-wrapper {
+        width: 100% !important;
+        flex: none;
+        box-sizing: border-box;
     }
+
+    .btn-add-to-cart {
+        width: 100%;
+        justify-content: center;
+        height: 44px;
+    }
+
     .card-header-with-filters {
         flex-direction: column;
         align-items: stretch;
+        gap: 14px;
     }
+
     .sales-filters-form {
         flex-direction: column;
         align-items: stretch;
+        gap: 10px;
+        width: 100%;
     }
+
+    .btn-clear-sales-filters {
+        width: 100%;
+        justify-content: center;
+    }
+
     .sales-pagination-wrapper {
         flex-direction: column;
         align-items: center;
-        gap: 8px;
+        gap: 12px;
+        text-align: center;
+    }
+
+    .cart-summary-box {
+        padding: 16px;
+    }
+
+    .btn-checkout-sale,
+    .btn-clear-cart {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .sales-card-body,
+    .catalog-card-body,
+    .cart-card-body {
+        padding: 14px 12px;
+    }
+
+    .stat-box-card {
+        padding: 14px;
+        gap: 12px;
+    }
+
+    .stat-box-icon-circle {
+        width: 46px;
+        height: 46px;
+    }
+
+    .stat-box-icon-circle i {
+        font-size: 20px;
+    }
+
+    .stat-number {
+        font-size: 22px;
+    }
+
+    .sales-history-table th,
+    .sales-history-table td,
+    .cart-table th,
+    .cart-table td {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .product-cell-img {
+        width: 36px;
+        height: 36px;
     }
 }
 

@@ -562,6 +562,7 @@
 @media (max-width: 1200px) {
     .sales-grid-layout {
         grid-template-columns: 1fr;
+        gap: 20px;
     }
     .inventory-stats-row {
         grid-template-columns: repeat(2, 1fr);
@@ -570,10 +571,21 @@
 
 @media (max-width: 768px) {
     .add-product-row {
-        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    .add-product-row .form-group {
+        width: 100%;
     }
     .inventory-stats-row {
         grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .btn-checkout-sale,
+    .btn-clear-cart {
+        width: 100%;
+        justify-content: center;
     }
 }
 
@@ -585,16 +597,30 @@
 
 @media (max-width: 576px) {
     .sales-history-table th, .sales-history-table td {
-        padding: 10px 12px;
-        font-size: 13px;
-    }
-
-    .cart-table th, .cart-table td {
         padding: 8px 10px;
         font-size: 12px;
     }
 
+    .cart-table th, .cart-table td {
+        padding: 8px 8px;
+        font-size: 12px;
+    }
+
     .card-body, .sales-history-card, .catalog-card, .cart-card {
-        padding: 15px;
+        padding: 14px 12px;
+    }
+
+    .stat-box-card {
+        padding: 12px 14px;
+        border-radius: 16px;
+    }
+
+    .stat-box-icon-circle {
+        width: 46px;
+        height: 46px;
+    }
+
+    .stat-box-details .stat-number {
+        font-size: 22px;
     }
 }

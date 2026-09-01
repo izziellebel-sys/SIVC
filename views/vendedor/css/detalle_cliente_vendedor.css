@@ -582,14 +582,26 @@
 }
 
 @media (max-width: 576px) {
+    .client-detail-header-card {
+        padding: 16px 14px;
+    }
+
+    .client-avatar-large {
+        width: 56px;
+        height: 56px;
+        font-size: 20px;
+    }
+
     .debts-table th, .debts-table td {
-        padding: 10px 12px;
-        font-size: 13px;
+        padding: 8px 10px;
+        font-size: 12px;
     }
 
     .modal-content {
-        padding: 15px;
+        padding: 16px 12px;
         border-radius: 16px;
+        width: 96% !important;
+        max-width: 100% !important;
     }
 
     .info-item {
@@ -597,4 +609,15 @@
         align-items: flex-start;
         gap: 2px;
     }
+
+    .card-body,
+    .summary-card {
+        padding: 16px 12px;
+    }
+}
+
+.debts-table-container {
+    overflow-x: auto;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
 }

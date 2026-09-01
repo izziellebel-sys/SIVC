@@ -722,18 +722,77 @@
     margin-top: 6px;
 }
 
+@media (max-width: 991px) {
+    .inventory-stats-row {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .inventory-stats-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .modal-content {
+        width: 96% !important;
+        max-width: 100% !important;
+        margin: 15px auto;
+        padding: 20px 16px;
+        box-sizing: border-box;
+    }
+
+    .modal-grid-form {
+        grid-template-columns: 1fr;
+    }
+
+    .form-full-row {
+        grid-column: span 1;
+    }
+}
+
+.inventory-table-container {
+    overflow-x: auto;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+}
+
 @media (max-width: 576px) {
     .details-grid {
         grid-template-columns: 1fr;
     }
 
     .modal-content {
-        padding: 15px;
+        padding: 16px 12px;
         border-radius: 16px;
     }
 
     .inventory-table th, .inventory-table td {
-        padding: 10px 12px;
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .product-avatar-img {
+        width: 72px;
+        height: 72px;
+        border-radius: 16px;
+    }
+
+    .stat-box-card {
+        padding: 12px 14px;
+        border-radius: 16px;
+    }
+
+    .form-actions-row {
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+
+    .btn-modal-cancel,
+    .btn-modal-submit {
+        width: 100%;
+        justify-content: center;
     }
 }
 

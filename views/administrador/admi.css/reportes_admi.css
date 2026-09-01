@@ -367,6 +367,13 @@
         gap: 15px;
     }
 
+    .date-selector-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        width: 100%;
+    }
+
     .report-tabs-bar {
         flex-direction: column;
         align-items: stretch;
@@ -375,10 +382,13 @@
 
     .tabs-left {
         justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
     }
 
     .btn-export {
         justify-content: center;
+        width: 100%;
     }
 }
 
@@ -386,10 +396,17 @@
     .donut-chart-container {
         flex-direction: column;
         align-items: center;
+        gap: 16px;
     }
 
     .category-legend-list {
         width: 100%;
+    }
+
+    .report-table-container {
+        overflow-x: auto;
+        width: 100%;
+        -webkit-overflow-scrolling: touch;
     }
 }
 
@@ -402,11 +419,22 @@
     .tab-pill {
         padding: 6px 12px;
         font-size: 12px;
+        flex: 1;
+        text-align: center;
+        min-width: 80px;
     }
 
     .report-tabs-bar {
         padding: 10px;
         border-radius: 16px;
+    }
+
+    .chart-panel-card {
+        padding: 16px 12px;
+    }
+
+    .stat-box-card {
+        padding: 14px 12px;
     }
 }
 

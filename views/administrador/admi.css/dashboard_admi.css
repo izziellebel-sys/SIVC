@@ -705,10 +705,33 @@ body {
     }
 }
 
+/* OVERLAY FOR MOBILE SIDEBAR */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(2px);
+    z-index: 95;
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition-smooth);
+}
+
+.sidebar-overlay.active,
+.sidebar-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
 @media (max-width: 991px) {
     .sidebar {
-        left: -280px;
+        left: -290px;
         width: 280px;
+        z-index: 100;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
     }
 
     .sidebar.open {
@@ -720,12 +743,23 @@ body {
     }
 
     .main-content {
-        margin-left: 0;
-        padding: 80px 24px 24px;
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 76px 20px 24px;
+        box-sizing: border-box;
     }
 
     .mobile-toggle-btn {
-        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        z-index: 90;
     }
 
     .content-header {
@@ -736,12 +770,14 @@ body {
 
     .header-right-widgets {
         width: 100%;
-        justify-content: space-between;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
     }
     
     .datetime-card, .profile-card {
         flex: 1;
-        justify-content: center;
+        min-width: 200px;
     }
     
     .info-banner {
@@ -757,19 +793,24 @@ body {
 }
 
 @media (max-width: 600px) {
+    .main-content {
+        padding: 72px 14px 20px;
+    }
+
     .stats-grid-section {
         grid-template-columns: 1fr;
-        gap: 16px;
+        gap: 14px;
     }
     
     .header-right-widgets {
         flex-direction: column;
-        gap: 12px;
+        gap: 10px;
     }
     
     .datetime-card, .profile-card {
         width: 100%;
         flex: none;
+        box-sizing: border-box;
     }
     
     .main-footer {
@@ -777,5 +818,21 @@ body {
         gap: 8px;
         align-items: center;
         text-align: center;
+        padding: 16px 0;
+    }
+
+    .welcome-text h1,
+    .page-title h1 {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 380px) {
+    .main-content {
+        padding: 68px 10px 16px;
+    }
+
+    .stat-card {
+        padding: 16px 12px;
     }
 }

@@ -637,8 +637,26 @@ function aplicarConfiguracionEstilos() {
     // Estilo global para el indicador de módulo activo (de 'v' a '>')
     echo "  .sidebar-link-card .link-chevron, .sidebar-link-card .link-arrow, .nav-item .link-chevron { display: inline-flex; align-items: center; justify-content: center; font-size: 13px; }\n";
     echo "  .sidebar-link-card .link-chevron i, .sidebar-link-card .link-arrow i, .nav-item .link-chevron i { transition: transform 0.25s ease, color 0.25s ease; }\n";
-    echo "  .sidebar-link-card.active .link-chevron i, .sidebar-link-card.active .link-arrow i, .sidebar-link-card.active .link-chevron i.fa-chevron-down, .nav-item.active .link-chevron i, .nav-item.active .link-chevron i.fa-chevron-down { transform: rotate(-90deg) !important; color: #ffffff !important; }\n";
-
     echo "</style>\n";
+    echo "<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) {
+            document.addEventListener('click', function(e) {
+                if (sidebar.classList.contains('open')) {
+                    const mobileBtn = document.getElementById('mobileMenu');
+                    if (!sidebar.contains(e.target) && (!mobileBtn || !mobileBtn.contains(e.target))) {
+                        sidebar.classList.remove('open');
+                    }
+                }
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                }
+            });
+        }
+    });
+    </script>\n";
 }
 ?>

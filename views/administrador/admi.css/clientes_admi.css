@@ -546,52 +546,91 @@
 @media (max-width: 991px) {
     .clients-stats-row {
         grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+        width: 100%;
     }
     
-    .filter-bar-form {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 15px;
+    .filter-bar-form,
+    .filter-bar-form-new {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 14px !important;
+        padding: 16px 14px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .filter-controls-left {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+        width: 100% !important;
     }
 
     .filter-select-group {
         justify-content: space-between;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
 
-    .btn-clear-filters {
-        justify-content: center;
+    .btn-clear-filters,
+    .btn-clear-filters-new,
+    .btn-add-client-top {
+        justify-content: center !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .clients-table-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        display: block !important;
+        box-sizing: border-box !important;
+        margin-bottom: 20px !important;
     }
 }
 
 @media (max-width: 768px) {
     .clients-stats-row {
-        grid-template-columns: 1fr;
-        gap: 12px;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        width: 100%;
+    }
+
+    .filter-input-group,
+    .filter-select-group,
+    .filter-select-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: none !important;
+        box-sizing: border-box !important;
     }
 
     .filter-select-group {
         flex-direction: column;
-        width: 100%;
-        gap: 10px;
-    }
-
-    .filter-select-wrapper {
-        width: 100%;
+        align-items: stretch;
+        gap: 8px;
     }
 
     .clients-footer-section {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 16px;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 14px !important;
+        width: 100%;
     }
 
     .btn-add-client {
-        width: 100%;
-        justify-content: center;
+        width: 100% !important;
+        justify-content: center !important;
     }
 
     .pagination-controls {
-        justify-content: center;
+        justify-content: center !important;
+        flex-wrap: wrap !important;
+        gap: 6px;
     }
 
     .form-group-row {

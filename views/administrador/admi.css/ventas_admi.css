@@ -959,36 +959,66 @@
     }
 }
 
+@media (max-width: 991px) {
+    .sales-grid-layout,
+    .sales-left-column,
+    .sales-right-column,
+    .sales-card-box,
+    .sales-history-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    .table-responsive,
+    .cart-table-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        display: block !important;
+        box-sizing: border-box !important;
+    }
+}
+
 @media (max-width: 768px) {
     .inventory-stats-row {
         grid-template-columns: 1fr;
         gap: 12px;
+        width: 100%;
     }
 
     .add-product-row {
         flex-direction: column;
         align-items: stretch;
         gap: 12px;
+        width: 100%;
     }
 
     .form-group-item,
     .form-group-item.qty-field,
     .sales-input-wrapper {
         width: 100% !important;
+        max-width: 100% !important;
         flex: none;
         box-sizing: border-box;
     }
 
-    .btn-add-to-cart {
+    .btn-add-to-cart,
+    .btn-add-to-cart-new {
         width: 100%;
         justify-content: center;
         height: 44px;
+        box-sizing: border-box;
     }
 
     .card-header-with-filters {
         flex-direction: column;
         align-items: stretch;
         gap: 14px;
+        padding: 16px 14px;
     }
 
     .sales-filters-form {
@@ -1008,6 +1038,13 @@
         align-items: center;
         gap: 12px;
         text-align: center;
+        padding: 12px 14px;
+    }
+
+    .sales-pagination-wrapper .pagination-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 4px;
     }
 
     .cart-summary-box {
@@ -1015,21 +1052,26 @@
     }
 
     .btn-checkout-sale,
-    .btn-clear-cart {
+    .btn-clear-cart,
+    .btn-process-sale-new {
         width: 100%;
         justify-content: center;
     }
 }
 
 @media (max-width: 480px) {
+    .sales-card-box {
+        padding: 18px 12px;
+    }
+
     .sales-card-body,
     .catalog-card-body,
     .cart-card-body {
-        padding: 14px 12px;
+        padding: 14px 10px;
     }
 
     .stat-box-card {
-        padding: 14px;
+        padding: 14px 12px;
         gap: 12px;
     }
 
@@ -1061,7 +1103,11 @@
 }
 
 .table-responsive {
-    overflow-x: auto;
-    width: 100%;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    -webkit-overflow-scrolling: touch !important;
+    display: block !important;
+    box-sizing: border-box !important;
 }

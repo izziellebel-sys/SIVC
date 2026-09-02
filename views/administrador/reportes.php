@@ -388,6 +388,38 @@ if ($tab === 'general') {
     }
     $stmtVentasDetalle->close();
 
+    // Filtros y Paginación para la Tabla de Ventas en Reportes (Máximo 5 por página)
+    $filtro_metodo_rep = isset($_GET['filtro_metodo_rep']) ? trim($_GET['filtro_metodo_rep']) : '';
+    $filtro_buscar_rep = isset($_GET['filtro_buscar_rep']) ? trim($_GET['filtro_buscar_rep']) : '';
+    $pagina_ventas_rep = isset($_GET['p_ventas']) ? max(1, (int)$_GET['p_ventas']) : 1;
+    $limite_ventas_rep = 5;
+
+    $ventasFiltradasRep = [];
+    foreach ($ventasDetalleArray as $rowV) {
+        if ($filtro_metodo_rep !== '' && $rowV['metodo_Pago'] !== $filtro_metodo_rep) {
+            continue;
+        }
+        if ($filtro_buscar_rep !== '') {
+            $t = mb_strtolower($filtro_buscar_rep);
+            $matchId = strpos((string)$rowV['id_Venta'], $t) !== false || strpos('#sivc-' . str_pad($rowV['id_Venta'], 5, '0', STR_PAD_LEFT), $t) !== false;
+            $matchCli = mb_strpos(mb_strtolower($rowV['cliente_nombre']), $t) !== false;
+            $matchVend = mb_strpos(mb_strtolower($rowV['vendedor_nombre']), $t) !== false;
+            $matchProd = mb_strpos(mb_strtolower($rowV['productos_comprados']), $t) !== false;
+            if (!$matchId && !$matchCli && !$matchVend && !$matchProd) {
+                continue;
+            }
+        }
+        $ventasFiltradasRep[] = $rowV;
+    }
+
+    $totalVentasFiltradasRep = count($ventasFiltradasRep);
+    $totalPaginasVentasRep = max(1, (int)ceil($totalVentasFiltradasRep / $limite_ventas_rep));
+    if ($pagina_ventas_rep > $totalPaginasVentasRep) {
+        $pagina_ventas_rep = $totalPaginasVentasRep;
+    }
+    $offset_ventas_rep = ($pagina_ventas_rep - 1) * $limite_ventas_rep;
+    $ventasMostradasRep = array_slice($ventasFiltradasRep, $offset_ventas_rep, $limite_ventas_rep);
+
 } elseif ($tab === 'productos') {
     // -------------------------------------------------------------
     // PESTAÑA: PRODUCTOS
@@ -1292,15 +1324,61 @@ if ($tab === 'general') {
                             </div>
                         </div>
 
-                        <!-- Detalle completo de ventas (Visible en pantalla y en impresión) -->
-                        <div class="chart-panel-card" style="grid-column: span 2; margin-top: 25px;">
-                            <div class="chart-panel-header" style="border-bottom: 2px solid var(--color-green); padding-bottom: 10px; margin-bottom: 15px;">
-                                <h3 style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-list-check" style="color: var(--color-green);"></i> Detalle de transacciones para exportación</h3>
+                        <!-- Detalle completo de ventas con Filtro y Paginación (Máximo 5 por página) -->
+                        <div class="chart-panel-card" id="tabla-ventas-reporte" style="grid-column: span 2; margin-top: 25px;">
+                            <div class="card-header-with-filters">
+                                <div class="header-title-group">
+                                    <h3 style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 16px; font-weight: 800; color: var(--text-dark);">
+                                        <i class="fa-solid fa-list-check" style="color: var(--color-green);"></i> Detalle de transacciones para exportación
+                                    </h3>
+                                    <span class="header-subtitle">Listado y facturas emitidas en el periodo</span>
+                                </div>
+
+                                <!-- Formulario de Filtros de Ventas en Reportes -->
+                                <form action="reportes.php" method="GET" class="sales-filters-form" id="salesReportFilterForm">
+                                    <input type="hidden" name="tab" value="ventas">
+                                    <input type="hidden" name="fecha_inicio" value="<?= htmlspecialchars($fecha_inicio); ?>">
+                                    <input type="hidden" name="fecha_fin" value="<?= htmlspecialchars($fecha_fin); ?>">
+
+                                    <!-- Filtro Método de Pago -->
+                                    <div class="sales-filter-item">
+                                        <label for="filtro_metodo_rep">Método</label>
+                                        <div class="sales-input-wrapper">
+                                            <i class="fa-solid fa-credit-card input-icon-left"></i>
+                                            <select name="filtro_metodo_rep" id="filtro_metodo_rep" onchange="this.form.submit()">
+                                                <option value="">Todos los métodos</option>
+                                                <option value="Efectivo" <?= ($filtro_metodo_rep === 'Efectivo') ? 'selected' : ''; ?>>Efectivo</option>
+                                                <option value="Transferencia" <?= ($filtro_metodo_rep === 'Transferencia') ? 'selected' : ''; ?>>Transferencia</option>
+                                                <option value="Crédito" <?= ($filtro_metodo_rep === 'Crédito') ? 'selected' : ''; ?>>Crédito (Fiada)</option>
+                                            </select>
+                                            <i class="fa-solid fa-chevron-down select-chevron-custom"></i>
+                                        </div>
+                                    </div>
+
+                                    <!-- Filtro Buscar (Cliente / ID / Producto) -->
+                                    <div class="sales-filter-item">
+                                        <label for="filtro_buscar_rep">Buscar</label>
+                                        <div class="sales-input-wrapper">
+                                            <i class="fa-solid fa-magnifying-glass input-icon-left"></i>
+                                            <input type="text" name="filtro_buscar_rep" id="filtro_buscar_rep" placeholder="Buscar cliente o ID..." value="<?= htmlspecialchars($filtro_buscar_rep); ?>" onkeydown="if(event.key==='Enter'){this.form.submit();}">
+                                        </div>
+                                    </div>
+
+                                    <!-- Botón Limpiar Filtros -->
+                                    <?php if ($filtro_metodo_rep !== '' || $filtro_buscar_rep !== ''): ?>
+                                        <a href="reportes.php?tab=ventas&fecha_inicio=<?= urlencode($fecha_inicio); ?>&fecha_fin=<?= urlencode($fecha_fin); ?>#tabla-ventas-reporte" class="btn-clear-sales-filters" title="Restablecer filtros">
+                                            <i class="fa-solid fa-rotate-left"></i> Limpiar
+                                        </a>
+                                    <?php endif; ?>
+                                </form>
                             </div>
-                            <div class="report-table-wrapper">
+
+                            <!-- Tabla para pantalla (Máximo 5 por página) -->
+                            <div class="report-table-wrapper screen-only-table">
                                 <table class="report-table">
                                     <thead>
                                         <tr>
+                                            <th>Venta ID</th>
                                             <th>Fecha</th>
                                             <th>Cliente</th>
                                             <th>Vendedor</th>
@@ -1312,9 +1390,10 @@ if ($tab === 'general') {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php if (count($ventasDetalleArray) > 0): ?>
-                                            <?php foreach ($ventasDetalleArray as $vd): ?>
+                                        <?php if (count($ventasMostradasRep) > 0): ?>
+                                            <?php foreach ($ventasMostradasRep as $vd): ?>
                                                 <tr>
+                                                    <td style="font-weight: 700; color: var(--color-green);">#SIVC-<?= str_pad($vd['id_Venta'], 5, '0', STR_PAD_LEFT); ?></td>
                                                     <td><?= date('d/m/Y H:i', strtotime($vd['fecha_Venta'])); ?></td>
                                                     <td><?= htmlspecialchars($vd['cliente_nombre']); ?></td>
                                                     <td><?= htmlspecialchars($vd['vendedor_nombre']); ?></td>
@@ -1333,20 +1412,55 @@ if ($tab === 'general') {
                                             <?php endforeach; ?>
                                         <?php else: ?>
                                             <tr>
-                                                <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 20px;">
-                                                    No se registraron ventas en este periodo.
+                                                <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 25px;">
+                                                    <i class="fa-regular fa-folder-open" style="font-size: 24px; margin-bottom: 8px; display: block; opacity: 0.5;"></i>
+                                                    No se encontraron ventas con los filtros seleccionados.
                                                 </td>
                                             </tr>
                                         <?php endif; ?>
                                     </tbody>
                                 </table>
                             </div>
-                            
+
+                            <!-- Paginación de Ventas en Reportes (5 por página) -->
+                            <div class="sales-pagination-wrapper">
+                                <div class="pagination-info">
+                                    Mostrando <?= ($totalVentasFiltradasRep > 0) ? ($offset_ventas_rep + 1) : 0; ?> a <?= min($offset_ventas_rep + $limite_ventas_rep, $totalVentasFiltradasRep); ?> de <?= $totalVentasFiltradasRep; ?> facturas
+                                </div>
+
+                                <div class="pagination-links">
+                                    <?php
+                                    $baseRepUrl = "reportes.php?tab=ventas&fecha_inicio=" . urlencode($fecha_inicio) . "&fecha_fin=" . urlencode($fecha_fin);
+                                    if ($filtro_metodo_rep !== '') $baseRepUrl .= "&filtro_metodo_rep=" . urlencode($filtro_metodo_rep);
+                                    if ($filtro_buscar_rep !== '') $baseRepUrl .= "&filtro_buscar_rep=" . urlencode($filtro_buscar_rep);
+                                    ?>
+
+                                    <!-- Anterior Button -->
+                                    <a href="<?= $baseRepUrl; ?>&p_ventas=<?= $pagina_ventas_rep - 1; ?>#tabla-ventas-reporte" 
+                                       class="page-btn <?= $pagina_ventas_rep <= 1 ? 'disabled' : ''; ?>" title="Página Anterior">
+                                       <i class="fa-solid fa-chevron-left"></i>
+                                    </a>
+
+                                    <?php for ($i = 1; $i <= $totalPaginasVentasRep; $i++): ?>
+                                        <a href="<?= $baseRepUrl; ?>&p_ventas=<?= $i; ?>#tabla-ventas-reporte" 
+                                           class="page-btn <?= $pagina_ventas_rep === $i ? 'active' : ''; ?>">
+                                           <?= $i; ?>
+                                        </a>
+                                    <?php endfor; ?>
+
+                                    <!-- Siguiente Button -->
+                                    <a href="<?= $baseRepUrl; ?>&p_ventas=<?= $pagina_ventas_rep + 1; ?>#tabla-ventas-reporte" 
+                                       class="page-btn <?= $pagina_ventas_rep >= $totalPaginasVentasRep ? 'disabled' : ''; ?>" title="Página Siguiente">
+                                       <i class="fa-solid fa-chevron-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+
                             <!-- Resumen de Contado vs Fiado -->
-                            <div style="display: flex; gap: 20px; margin-top: 15px; background: #f9fafb; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb; font-size: 13px;">
+                            <div class="report-sales-summary-box" style="display: flex; gap: 20px; margin-top: 15px; background: #f9fafb; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb; font-size: 13px; flex-wrap: wrap;">
                                 <div><strong>Ventas de contado:</strong> <?= $cantContado; ?> transacciones ($<?= number_format($sumContado, 0, ',', '.'); ?>)</div>
                                 <div><strong>Ventas fiadas (créditos):</strong> <?= $cantFiado; ?> transacciones ($<?= number_format($sumFiado, 0, ',', '.'); ?>)</div>
-                                <div style="margin-left: auto;"><strong>Ticket promedio del periodo:</strong> $<?= number_format($ticketPromedio, 0, ',', '.'); ?></div>
+                                <div style="margin-left: auto;"><strong>Ticket promedio:</strong> $<?= number_format($ticketPromedio, 0, ',', '.'); ?></div>
                             </div>
                         </div>
                     </div>

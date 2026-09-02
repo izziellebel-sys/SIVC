@@ -571,3 +571,199 @@
     background-color: #10b981;
     display: inline-block;
 }
+
+/* FILTROS Y PAGINACIÓN PARA TABLA DE VENTAS EN REPORTES */
+.card-header-with-filters {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--card-bg, #ffffff);
+    flex-wrap: wrap;
+    gap: 16px;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.header-title-group h3 {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-dark, #0f172a);
+    margin: 0;
+    letter-spacing: -0.2px;
+}
+
+.header-title-group .header-subtitle {
+    font-size: 13px;
+    color: var(--text-muted, #64748b);
+    font-weight: 500;
+    display: block;
+    margin-top: 2px;
+}
+
+.sales-filters-form {
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.sales-filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.sales-filter-item label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sales-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 200px;
+    height: 38px;
+    box-sizing: border-box;
+}
+
+.sales-input-wrapper .input-icon-left {
+    position: absolute;
+    left: 12px;
+    font-size: 14px;
+    color: #64748b;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.sales-input-wrapper select,
+.sales-input-wrapper input[type="text"] {
+    width: 100%;
+    height: 100%;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 9px;
+    font-size: 13.5px;
+    color: #1e293b;
+    background-color: #f8fafc;
+    padding: 0 12px 0 34px;
+    outline: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.sales-input-wrapper select {
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    padding-right: 30px;
+}
+
+.sales-input-wrapper .select-chevron-custom {
+    position: absolute;
+    right: 12px;
+    font-size: 11px;
+    color: #64748b;
+    pointer-events: none;
+}
+
+.sales-input-wrapper select:focus,
+.sales-input-wrapper input[type="text"]:focus {
+    border-color: #014235;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(1, 66, 53, 0.12);
+}
+
+.btn-clear-sales-filters {
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 14px;
+    border-radius: 9px;
+    background-color: #f1f5f9;
+    border: 1.5px solid #cbd5e1;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-clear-sales-filters:hover {
+    background-color: #e2e8f0;
+    color: #0f172a;
+    border-color: #94a3b8;
+}
+
+/* PAGINACIÓN DE REPORTES */
+.sales-pagination-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    background-color: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    flex-wrap: wrap;
+    gap: 10px;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.sales-pagination-wrapper .pagination-info {
+    font-size: 13.5px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.sales-pagination-wrapper .pagination-links {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.sales-pagination-wrapper .page-btn {
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border-radius: 7px;
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 600;
+    transition: all 0.15s ease;
+}
+
+.sales-pagination-wrapper .page-btn:hover {
+    border-color: #014235;
+    color: #014235;
+    background-color: #f0fdf4;
+}
+
+.sales-pagination-wrapper .page-btn.active {
+    background-color: #014235;
+    color: #ffffff;
+    border-color: #014235;
+    font-weight: 700;
+}
+
+.sales-pagination-wrapper .page-btn.disabled {
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+@media print {
+    .sales-pagination-wrapper,
+    .sales-filters-form,
+    .btn-clear-sales-filters {
+        display: none !important;
+    }
+}

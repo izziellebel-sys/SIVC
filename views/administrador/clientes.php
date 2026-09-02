@@ -288,8 +288,8 @@ if ($id_admin > 0) {
     <link rel="stylesheet" href="../css/style.css">
 
     <!-- CSS Clientes & Dashboard -->
-    <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=3">
-    <link rel="stylesheet" href="admi.css/clientes_admi.css?v=7">
+    <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="admi.css/clientes_admi.css?v=<?= time() ?>">
     <?php 
     require_once __DIR__ . '/../../configuration/load_config.php';
     aplicarConfiguracionEstilos();

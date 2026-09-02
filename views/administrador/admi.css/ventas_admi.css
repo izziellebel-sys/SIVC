@@ -999,6 +999,7 @@
 
     .form-group-item,
     .form-group-item.qty-field,
+    .sales-filter-item,
     .sales-input-wrapper {
         width: 100% !important;
         max-width: 100% !important;

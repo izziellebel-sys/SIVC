@@ -856,8 +856,8 @@ if ($tab === 'general') {
     <link rel="stylesheet" href="../css/style.css">
 
     <!-- CSS Dashboard & Reportes Local (Cache Busted) -->
-    <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=5">
-    <link rel="stylesheet" href="admi.css/reportes_admi.css?v=6">
+    <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="admi.css/reportes_admi.css?v=<?= time() ?>">
     
     <style>
         /* Estilos de impresión */

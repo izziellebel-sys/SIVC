@@ -243,8 +243,8 @@ if ($stmtVentas) {
     <link rel="stylesheet" href="../css/style.css">
 
     <!-- CSS Dashboard & Ventas Local (Cache Busted) -->
-    <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=2">
-    <link rel="stylesheet" href="admi.css/ventas_admi.css?v=8">
+    <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="admi.css/ventas_admi.css?v=<?= time() ?>">
     
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

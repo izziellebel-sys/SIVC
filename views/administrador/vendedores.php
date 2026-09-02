@@ -298,8 +298,8 @@ if ($stmt) {
     <link rel="stylesheet" href="../css/style.css">
 
     <!-- CSS Dashboard & Vendedores Local (Cache Busted) -->
-    <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=5">
-    <link rel="stylesheet" href="admi.css/vendedores_admi.css?v=7">
+    <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="admi.css/vendedores_admi.css?v=<?= time() ?>">
     
     <!-- Cargar configuración dinámica de temas y fuentes -->
     <?php aplicarConfiguracionEstilos(); ?>

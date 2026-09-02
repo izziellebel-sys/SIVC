@@ -396,8 +396,8 @@ $categoriesResult = $conn->query("SELECT DISTINCT unidad_Medida FROM producto WH
     <link rel="stylesheet" href="../css/style.css">
 
     <!-- CSS Dashboard & Inventario Local (Cache Busted) -->
-    <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=2">
-    <link rel="stylesheet" href="admi.css/inventario_admi.css?v=4">
+    <link rel="stylesheet" href="admi.css/dashboard_admi.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="admi.css/inventario_admi.css?v=<?= time() ?>">
     <?php 
     require_once __DIR__ . '/../../configuration/load_config.php';
     aplicarConfiguracionEstilos();

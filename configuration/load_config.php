@@ -637,6 +637,43 @@ function aplicarConfiguracionEstilos() {
     // Estilo global para el indicador de módulo activo (de 'v' a '>')
     echo "  .sidebar-link-card .link-chevron, .sidebar-link-card .link-arrow, .nav-item .link-chevron { display: inline-flex; align-items: center; justify-content: center; font-size: 13px; }\n";
     echo "  .sidebar-link-card .link-chevron i, .sidebar-link-card .link-arrow i, .nav-item .link-chevron i { transition: transform 0.25s ease, color 0.25s ease; }\n";
+
+    // MOTOR RESPONSIVO ESENCIAL PARA MÓVIL (Inmune a caché de archivos CSS externos)
+    echo "  @media (max-width: 991px) {\n";
+    echo "    html, body { max-width: 100vw !important; overflow-x: hidden !important; width: 100% !important; }\n";
+    echo "    .dashboard-container { max-width: 100vw !important; min-width: 0 !important; overflow-x: hidden !important; width: 100% !important; }\n";
+    echo "    .main-content { margin-left: 0 !important; width: 100% !important; max-width: 100% !important; min-width: 0 !important; padding: 76px 14px 24px !important; box-sizing: border-box !important; overflow-x: hidden !important; }\n";
+    echo "    .sidebar { position: fixed !important; top: 0 !important; left: 0 !important; bottom: 0 !important; width: 285px !important; max-width: 85vw !important; height: 100vh !important; height: 100dvh !important; max-height: 100dvh !important; z-index: 1000 !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; transform: translateX(-100%) !important; visibility: hidden !important; pointer-events: none !important; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s ease !important; box-shadow: none !important; }\n";
+    echo "    .sidebar.open { transform: translateX(0) !important; visibility: visible !important; pointer-events: auto !important; box-shadow: 6px 0 35px rgba(0, 0, 0, 0.45) !important; }\n";
+    echo "    .sidebar-toggle-btn { display: flex !important; position: absolute !important; top: 20px !important; right: 16px !important; z-index: 10 !important; }\n";
+    echo "    body:has(.sidebar.open)::before { content: '' !important; position: fixed !important; inset: 0 !important; width: 100vw !important; height: 100vh !important; background-color: rgba(0, 0, 0, 0.5) !important; backdrop-filter: blur(3px) !important; -webkit-backdrop-filter: blur(3px) !important; z-index: 999 !important; pointer-events: auto !important; }\n";
+    echo "    body:has(.sidebar.open) { overflow: hidden !important; }\n";
+    echo "    .mobile-toggle-btn { display: flex !important; position: fixed !important; top: 14px !important; left: 14px !important; width: 44px !important; height: 44px !important; border-radius: 10px !important; z-index: 950 !important; }\n";
+    echo "    .charts-grid-row { display: flex !important; flex-direction: column !important; gap: 20px !important; width: 100% !important; min-width: 0 !important; }\n";
+    echo "    .charts-grid-row > *, .chart-panel-card { width: 100% !important; min-width: 0 !important; max-width: 100% !important; grid-column: auto !important; box-sizing: border-box !important; }\n";
+    echo "    canvas { max-width: 100% !important; height: auto !important; }\n";
+    echo "    .donut-chart-container { flex-direction: column !important; align-items: center !important; gap: 20px !important; width: 100% !important; }\n";
+    echo "    .donut-canvas-wrapper { width: 160px !important; height: 160px !important; margin: 0 auto !important; }\n";
+    echo "    .category-legend-list { width: 100% !important; }\n";
+    echo "    .sales-grid-layout, .sales-left-column, .sales-right-column, .sales-card-box, .sales-history-card, .clients-table-container, .inventory-table-container, .vendedores-table-container, .report-table-container, .table-container, .stat-card, .stat-box-card { width: 100% !important; max-width: 100% !important; min-width: 0 !important; box-sizing: border-box !important; }\n";
+    echo "    .sales-grid-layout { display: flex !important; flex-direction: column !important; gap: 20px !important; }\n";
+    echo "    .table-responsive, .clients-table-container, .inventory-table-container, .vendedores-table-container, .report-table-wrapper, .report-table-container, .cart-table-wrapper { width: 100% !important; max-width: 100% !important; min-width: 0 !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; display: block !important; box-sizing: border-box !important; }\n";
+    echo "    .sales-filters-form, .filter-bar-form, .filter-bar-form-new, .filter-controls-left { flex-direction: column !important; align-items: stretch !important; gap: 12px !important; width: 100% !important; box-sizing: border-box !important; }\n";
+    echo "    .sales-filter-item, .sales-input-wrapper, .filter-input-group, .filter-select-group, .filter-select-wrapper { width: 100% !important; max-width: 100% !important; flex: none !important; box-sizing: border-box !important; }\n";
+    echo "    .btn-clear-sales-filters, .btn-clear-filters, .btn-clear-filters-new, .btn-add-client-top, .btn-process-sale-new { width: 100% !important; justify-content: center !important; box-sizing: border-box !important; }\n";
+    echo "    .sales-pagination-wrapper, .clients-footer-section { flex-direction: column !important; align-items: center !important; gap: 12px !important; width: 100% !important; padding: 12px 14px !important; box-sizing: border-box !important; }\n";
+    echo "    .sales-pagination-wrapper .pagination-links, .pagination-controls { flex-wrap: wrap !important; justify-content: center !important; gap: 4px !important; }\n";
+    echo "    .report-tabs-bar { flex-direction: column !important; align-items: stretch !important; gap: 14px !important; width: 100% !important; padding: 12px !important; box-sizing: border-box !important; }\n";
+    echo "    .tabs-left { display: flex !important; justify-content: center !important; flex-wrap: wrap !important; gap: 8px !important; width: 100% !important; }\n";
+    echo "    .tab-pill { flex: 1 !important; text-align: center !important; min-width: 80px !important; padding: 6px 12px !important; font-size: 12px !important; }\n";
+    echo "    .btn-export { justify-content: center !important; width: 100% !important; box-sizing: border-box !important; }\n";
+    echo "    .date-selector-row { flex-direction: column !important; align-items: stretch !important; gap: 10px !important; width: 100% !important; }\n";
+    echo "    .date-range-badge { width: 100% !important; justify-content: center !important; box-sizing: border-box !important; }\n";
+    echo "    .report-stats-row, .clients-stats-row, .inventory-stats-row { grid-template-columns: 1fr !important; gap: 14px !important; width: 100% !important; }\n";
+    echo "    .add-product-row { flex-direction: column !important; align-items: stretch !important; gap: 12px !important; width: 100% !important; }\n";
+    echo "    .form-group-item, .form-group-item.qty-field { width: 100% !important; max-width: 100% !important; flex: none !important; box-sizing: border-box !important; }\n";
+    echo "    .btn-add-to-cart, .btn-add-to-cart-new { width: 100% !important; justify-content: center !important; height: 44px !important; box-sizing: border-box !important; }\n";
+    echo "  }\n";
     echo "</style>\n";
     echo "<script>
     document.addEventListener('DOMContentLoaded', function() {
